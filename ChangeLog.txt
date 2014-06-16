@@ -1,0 +1,43 @@
+Version 0.1
++Added CivGrid namespace
+Version 0.2
+-Removed old resource management system
++Refactored resource management system to provide better results and more features
++Refactored ResourceRules to make it more felxible for future expansion; also fixed large logic errors while handleing multiple terrainTypes
++Renamed "Tiles" to "Tile" for consistancy
+-Removed ResourceManagerWindow until it is refactored
++Improved resource generation time
++Fixed Resource Feature check
++Fixed Resource Tile check
+Version 0.2.5
+-Removed old improvement management system
++Refactored improvement management system to provide better results and more features
++Refactored ImprovementRules to make it more felxible for future expansion
++Implimented full ResourceManagerWindow
++Improved Improvement generation time(Still work needed)
+Version 0.3
++Added automatic texture atlasing algorithm
++Texture atlassing basic editor(more features coming soon)
+Version 0.3.f
++Fixed unlinked texture atlas
+-Removed "edit" function from resource manager
++Made resource/improvement relationship more consistant
++Cleaned up improvement logic
++Improved improvement clicking logic
++Renamed "Resource Manager" window to "Add Resource"; window class remains the same
++Automatic "None" generation for resources
+Version 0.3.5
++Added regular hexagon dimension generation
+Version 0.4
++Optimized Improvements
++Added extensions methods for lists
++Added editor for texture atlas generation allowing all three types of terrain textures
++Refactored atlas generation
++Improved atlas usage
++Fixed editor memory leak
++Combined targeted atlases into one "Master" atlas
++General code clean up
++Added name array to both resource manager and the improvement manager
++Added TextureAtlas class to clean up WorldManager
++Implimented custom serializable dictionaries
++Improved editor logic and speed
