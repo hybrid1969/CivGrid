@@ -247,7 +247,7 @@ namespace CivGrid
             MeshSetup();
         }
 
-        public void CombineWithOthers(int size, Vector3[] positions)
+        public void CombineHexResources(int size, Vector3[] positions)
         {
             //AssignPresetUV(currentResource.meshToSpawn, 0, 0);
 
@@ -255,22 +255,19 @@ namespace CivGrid
             if (size > 0)
             {
                 //combine instances
-                CombineInstance[] combine = new CombineInstance[size + 1];
-                //set first mesh to the hexagon
-                combine[0].mesh = localMesh;
+                CombineInstance[] combine = new CombineInstance[size];
                 Matrix4x4 matrix = new Matrix4x4();
                 matrix.SetTRS(Vector3.zero, Quaternion.identity, Vector3.one);
                 combine[0].transform = matrix;
-                localMesh = new Mesh();
 
 
                 //skip first combine instance due to presetting
                 for (int i = 0; i < size; i++)
                 {
-                    combine[i + 1].mesh = currentResource.meshToSpawn;
+                    combine[i].mesh = currentResource.meshToSpawn;
                     matrix = new Matrix4x4();
                     matrix.SetTRS(positions[i], Quaternion.identity, Vector3.one);
-                    combine[i + 1].transform = matrix;
+                    combine[i].transform = matrix;
                 }
 
                 localMesh.CombineMeshes(combine);
@@ -338,9 +335,9 @@ namespace CivGrid
 
         private void AssignPresetUV(Mesh mesh, Rect rectArea)
         {
-            UV = new Vector2[localMesh.vertexCount];
+            UV = new Vector2[mesh.vertexCount];
 
-            for (int i = 0; i < localMesh.vertexCount; i++)
+            for (int i = 0; i < mesh.vertexCount; i++)
             {
                 UV[i] = new Vector2(mesh.uv[i].x * rectArea.width + rectArea.x, mesh.uv[i].y * rectArea.height + rectArea.y);
 

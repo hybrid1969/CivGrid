@@ -13,6 +13,8 @@ namespace CivGrid
 
         public bool hideResources;
 
+        Vector2[] uv;
+
         public void SetUp()
         {
             resources.Insert(0, new Resource("None", 0, null, null));
@@ -59,7 +61,54 @@ namespace CivGrid
                 float x = (hex.localMesh.bounds.center.x + Random.Range(-0.2f, 0.2f));
                 float z = (hex.localMesh.bounds.center.z + Random.Range(-0.2f, 0.2f));
                 hex.resourceLocations.Add(new Vector3(x, y, z));
-                hex.CombineWithOthers(hex.resourceLocations.Count, hex.resourceLocations.ToArray());
+                //hex.CombineHexResources(hex.resourceLocations.Count, hex.resourceLocations.ToArray());
+
+                //AssignPresetUV(currentResource.meshToSpawn, 0, 0);
+            }
+
+            int size = hex.resourceLocations.Count;
+
+            //number of resources to combine
+            if (size > 0)
+            {
+                //combine instances
+                CombineInstance[] combine = new CombineInstance[size];
+                Matrix4x4 matrix = new Matrix4x4();
+                matrix.SetTRS(Vector3.zero, Quaternion.identity, Vector3.one);
+
+                //skip first combine instance due to presetting
+                for (int k = 0; k < size; k++)
+                {
+                    combine[k].mesh = hex.currentResource.meshToSpawn;
+                    matrix.SetTRS(hex.resourceLocations[k], Quaternion.identity, Vector3.one);
+                    combine[k].transform = matrix;
+                }
+
+                GameObject holder = new GameObject(r.resourceName, typeof(MeshFilter), typeof(MeshRenderer));
+
+                holder.transform.position = hex.worldPosition;
+                holder.transform.parent = hex.parentChunk.transform;
+
+                MeshFilter filter = holder.GetComponent<MeshFilter>();
+
+                holder.renderer.material = hex.parentChunk.renderer.material;
+
+                filter.mesh = new Mesh();
+                filter.mesh.CombineMeshes(combine);
+
+                //UV mapping
+                //Mesh localMesh = hex.currentResource.meshToSpawn;
+                Rect rectArea = hex.parentChunk.worldManager.textureAtlas.resourceLocations.TryGetValue(r);
+                uv = new Vector2[filter.mesh.vertexCount];
+
+                for (int i = 0; i < filter.mesh.vertexCount; i++)
+                {
+                    uv[i] = new Vector2(filter.mesh.uv[i].x * rectArea.width + rectArea.x, filter.mesh.uv[i].y * rectArea.height + rectArea.y);
+
+                    uv[i] = new Vector2(Mathf.Clamp(uv[i].x, 0.1f, 0.9f), Mathf.Clamp(uv[i].y, 0.1f, 0.9f));
+                }
+
+                filter.mesh.uv = uv;
             }
 
             if (regenerateChunk)
@@ -68,6 +117,7 @@ namespace CivGrid
                 hex.parentChunk.RegenerateMesh();
             }
         }
+
 
         /// <summary>
         /// Checks if a resource should be spawned on a hexagon

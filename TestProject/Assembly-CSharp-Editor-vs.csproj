@@ -48,19 +48,9 @@
   <ItemGroup>
      <Compile Include="Assets\Editor\CivGridEditor.cs" />
      <Compile Include="Assets\Editor\ResourceManagerEditor.cs" />
- <Reference Include="AssetStoreTools">
- <HintPath>C:/Users/Landon/Desktop/CivGrid/TestProject/Assets/AssetStoreTools/Editor/AssetStoreTools.dll</HintPath>
- </Reference>
- <Reference Include="AssetStoreToolsExtra">
- <HintPath>C:/Users/Landon/Desktop/CivGrid/TestProject/Assets/AssetStoreTools/Editor/AssetStoreToolsExtra.dll</HintPath>
- </Reference>
  <Reference Include="UnityEditor.Graphs">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
  </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="Assembly-CSharp-vs.csproj">
-      <Project>{4CE07701-134F-9DD0-F36C-F385BB4D61DF}</Project>      <Name>Assembly-CSharp-vs</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
