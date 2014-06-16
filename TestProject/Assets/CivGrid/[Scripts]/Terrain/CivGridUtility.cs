@@ -277,7 +277,6 @@ namespace CivGrid
         {
             foreach (ResourceItem item in list)
             {
-                Debug.Log(item.Key.resourceName + " ?= " + key.resourceName);
                 if (item.Key.resourceName == key.resourceName)
                 {
                     return item.Value;

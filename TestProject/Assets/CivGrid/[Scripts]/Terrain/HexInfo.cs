@@ -247,36 +247,6 @@ namespace CivGrid
             MeshSetup();
         }
 
-        public void CombineHexResources(int size, Vector3[] positions)
-        {
-            //AssignPresetUV(currentResource.meshToSpawn, 0, 0);
-
-            //number of resources to combine
-            if (size > 0)
-            {
-                //combine instances
-                CombineInstance[] combine = new CombineInstance[size];
-                Matrix4x4 matrix = new Matrix4x4();
-                matrix.SetTRS(Vector3.zero, Quaternion.identity, Vector3.one);
-                combine[0].transform = matrix;
-
-
-                //skip first combine instance due to presetting
-                for (int i = 0; i < size; i++)
-                {
-                    combine[i].mesh = currentResource.meshToSpawn;
-                    matrix = new Matrix4x4();
-                    matrix.SetTRS(positions[i], Quaternion.identity, Vector3.one);
-                    combine[i].transform = matrix;
-                }
-
-                localMesh.CombineMeshes(combine);
-                //AssignFeatureUV(terrainType, GetRawUV(), (1f / 3f));
-                localMesh.RecalculateNormals();
-                localMesh.RecalculateBounds();
-            }
-        }
-
         private void AssignUVToDefaultTile()
         {
             Vector2[] rawUV = parentChunk.worldManager.flatHexagonSharedMesh.uv;
