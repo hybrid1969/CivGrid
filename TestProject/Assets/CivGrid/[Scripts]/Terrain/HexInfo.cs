@@ -46,7 +46,6 @@ namespace CivGrid
         //improvments
         [SerializeField]
         public Improvement currentImprovement;
-        public List<GameObject> improvementGameObjects = new List<GameObject>();
 
         public Mesh localMesh;
 
@@ -241,12 +240,6 @@ namespace CivGrid
             #endregion
         }
 
-        public void RemoveResources()
-        {
-            resourceLocations = new List<Vector3>();
-            MeshSetup();
-        }
-
         private void AssignUVToDefaultTile()
         {
             Vector2[] rawUV = parentChunk.worldManager.flatHexagonSharedMesh.uv;
@@ -275,7 +268,7 @@ namespace CivGrid
             for (int i = 0; i < rawUV.Length; i++)
             {
                 UV[i] = new Vector2(rawUV[i].x * rectArea.width + rectArea.x, rawUV[i].y * rectArea.height + rectArea.y);
-
+                
                 UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
             }
 

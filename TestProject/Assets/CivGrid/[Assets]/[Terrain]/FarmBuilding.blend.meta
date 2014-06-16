@@ -11,8 +11,10 @@ ModelImporter:
     400004: Plane
     2300000: Cylinder
     2300002: Plane
+    2300004: //RootNode
     3300000: Cylinder
     3300002: Plane
+    3300004: //RootNode
     4300000: Plane
     4300002: Cylinder
     7400000: Default Take
@@ -25,6 +27,7 @@ ModelImporter:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
     optimizeGameObjects: 0
+    motionNodeName: 
     animationCompression: 1
     animationRotationError: .5
     animationPositionError: .5
@@ -35,7 +38,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: .0500000007
+    globalScale: .25
     meshCompression: 3
     addColliders: 0
     importBlendShapes: 0

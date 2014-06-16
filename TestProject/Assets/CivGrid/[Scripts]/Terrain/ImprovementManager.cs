@@ -13,7 +13,7 @@ namespace CivGrid
         public List<Improvement> searalizableImprovements;
         public string[] improvementNames;
 
-        public bool hideImprovements;
+        public ResourceManager rM;
 
         public void SetUp()
         {
@@ -21,6 +21,8 @@ namespace CivGrid
             improvements.Insert(0, new Improvement("None", 0, null, null));
             improvements[0].meshToSpawn = null;
             improvements[0].spawnAmount = 0;
+
+            rM = GetComponent<ResourceManager>();
 
             if (improvementNames == null)
             {
@@ -81,7 +83,7 @@ namespace CivGrid
             if (possible)
             {
                 hex.currentImprovement = returnImprovement;
-                InitiateImprovement(hex, returnImprovement);
+                hex.parentChunk.worldManager.iM.InitiateImprovement(hex, returnImprovement);
             }
         }
 
@@ -100,13 +102,7 @@ namespace CivGrid
 
 
                     //destory improvement children
-                    foreach (GameObject obj in hex.improvementGameObjects)
-                    {
-                        Destroy(obj);
-                    }
-
-                    //reset improvementGameObject list
-                    hex.improvementGameObjects = new List<GameObject>();
+                    Destroy(hex.currentImprovement.iObject);
 
                     //respawn resource model
                     if (hex.currentResource.resourceName != "None")
@@ -120,22 +116,16 @@ namespace CivGrid
             hex.currentImprovement = improvements[0];
         }
 
-        private static void InitiateImprovement(HexInfo hex, Improvement i)
+        private void InitiateImprovement(HexInfo hex, Improvement i)
         {
-            //delete resource gameobject
-            GameObject holder = hex.parentChunk.gameObject;
-            if (holder == null) { Debug.LogError("Could not find the resource holder!"); }
+            GameObject resourceHolder = hex.parentChunk.gameObject;
+            if (resourceHolder == null) { Debug.LogError("Could not find the resource holder!"); }
 
             //remove current improvements
-            foreach (GameObject obj in hex.improvementGameObjects)
-            {
-                Destroy(obj);
-            }
-            //reset improvement gameObject list
-            hex.improvementGameObjects = new List<GameObject>();
+            Destroy(hex.currentImprovement.iObject);
 
             //remove current resource gameobjects
-            hex.RemoveResources();
+            rM.HideResourceMesh(hex);
 
             hex.ChangeTextureToImprovement();
            
@@ -143,19 +133,16 @@ namespace CivGrid
             //spawn gameObject if needed
             if (i.meshToSpawn != null)
             {
+                
                 float y = (hex.worldPosition.y + hex.hexExt.y) - ((hex.worldPosition.y + hex.hexExt.y) / Random.Range(3, 6)); if (y == 0) { y -= ((hex.worldPosition.y + hex.hexExt.y) / Random.Range(4, 8)); }
-                GameObject obj = new GameObject(i.improvementName + " at " + hex.CubeGridPosition, typeof(MeshFilter), typeof(MeshRenderer));
-                obj.GetComponent<MeshFilter>().mesh = hex.currentImprovement.meshToSpawn;
-                obj.transform.position = new Vector3((hex.worldPosition.x + hex.hexCenter.x + Random.Range(-0.2f, 0.2f)), y, (hex.worldPosition.z + hex.hexCenter.z + Random.Range(-0.2f, 0.2f)));
-                obj.transform.rotation = Quaternion.identity;
-                obj.renderer.material.mainTexture = hex.parentChunk.worldManager.textureAtlas.terrainAtlas;
+                GameObject holder = new GameObject(i.improvementName + " at " + hex.CubeGridPosition, typeof(MeshFilter), typeof(MeshRenderer));
+                holder.GetComponent<MeshFilter>().mesh = hex.currentImprovement.meshToSpawn;
+                holder.transform.position = new Vector3((hex.worldPosition.x + hex.hexCenter.x + Random.Range(-0.2f, 0.2f)), y, (hex.worldPosition.z + hex.hexCenter.z + Random.Range(-0.2f, 0.2f)));
+                holder.transform.rotation = Quaternion.identity;
+                holder.renderer.material.mainTexture = i.improvementMeshTexture;
+                holder.transform.parent = hex.parentChunk.transform;
 
-
-                //add object to hexagon's improvementGameObject list
-                hex.improvementGameObjects.Add(obj);
-
-                //hide resource in heirarchy?
-                if (hex.rM.hideResources) { obj.hideFlags = HideFlags.HideInHierarchy; } else { obj.hideFlags = HideFlags.None; }
+                hex.currentImprovement.iObject = holder;
             }
         }
 
@@ -207,6 +194,7 @@ namespace CivGrid
     [System.Serializable]
     public class Improvement
     {
+        public GameObject iObject;
         public string improvementName;
         public ImprovementRule rule;
         bool possible;
@@ -215,6 +203,7 @@ namespace CivGrid
         //public Vector2 atlasLocation;
 
         public Mesh meshToSpawn;
+        public Texture2D improvementMeshTexture;
         public int spawnAmount = 3;
 
         public Improvement(string name, float rarity, Mesh mesh, ImprovementRule rule)
