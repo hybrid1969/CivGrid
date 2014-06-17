@@ -194,6 +194,7 @@ namespace CivGrid
     [System.Serializable]
     public class Improvement
     {
+        [HideInInspector]
         public GameObject iObject;
         public string improvementName;
         public ImprovementRule rule;

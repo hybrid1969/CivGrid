@@ -226,6 +226,7 @@ namespace CivGrid
     [System.Serializable]
     public class Resource
     {
+        [HideInInspector]
         public GameObject rObject;
         public string resourceName;
         public ResourceRules rule;
