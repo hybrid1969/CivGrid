@@ -95,8 +95,7 @@ namespace CivGrid
             GetHexProperties();
             GenerateMap();
 
-            //textureAtlas.improvementLocations = new ImprovementItem[1];
-            //textureAtlas.improvementLocations[0] = new ImprovementItem(iM.searalizableImprovements[1], new Vector2(3, 1));
+            rM.InitResourceTexturesOnHexs();
         }
 
         void SetNoiseScaleToTrueValue()

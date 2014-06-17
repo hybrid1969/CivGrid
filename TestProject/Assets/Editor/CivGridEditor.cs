@@ -149,7 +149,7 @@ namespace CivGrid
 
     public enum TypeofEditorTile { Terrain, Resource, Improvement }
 
-    public sealed class TextureManagerWindow : EditorWindow
+    public sealed class TerrainManagerWindow : EditorWindow
     {
         WorldManager worldManager;
         ImprovementManager improvementManager;
@@ -170,15 +170,15 @@ namespace CivGrid
 
         private Vector2 internalAtlasDimension;
 
-        [MenuItem("CivGrid/Texture Manager")]
+        [MenuItem("CivGrid/Terrain Manager")]
         static void ShowWindow()
         {
-            EditorWindow.GetWindow(typeof(TextureManagerWindow));
+            EditorWindow.GetWindow(typeof(TerrainManagerWindow));
         }
 
         void OnEnable()
         {
-            this.title = "Texture Manager";
+            this.title = "Terrain Manager";
             worldManager = GameObject.FindObjectOfType<WorldManager>();
             improvementManager = GameObject.FindObjectOfType<ImprovementManager>();
             resourceManager = GameObject.FindObjectOfType<ResourceManager>();
@@ -276,13 +276,12 @@ namespace CivGrid
 
         private void GenerateAtlas()
         {
-            //Texture2D returnTexture = TextureManager.AtlasTextures(CivGridUtility.ToSingleArray(textures), internalAtlasDimension, out worldManager.textureAtlas.texturesInAtlas);
 
             Rect[] rectAreas;
             Texture2D returnTexture = TexturePacker.AtlasTextures(CivGridUtility.ToSingleArray(textures), out rectAreas);
 
-            int lengthOfArraysX = catagory.GetLength(0); //these used to be tempTileType
-            int lengthOfArraysY = catagory.GetLength(1); //these used to be tempTileType
+            int lengthOfArraysX = catagory.GetLength(0); 
+            int lengthOfArraysY = catagory.GetLength(1); 
 
             for (int x = 0; x < lengthOfArraysX; x++)
             {

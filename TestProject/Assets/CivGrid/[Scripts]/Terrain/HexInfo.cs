@@ -46,7 +46,6 @@ namespace CivGrid
         //improvments
         [SerializeField]
         public Improvement currentImprovement;
-        public List<GameObject> improvementGameObjects = new List<GameObject>();
 
         public Mesh localMesh;
 
@@ -241,45 +240,6 @@ namespace CivGrid
             #endregion
         }
 
-        public void RemoveResources()
-        {
-            resourceLocations = new List<Vector3>();
-            MeshSetup();
-        }
-
-        public void CombineWithOthers(int size, Vector3[] positions)
-        {
-            //AssignPresetUV(currentResource.meshToSpawn, 0, 0);
-
-            //number of resources to combine
-            if (size > 0)
-            {
-                //combine instances
-                CombineInstance[] combine = new CombineInstance[size + 1];
-                //set first mesh to the hexagon
-                combine[0].mesh = localMesh;
-                Matrix4x4 matrix = new Matrix4x4();
-                matrix.SetTRS(Vector3.zero, Quaternion.identity, Vector3.one);
-                combine[0].transform = matrix;
-                localMesh = new Mesh();
-
-
-                //skip first combine instance due to presetting
-                for (int i = 0; i < size; i++)
-                {
-                    combine[i + 1].mesh = currentResource.meshToSpawn;
-                    matrix = new Matrix4x4();
-                    matrix.SetTRS(positions[i], Quaternion.identity, Vector3.one);
-                    combine[i + 1].transform = matrix;
-                }
-
-                localMesh.CombineMeshes(combine);
-                //AssignFeatureUV(terrainType, GetRawUV(), (1f / 3f));
-                localMesh.RecalculateNormals();
-                localMesh.RecalculateBounds();
-            }
-        }
-
         private void AssignUVToDefaultTile()
         {
             Vector2[] rawUV = parentChunk.worldManager.flatHexagonSharedMesh.uv;
@@ -308,7 +268,7 @@ namespace CivGrid
             for (int i = 0; i < rawUV.Length; i++)
             {
                 UV[i] = new Vector2(rawUV[i].x * rectArea.width + rectArea.x, rawUV[i].y * rectArea.height + rectArea.y);
-
+                
                 UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
             }
 
@@ -338,9 +298,9 @@ namespace CivGrid
 
         private void AssignPresetUV(Mesh mesh, Rect rectArea)
         {
-            UV = new Vector2[localMesh.vertexCount];
+            UV = new Vector2[mesh.vertexCount];
 
-            for (int i = 0; i < localMesh.vertexCount; i++)
+            for (int i = 0; i < mesh.vertexCount; i++)
             {
                 UV[i] = new Vector2(mesh.uv[i].x * rectArea.width + rectArea.x, mesh.uv[i].y * rectArea.height + rectArea.y);
 
