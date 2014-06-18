@@ -264,12 +264,12 @@ namespace CivGrid
         {
             foreach (TileItem item in list)
             {
-                if (item.Key == key)
+                if (item.Key.name == key.name)
                 {
                     return item.Value;
                 }
             }
-            Debug.LogError("Couldn't get a value from the given key: " + key.ToString());
+            Debug.LogError("Couldn't get a value from the given key: " + key.name);
             return new Rect();
         }
 
@@ -277,12 +277,12 @@ namespace CivGrid
         {
             foreach (ResourceItem item in list)
             {
-                if (item.Key.resourceName == key.resourceName)
+                if (item.Key.name == key.name)
                 {
                     return item.Value;
                 }
             }
-            Debug.LogError("Couldn't get a value from the given key: " + key.resourceName);
+            Debug.LogError("Couldn't get a value from the given key: " + key.name);
             return new Rect();
         }
 
@@ -290,12 +290,12 @@ namespace CivGrid
         {
             foreach (ImprovementItem item in list)
             {
-                if (item.Key.improvementName == key.improvementName)
+                if (item.Key.name == key.name)
                 {
                     return item.Value;
                 }
             }
-            Debug.LogError("Couldn't get a value from the given key: " + key.improvementName);
+            Debug.LogError("Couldn't get a value from the given key: " + key.name);
             return new Rect();
         }
 

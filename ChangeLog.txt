@@ -52,3 +52,7 @@ Version 0.4
 	+Added project to a git repository
 	+Cleaned up Changelog
 	+more stuff that I'm forgeting ;)
+Version 0.4.1f
+	+Fixed resource/improvement GameObject pooling on themselves 	allowing only one present at a time
+	+Changed "Tiles" enum to a class; giving more options
+	+Prepared for editor work

@@ -30,7 +30,7 @@ public class ResourceManagerEditor : Editor
                 Resource r = rm.resources[i];
                 EditorGUILayout.BeginHorizontal();
 
-                GUILayout.Label(r.resourceName);
+                GUILayout.Label(r.name);
 
                 /*
                 if (GUILayout.Button("Edit"))

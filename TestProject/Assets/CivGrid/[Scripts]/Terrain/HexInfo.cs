@@ -17,10 +17,8 @@ namespace CivGrid
         public Vector3 worldPosition;
         public Vector2 pixelLocation;
 
-        public string name;
         public bool isSelected;
         public Unit currentUnit;
-        public bool isWater;
         public Tile terrainType;
         public Feature terrainFeature;
         public Vector3[] vertsx;
@@ -42,6 +40,11 @@ namespace CivGrid
         public ResourceManager rM;
         public bool hideResources;
         public List<Vector3> resourceLocations = new List<Vector3>();
+
+        [HideInInspector]
+        public GameObject iObject;
+        [HideInInspector]
+        public GameObject rObject;
 
         //improvments
         [SerializeField]
@@ -70,8 +73,6 @@ namespace CivGrid
             MeshSetup();
             rM.CheckForResource(this, out currentResource);
             worldTextureAtlas = parentChunk.worldManager.textureAtlas;
-
-            if (terrainType == Tile.Ocean) { isWater = true; }
         }
 
         public void ChangeTextureToResource()
@@ -243,7 +244,6 @@ namespace CivGrid
         private void AssignUVToDefaultTile()
         {
             Vector2[] rawUV = parentChunk.worldManager.flatHexagonSharedMesh.uv;
-
             Rect rectArea = parentChunk.worldManager.textureAtlas.tileLocations.TryGetValue(terrainType);
 
             UV = new Vector2[rawUV.Length];

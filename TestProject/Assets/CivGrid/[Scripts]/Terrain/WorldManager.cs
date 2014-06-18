@@ -6,13 +6,14 @@ using CivGrid;
 
 namespace CivGrid
 {
-    public enum Tile { None = 0, Desert = 1, Grass = 2, Grasslands = 3, Ocean = 4, Shore = 5, Snow = 6, Tundra = 7 }
+    //public enum Tile { None = 0, Desert = 1, Grass = 2, Grasslands = 3, Ocean = 4, Shore = 5, Snow = 6, Tundra = 7 }
     public enum Feature { Flat = 0, Hill = 1, Mountain = 3, NextToWater = 4 }
 
     public enum TextureAtlasType { Terrain = 0, Resource = 1, Improvement = 2 }
 
     public enum WorldType { Diced, Continents }
 
+    [RequireComponent(typeof(TileManager), typeof(ResourceManager), typeof(ImprovementManager))]
     public class WorldManager : MonoBehaviour
     {
         #region fields
@@ -54,7 +55,6 @@ namespace CivGrid
         public bool debugMode;
         public bool useWorldTypeValues;
 
-
         //World Values
         private Texture2D tileMap;
         public float noiseScale;
@@ -78,6 +78,8 @@ namespace CivGrid
         public ResourceManager rM;
         [HideInInspector]
         public ImprovementManager iM;
+        [HideInInspector]
+        public TileManager tM;
         #endregion
 
         /// <summary>
@@ -87,6 +89,7 @@ namespace CivGrid
         {
             rM = GetComponent<ResourceManager>();
             iM = GetComponent<ImprovementManager>();
+            tM = GetComponent<TileManager>();
             rM.SetUp();
             iM.SetUp();
             civGridCamera = Camera.main.GetComponent<CivGridCamera>();
@@ -289,7 +292,7 @@ namespace CivGrid
         /// <param name="x">The x cords of the tile</param>
         /// <param name="h">The h(height) cord of the tile</param>
         /// <returns>An int corresponding to the biome it should be within</returns>
-        public int PickHex(int x, int h)
+        public Tile PickHex(int x, int h)
         {
             //temp no influence from rainfall values
             float latitude = Mathf.Abs((mapSize.y / 2) - h) / (mapSize.y / 2);//1 == snow (top) 0 == eqautor
@@ -299,11 +302,12 @@ namespace CivGrid
 
             if (tileMap.GetPixel(x, h).r == 0)
             {
-                tile = Tile.Ocean;
+                tile = tM.GetOcean();
             }
             else
             {
-
+                tile = tM.GetTileFromLattitude(latitude);
+                /*
                 if (latitude > 0.9f)
                 {
                     tile = Tile.Snow;
@@ -345,9 +349,10 @@ namespace CivGrid
                     if (latitude < 0.1f == false)
                         print("error incorrrect lattitude: " + latitude);
                 }
+                 */
             }
 
-            return ((int)tile);
+            return (tile);
         }
 
         public Feature PickFeature(int xArrayPosition, int yArrayPosition, bool edge)

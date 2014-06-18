@@ -28,19 +28,19 @@ namespace CivGrid
             }
         }
 
-        public void AddResource(Resource r)
-        {
-            resources.Add(r);
-            UpdateResourceNames();
-        }
-
         public void UpdateResourceNames()
         {
             resourceNames = new string[resources.Count];
             for (int i = 0; i < resources.Count; i++)
             {
-                resourceNames[i] = resources[i].resourceName;
+                resourceNames[i] = resources[i].name;
             }
+        }
+
+        public void AddResource(Resource r)
+        {
+            resources.Add(r);
+            UpdateResourceNames();
         }
 
         public void DeleteResource(Resource r)
@@ -51,21 +51,21 @@ namespace CivGrid
 
         public void HideResourceMesh(HexInfo hex)
         {
-            Destroy(hex.currentResource.rObject);
+            Destroy(hex.rObject);
         }
 
         public void SpawnResource(HexInfo hex, Resource r, bool regenerateChunk)
         {
             hex.resourceLocations.Clear();
-            if (hex.currentResource.rObject != null)
+            if (hex.rObject != null)
             {
-                Destroy(hex.currentResource.rObject);
+                Destroy(hex.rObject);
             }
 
             float y = (hex.localMesh.bounds.extents.y); if (y == 0) { y -= ((hex.worldPosition.y + hex.localMesh.bounds.extents.y) / Random.Range(4, 8)); } else { y = hex.worldPosition.y + hex.localMesh.bounds.extents.y + hex.currentResource.meshToSpawn.bounds.extents.y; }
             for (int i = 0; i < r.spawnAmount; i++)
             {
-                if (hex.currentResource.meshToSpawn == null && hex.currentResource.resourceName != "None") { Debug.LogWarning("No Mesh was assigned to spawn for resource: " + hex.currentResource.resourceName + ". Aborting spawning of graphics for this resource."); return; }
+                if (hex.currentResource.meshToSpawn == null && hex.currentResource.name != "None") { Debug.LogWarning("No Mesh was assigned to spawn for resource: " + hex.currentResource.name + ". Aborting spawning of graphics for this resource."); return; }
 
                 hex.localMesh.RecalculateBounds();
 
@@ -93,7 +93,7 @@ namespace CivGrid
                     combine[k].transform = matrix;
                 }
 
-                GameObject holder = new GameObject(r.resourceName, typeof(MeshFilter), typeof(MeshRenderer));
+                GameObject holder = new GameObject(r.name, typeof(MeshFilter), typeof(MeshRenderer));
 
                 holder.transform.position = hex.worldPosition;
                 holder.transform.parent = hex.parentChunk.transform;
@@ -105,7 +105,7 @@ namespace CivGrid
                 filter.mesh = new Mesh();
                 filter.mesh.CombineMeshes(combine);
 
-                hex.currentResource.rObject = holder;
+                hex.rObject = holder;
 
                 //UV mapping
                 Rect rectArea = worldManager.textureAtlas.resourceLocations.TryGetValue(r);
@@ -134,7 +134,7 @@ namespace CivGrid
             {
                 foreach (HexInfo hex in chunk.hexArray)
                 {
-                    if (hex.currentResource.resourceName != "None")
+                    if (hex.currentResource.name != "None")
                     {
                         hex.ChangeTextureToResource();
                     }
@@ -226,9 +226,7 @@ namespace CivGrid
     [System.Serializable]
     public class Resource
     {
-        [HideInInspector]
-        public GameObject rObject;
-        public string resourceName;
+        public string name;
         public ResourceRules rule;
         bool possible;
         public float rarity;
@@ -241,7 +239,7 @@ namespace CivGrid
 
         public Resource(string name, float rarity, Mesh mesh, ResourceRules rule)
         {
-            this.resourceName = name;
+            this.name = name;
             this.rule = rule;
             this.rarity = rarity;
             this.meshToSpawn = mesh;

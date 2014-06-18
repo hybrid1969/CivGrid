@@ -75,8 +75,7 @@ namespace CivGrid
                         hex.worldPosition = new Vector3(hex.localPosition.x + (xSector * (xSize * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((ySector * (ySize * hexSize.z)) * (.75f)));
 
                         ///Set Hex values
-                        hex.terrainType = (Tile)(worldManager.PickHex((int)worldArrayPosition.x, (int)worldArrayPosition.y));
-                        hex.name = "HexTile " + hex.CubeGridPosition;
+                        hex.terrainType = worldManager.PickHex((int)worldArrayPosition.x, (int)worldArrayPosition.y);
                         hex.terrainFeature = worldManager.PickFeature((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
                         hex.hexExt = worldManager.hexExt;
                         hex.hexCenter = worldManager.hexCenter;
@@ -111,8 +110,7 @@ namespace CivGrid
                             hex.worldPosition = new Vector3(hex.localPosition.x + (xSector * (xSize * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((ySector * (ySize * hexSize.z)) * (.75f)));
 
                             ///Set Hex values
-                            hex.terrainType = (Tile)(worldManager.PickHex((int)worldArrayPosition.x, (int)worldArrayPosition.y));
-                            hex.name = "HexTile " + hex.CubeGridPosition;
+                            hex.terrainType = worldManager.PickHex((int)worldArrayPosition.x, (int)worldArrayPosition.y);
                             hex.terrainFeature = worldManager.PickFeature((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
                             hex.hexExt = worldManager.hexExt;
                             hex.hexCenter = worldManager.hexCenter;
@@ -146,8 +144,7 @@ namespace CivGrid
                             //print(hex.CubeGridPosition + "is in chunk " + gameObject.name + " at local position " + hex.localPosition + " and at world position " + hex.worldPosition); 
 
                             ///Set Hex values
-                            hex.terrainType = (Tile)(worldManager.PickHex((int)worldArrayPosition.x, (int)worldArrayPosition.y));
-                            hex.name = "HexTile " + hex.CubeGridPosition;
+                            hex.terrainType = worldManager.PickHex((int)worldArrayPosition.x, (int)worldArrayPosition.y);
                             hex.terrainFeature = worldManager.PickFeature((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
                             hex.hexExt = worldManager.hexExt;
                             hex.hexCenter = worldManager.hexCenter;

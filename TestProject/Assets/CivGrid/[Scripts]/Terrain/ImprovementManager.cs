@@ -47,7 +47,7 @@ namespace CivGrid
             improvementNames = new string[searalizableImprovements.Count];
             for (int i = 0; i < searalizableImprovements.Count; i++)
             {
-                improvementNames[i] = searalizableImprovements[i].improvementName;
+                improvementNames[i] = searalizableImprovements[i].name;
             }
         }
 
@@ -64,7 +64,7 @@ namespace CivGrid
             Improvement returnImprovement = new Improvement();
             foreach (Improvement i in improvements)
             {
-                if (improvementName == i.improvementName)
+                if (improvementName == i.name)
                 {
                     returnImprovement = i;
                 }
@@ -95,17 +95,17 @@ namespace CivGrid
         {
             if (hex.currentImprovement != null)
             {
-                if (hex.currentImprovement.improvementName != "None")
+                if (hex.currentImprovement.name != "None")
                 {
                     //change texture of this hexagon back to its original if it has a resource it will be corrected below
                     hex.ChangeTextureToNormalTile();
 
 
                     //destory improvement children
-                    Destroy(hex.currentImprovement.iObject);
+                    Destroy(hex.iObject);
 
                     //respawn resource model
-                    if (hex.currentResource.resourceName != "None")
+                    if (hex.currentResource.name != "None")
                     {
                         hex.rM.SpawnResource(hex, hex.currentResource, true);
                     }
@@ -122,7 +122,7 @@ namespace CivGrid
             if (resourceHolder == null) { Debug.LogError("Could not find the resource holder!"); }
 
             //remove current improvements
-            Destroy(hex.currentImprovement.iObject);
+            Destroy(hex.iObject);
 
             //remove current resource gameobjects
             rM.HideResourceMesh(hex);
@@ -135,14 +135,14 @@ namespace CivGrid
             {
                 
                 float y = (hex.worldPosition.y + hex.hexExt.y) - ((hex.worldPosition.y + hex.hexExt.y) / Random.Range(3, 6)); if (y == 0) { y -= ((hex.worldPosition.y + hex.hexExt.y) / Random.Range(4, 8)); }
-                GameObject holder = new GameObject(i.improvementName + " at " + hex.CubeGridPosition, typeof(MeshFilter), typeof(MeshRenderer));
+                GameObject holder = new GameObject(i.name + " at " + hex.CubeGridPosition, typeof(MeshFilter), typeof(MeshRenderer));
                 holder.GetComponent<MeshFilter>().mesh = hex.currentImprovement.meshToSpawn;
                 holder.transform.position = new Vector3((hex.worldPosition.x + hex.hexCenter.x + Random.Range(-0.2f, 0.2f)), y, (hex.worldPosition.z + hex.hexCenter.z + Random.Range(-0.2f, 0.2f)));
                 holder.transform.rotation = Quaternion.identity;
                 holder.renderer.material.mainTexture = i.improvementMeshTexture;
                 holder.transform.parent = hex.parentChunk.transform;
 
-                hex.currentImprovement.iObject = holder;
+                hex.iObject = holder;
             }
         }
 
@@ -186,17 +186,13 @@ namespace CivGrid
         }
     }
 
-
-
     /// <summary>
     /// Improvement
     /// </summary>
     [System.Serializable]
     public class Improvement
     {
-        [HideInInspector]
-        public GameObject iObject;
-        public string improvementName;
+        public string name;
         public ImprovementRule rule;
         bool possible;
         public float rarity;
@@ -209,7 +205,7 @@ namespace CivGrid
 
         public Improvement(string name, float rarity, Mesh mesh, ImprovementRule rule)
         {
-            this.improvementName = name;
+            this.name = name;
             this.rule = rule;
             this.rarity = rarity;
             this.meshToSpawn = mesh;

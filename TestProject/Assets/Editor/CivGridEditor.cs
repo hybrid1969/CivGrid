@@ -19,8 +19,9 @@ namespace CivGrid
         float rRariety;
         Mesh rMesh;
         ResourceManager resourceManager;
+        TileManager tileManager;
 
-        List<Tile> rPossibleTiles = new List<Tile>();
+        List<int> rPossibleTiles = new List<int>();
         List<Feature> rPossibleFeatures = new List<Feature>();
 
         [MenuItem("CivGrid/New Resource")]
@@ -32,6 +33,7 @@ namespace CivGrid
         void OnEnable()
         {
             resourceManager = GameObject.FindObjectOfType<ResourceManager>();
+            tileManager = GameObject.FindObjectOfType<TileManager>();
         }
 
 
@@ -50,14 +52,14 @@ namespace CivGrid
 
             if(GUILayout.Button("+"))
             {
-                rPossibleTiles.Add(Tile.Desert);
+                rPossibleTiles.Add(0);
             }
 
             for (int i = 0; i < rPossibleTiles.Count; i++)
             {
                 GUILayout.BeginHorizontal();
 
-                rPossibleTiles[i] = (Tile)EditorGUILayout.EnumPopup(rPossibleTiles[i]);
+                rPossibleTiles[i] = (int)EditorGUILayout.Popup(rPossibleTiles[i], tileManager.tileNames);
 
                 if (GUILayout.Button("-"))
                 {
@@ -109,7 +111,7 @@ namespace CivGrid
             //fill tile list with data from rule.possibleTiles
             for(int i = 0; i < rPossibleTiles.Count; i++)
             {
-                finalTiles.Add(rPossibleTiles[i]);
+                finalTiles.Add(tileManager.tiles[rPossibleTiles[i]]);
             }
 
             //fill feature list with data from rule.possibleFeatures
@@ -154,13 +156,14 @@ namespace CivGrid
         WorldManager worldManager;
         ImprovementManager improvementManager;
         ResourceManager resourceManager;
+        TileManager tileManager;
 
         string loc = Application.dataPath;
         string editedLoc;
 
         Vector2 terrainAtlasSize = new Vector2(1,1);
         Texture2D[,] textures;
-        Tile[,] tempTileType;
+        int[,] tempTileType;
         int[,] tempResourceType;
         int[,] tempImprovementType;
         TypeofEditorTile[,] catagory;
@@ -182,6 +185,7 @@ namespace CivGrid
             worldManager = GameObject.FindObjectOfType<WorldManager>();
             improvementManager = GameObject.FindObjectOfType<ImprovementManager>();
             resourceManager = GameObject.FindObjectOfType<ResourceManager>();
+            tileManager = GameObject.FindObjectOfType<TileManager>();
 
             improvementManager.UpdateImprovementNames();
 
@@ -189,6 +193,10 @@ namespace CivGrid
             {
                 Debug.LogError("Need to have WorldManager and ImprovementManager in current scene");
             }
+
+            tileManager.UpdateTileNames();
+            resourceManager.UpdateResourceNames();
+            improvementManager.UpdateImprovementNames();
         }
 
         Vector2 scrollPosition = new Vector2();
@@ -214,20 +222,20 @@ namespace CivGrid
                     catagory[x, y] = (TypeofEditorTile)EditorGUILayout.EnumPopup("Type:", catagory[x, y], GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
                     if (catagory[x, y] == TypeofEditorTile.Terrain)
                     {
-                        tempTileType[x, y] = (Tile)EditorGUILayout.EnumPopup("Tile Type:", tempTileType[x, y], GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
+                        tempTileType[x, y] = (int)EditorGUILayout.Popup("Tile Type:", tempTileType[x, y], tileManager.tileNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
                         tempResourceType[x,y] = 0;
                         tempImprovementType[x,y] = 0;
                     }
                     else if (catagory[x, y] == TypeofEditorTile.Resource)
                     {
                         tempResourceType[x, y] = (int)EditorGUILayout.Popup("Resource Type:", tempResourceType[x, y], resourceManager.resourceNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
-                        tempTileType[x, y] = Tile.None;
+                        tempTileType[x, y] = 0;
                         tempImprovementType[x,y] = 0;
                     }
                     else if (catagory[x, y] == TypeofEditorTile.Improvement)
                     {
                         tempImprovementType[x, y] = (int)EditorGUILayout.Popup("Improvement Type:", tempImprovementType[x, y], improvementManager.improvementNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
-                        tempTileType[x,y] = Tile.None;
+                        tempTileType[x,y] = 0;
                         tempResourceType[x, y] = 0;
                     }
                     else
@@ -264,7 +272,7 @@ namespace CivGrid
         {
             internalAtlasDimension = terrainAtlasSize;
             textures = new Texture2D[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
-            tempTileType = new Tile[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
+            tempTileType = new int[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
             tempResourceType = new int[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
             tempImprovementType = new int[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
             catagory = new TypeofEditorTile[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
@@ -289,9 +297,9 @@ namespace CivGrid
                 {
                     if (catagory[x, y] == TypeofEditorTile.Terrain)
                     {
-                        if (!tileLocations.ContainsKey(tempTileType[x, y]))
+                        if (!tileLocations.ContainsKey(tileManager.tiles[tempTileType[x, y]]))
                         {
-                            tileLocations.Add(tempTileType[x, y], rectAreas[x * lengthOfArraysY + y]);
+                            tileLocations.Add(tileManager.tiles[tempTileType[x, y]], rectAreas[x * lengthOfArraysY + y]);
                         }
                         else
                         {
@@ -329,6 +337,9 @@ namespace CivGrid
             worldManager.textureAtlas.tileLocations = (TileItem[])tileLocations.ToArray().Clone();
             worldManager.textureAtlas.resourceLocations = (ResourceItem[])resourceLocations.ToArray().Clone();
             worldManager.textureAtlas.improvementLocations = (ImprovementItem[])improvementLocations.ToArray().Clone();
+            
+            
+
             this.Close();
         }
     }

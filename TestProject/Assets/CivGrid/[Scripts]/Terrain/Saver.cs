@@ -106,7 +106,7 @@ namespace CivGrid
                         writer.WriteValue(hex.CubeGridPosition.y);
                         writer.WriteEndElement();
 
-                        writer.WriteElementString("Type", ((int)hex.terrainType).ToString());
+                        writer.WriteElementString("Type", (hex.terrainType.ToString()));
 
                         writer.WriteElementString("Feature", ((int)hex.terrainFeature).ToString());
 
@@ -126,7 +126,7 @@ namespace CivGrid
             //hexagon data buffer
             float xLoc;
             float yLoc = 0;
-            Tile type;
+            string typeName;
             Feature feature;
 
             using (XmlTextReader reader = new XmlTextReader(name + ".xml"))
@@ -175,7 +175,7 @@ namespace CivGrid
                                 //Debug.Log("X: " + xLoc);
                                 break;
                             case "Type":
-                                type = ((Tile)(XmlConvert.ToInt32(reader.ReadString())));
+                                typeName = reader.ReadString();
                                 //Debug.Log("Type: " + type);
                                 break;
                             case "Feature":
