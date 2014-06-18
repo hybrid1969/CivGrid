@@ -14,6 +14,7 @@ namespace CivGrid
         public string[] improvementNames;
 
         public ResourceManager rM;
+        public TileManager tM;
 
         public void SetUp()
         {
@@ -23,6 +24,7 @@ namespace CivGrid
             improvements[0].spawnAmount = 0;
 
             rM = GetComponent<ResourceManager>();
+            tM = GetComponent<TileManager>();
 
             if (improvementNames == null)
             {
@@ -133,7 +135,6 @@ namespace CivGrid
             //spawn gameObject if needed
             if (i.meshToSpawn != null)
             {
-                
                 float y = (hex.worldPosition.y + hex.hexExt.y) - ((hex.worldPosition.y + hex.hexExt.y) / Random.Range(3, 6)); if (y == 0) { y -= ((hex.worldPosition.y + hex.hexExt.y) / Random.Range(4, 8)); }
                 GameObject holder = new GameObject(i.name + " at " + hex.CubeGridPosition, typeof(MeshFilter), typeof(MeshRenderer));
                 holder.GetComponent<MeshFilter>().mesh = hex.currentImprovement.meshToSpawn;
@@ -149,10 +150,11 @@ namespace CivGrid
         private static bool Test(ImprovementRule rule, HexInfo hex)
         {
             bool returnVal;
+            TileManager tM = hex.parentChunk.worldManager.tM;
 
             for (int i = 0; i < rule.possibleTiles.Length; i++)
             {
-                returnVal = TestRule(hex, rule.possibleTiles[i]);
+                returnVal = TestRule(hex, tM.tiles[rule.possibleTiles[i]]);
                 if (returnVal == true) break;
                 if (i == (rule.possibleTiles.Length - 1)) { return false; }
             }
@@ -217,10 +219,10 @@ namespace CivGrid
     [System.Serializable]
     public class ImprovementRule
     {
-        public Tile[] possibleTiles;
+        public int[] possibleTiles;
         public Feature[] possibleFeatures;
 
-        public ImprovementRule(Tile[] possibleTiles, Feature[] possibleFeatures)
+        public ImprovementRule(int[] possibleTiles, Feature[] possibleFeatures)
         {
             this.possibleTiles = possibleTiles;
             this.possibleFeatures = possibleFeatures;

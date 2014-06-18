@@ -191,10 +191,11 @@ namespace CivGrid
         private static bool Test(HexInfo hex, ResourceRules rule)
         {
             bool returnVal;
+            TileManager tM = hex.parentChunk.worldManager.tM;
 
             for(int i =0; i < rule.possibleTiles.Length; i++)
             {
-                returnVal = TestRule(hex, rule.possibleTiles[i]);
+                returnVal = TestRule(hex, tM.tiles[rule.possibleTiles[i]]);
                 if (returnVal == true) break;
                 if(i == (rule.possibleTiles.Length-1)) { return false;}
             }
@@ -249,10 +250,10 @@ namespace CivGrid
     [System.Serializable]
     public class ResourceRules
     {
-        public Tile[] possibleTiles;
+        public int[] possibleTiles;
         public Feature[] possibleFeatures;
 
-        public ResourceRules(Tile[] possibleTiles, Feature[] possibleFeatures)
+        public ResourceRules(int[] possibleTiles, Feature[] possibleFeatures)
         {
             this.possibleTiles = possibleTiles;
             this.possibleFeatures = possibleFeatures;

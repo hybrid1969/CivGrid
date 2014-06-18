@@ -105,14 +105,10 @@ namespace CivGrid
 
         void CreateResource(string name, float rariety, Mesh mesh)
         {
-            List<Tile> finalTiles = new List<Tile>();
+            int[] finalTiles = new int[rPossibleTiles.Count];
             List<Feature> finalFeatures = new List<Feature>();
 
-            //fill tile list with data from rule.possibleTiles
-            for(int i = 0; i < rPossibleTiles.Count; i++)
-            {
-                finalTiles.Add(tileManager.tiles[rPossibleTiles[i]]);
-            }
+            finalTiles = rPossibleTiles.ToArray();
 
             //fill feature list with data from rule.possibleFeatures
             for(int i = 0; i < rPossibleFeatures.Count; i++)
@@ -122,16 +118,17 @@ namespace CivGrid
 
 
             //nullify duplicate tiles
-            for (int i = 0; i < finalTiles.Count; i++)
+            for (int i = 0; i < rPossibleTiles.Count; i++)
             {
-                for (int z = 0; z < finalTiles.Count; z++)
+                for (int z = 0; z < rPossibleTiles.Count; z++)
                 {
-                    if (finalTiles[i] == finalTiles[z] && i != z)
+                    if (rPossibleTiles[i] == rPossibleTiles[z] && i != z)
                     {
-                        finalTiles.RemoveAt(z);
+                        rPossibleTiles.RemoveAt(z);
                     }
                 }
             }
+            finalTiles = rPossibleTiles.ToArray();
 
             //nullify duplicate features
             for (int i = 0; i < finalFeatures.Count; i++)
@@ -145,7 +142,7 @@ namespace CivGrid
                 }
             }
 
-            resourceManager.AddResource(new Resource(name, rariety, mesh, new ResourceRules(finalTiles.ToArray(), finalFeatures.ToArray())));
+            resourceManager.AddResource(new Resource(name, rariety, mesh, new ResourceRules(finalTiles, finalFeatures.ToArray())));
         }
     }
 
