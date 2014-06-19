@@ -6,8 +6,7 @@ using CivGrid;
 
 namespace CivGrid
 {
-    //public enum Tile { None = 0, Desert = 1, Grass = 2, Grasslands = 3, Ocean = 4, Shore = 5, Snow = 6, Tundra = 7 }
-    public enum Feature { Flat = 0, Hill = 1, Mountain = 3, NextToWater = 4 }
+    public enum Feature { Flat = 0, Hill = 1, Mountain = 3 }
 
     public enum TextureAtlasType { Terrain = 0, Resource = 1, Improvement = 2 }
 
@@ -132,30 +131,29 @@ namespace CivGrid
         /// <summary>
         /// Set up dimensions of the hexagons; used for spacing and other algorithms
         /// </summary>
-        void GetHexProperties()
+        private void GetHexProperties()
         {
-
-            //creates GameObject that holds our test mesh to calculate bounds/dimensions
+            //Creates mesh to calculate bounds
             GameObject inst = new GameObject("Bounds Set Up: Flat");
-            //creates a MeshFilter to hold our mesh data
+            //add mesh filter to our temp object
             inst.AddComponent<MeshFilter>();
-            //creates a MeshCollider that we can use to get size dimesnsions easily from
+            //add a renderer to our temp object
+            inst.AddComponent<MeshRenderer>();
+            //add a mesh collider to our temp object; this is for determining dimensions cheaply and easily
             inst.AddComponent<MeshCollider>();
-            
-            //set to zero position/rotation to eliminate local/world confusion
+            //reset the position to global zero
             inst.transform.position = Vector3.zero;
+            //reset all rotation
             inst.transform.rotation = Quaternion.identity;
 
-            //array of vertices we will generate for our test mesh
+
             Vector3[] vertices;
-            //array of triangles we will generate for our test mesh
             int[] triangles;
 
             #region verts
 
-            //y position of the vertices; consistant to create flat hexagons
             float floorLevel = 0;
-            //setting our vertex position using hexRadiusSize to determine radius size that generates a geometric regular hexagon
+            //positions vertices of the hexagon to make a normal hexagon
             vertices = new Vector3[]
             {
                 /*0*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(3+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(3+0.5)/6)))),
@@ -165,24 +163,24 @@ namespace CivGrid
                 /*4*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(5+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(5+0.5)/6)))),
                 /*5*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(4+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(4+0.5)/6))))
             };
-            
+
             #endregion
 
             #region triangles
 
-            //setting triangles for our hexagon
+            //triangles connecting the verts
             triangles = new int[] 
-            {
-                1,5,0,
-                1,4,5,
-                1,2,4,
-                2,3,4
-            };
+        {
+            1,5,0,
+            1,4,5,
+            1,2,4,
+            2,3,4
+        };
 
             #endregion
 
             #region uv
-
+            //uv mappping
             Vector2[] uv = new Vector2[]
             {
                 new Vector2(0,0.25f),
@@ -192,22 +190,32 @@ namespace CivGrid
                 new Vector2(1,0.25f),
                 new Vector2(0.5f,0),
             };
-
             #endregion
 
             #region finalize
+            //create new mesh to hold the data for the flat hexagon
             flatHexagonSharedMesh = new Mesh();
+            //assign verts
             flatHexagonSharedMesh.vertices = vertices;
+            //assign triangles
             flatHexagonSharedMesh.triangles = triangles;
+            //assign uv
             flatHexagonSharedMesh.uv = uv;
+            //set temp gameObject's mesh to the flat hexagon mesh
             inst.GetComponent<MeshFilter>().mesh = flatHexagonSharedMesh;
+            //make object play nicely with lighting
             inst.GetComponent<MeshFilter>().mesh.RecalculateNormals();
+            //set mesh collider's mesh to the flat hexagon
             inst.GetComponent<MeshCollider>().sharedMesh = flatHexagonSharedMesh;
             #endregion
 
+            //calculate the extents of the flat hexagon
             hexExt = new Vector3(inst.gameObject.collider.bounds.extents.x, inst.gameObject.collider.bounds.extents.y, inst.gameObject.collider.bounds.extents.z);
+            //calculate the size of the flat hexagon
             hexSize = new Vector3(inst.gameObject.collider.bounds.size.x, inst.gameObject.collider.bounds.size.y, inst.gameObject.collider.bounds.size.z);
+            //calculate the center of the flat hexagon
             hexCenter = new Vector3(inst.gameObject.collider.bounds.center.x, inst.gameObject.collider.bounds.center.y, inst.gameObject.collider.bounds.center.z);
+            //destroy the temp object that we used to calculate the flat hexagon's size
             Destroy(inst);
         }
 
@@ -228,7 +236,7 @@ namespace CivGrid
             GameObject chunkObj = new GameObject("Chunk[" + x + "," + y + "]");
             //add the hexChunk script and set it's size
             chunkObj.AddComponent<HexChunk>().SetSize(chunkSize, chunkSize);
-            //allocate the hexagon array
+            //setup HexInfo array
             chunkObj.GetComponent<HexChunk>().AllocateHexArray();
             //set the texture map for this chunk and add the mesh renderer
             chunkObj.AddComponent<MeshRenderer>().material.mainTexture = textureAtlas.terrainAtlas;

@@ -22,6 +22,7 @@ namespace CivGrid
         public Tile terrainType;
         public Feature terrainFeature;
         public Vector3[] vertsx;
+        Vector2[] defaultFeatureUV;
 
         public HexChunk parentChunk;
 
@@ -70,6 +71,7 @@ namespace CivGrid
 
         public void Start()
         {
+            if (terrainFeature == Feature.Mountain) { Tile mountain = parentChunk.worldManager.tM.TryGet("Mountain"); if (mountain != null) { terrainType = mountain; } }
             MeshSetup();
             rM.CheckForResource(this, out currentResource);
             worldTextureAtlas = parentChunk.worldManager.textureAtlas;
@@ -109,7 +111,7 @@ namespace CivGrid
             }
             else if (terrainFeature == Feature.Hill || terrainFeature == Feature.Mountain)
             {
-                AssignPresetUV(localMesh, worldTextureAtlas.tileLocations.TryGetValue(terrainType));
+                AssignPresetUVToDefaultTile(defaultFeatureUV);
             }
             parentChunk.RegenerateMesh();
         }
@@ -119,7 +121,7 @@ namespace CivGrid
             localMesh = new Mesh();
 
             #region Flat
-            if (terrainFeature == Feature.Flat || terrainFeature == Feature.NextToWater)
+            if (terrainFeature == Feature.Flat)
             {
                 localMesh.vertices = parentChunk.worldManager.flatHexagonSharedMesh.vertices;
                 localMesh.triangles = parentChunk.worldManager.flatHexagonSharedMesh.triangles;
@@ -189,6 +191,7 @@ namespace CivGrid
                         tangents[y * width + x] = new Vector4(tan.x, tan.y, tan.z, -1.0f);
                     }
                 }
+                defaultFeatureUV = rawUV;
                 #endregion
 
                 // Assign them to the mesh
@@ -236,6 +239,8 @@ namespace CivGrid
                 // Assign tangents after recalculating normals
                 localMesh.tangents = tangents;
 
+                hexExt = localMesh.bounds.extents;
+
                 AssignPresetUVToDefaultTile(rawUV);
             }
             #endregion
@@ -252,7 +257,7 @@ namespace CivGrid
             {
                 UV[i] = new Vector2(rawUV[i].x * rectArea.width + rectArea.x, rawUV[i].y * rectArea.height + rectArea.y);
 
-                UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
+                //UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
             }
 
             localMesh.uv = UV;
@@ -269,7 +274,7 @@ namespace CivGrid
             {
                 UV[i] = new Vector2(rawUV[i].x * rectArea.width + rectArea.x, rawUV[i].y * rectArea.height + rectArea.y);
                 
-                UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
+                //UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
             }
 
             localMesh.uv = UV;
@@ -290,7 +295,7 @@ namespace CivGrid
             {
                 UV[i] = new Vector2(rawUV[i].x * rectArea.width + rectArea.x, rawUV[i].y  * rectArea.height + rectArea.y);
 
-                UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
+                //UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
             }
 
             localMesh.uv = UV;
@@ -304,10 +309,22 @@ namespace CivGrid
             {
                 UV[i] = new Vector2(mesh.uv[i].x * rectArea.width + rectArea.x, mesh.uv[i].y * rectArea.height + rectArea.y);
 
-                UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
+                //UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
             }
 
-            mesh.uv = UV;
+            localMesh.uv = UV;
+        }
+
+        private void AssignPresetUV(Vector2[] uv, Rect rectArea)
+        {
+            UV = new Vector2[uv.Length];
+
+            for (int i = 0; i < uv.Length; i++)
+            {
+                UV[i] = new Vector2(uv[i].x * rectArea.width + rectArea.x, uv[i].y * rectArea.height + rectArea.y);
+            }
+
+            localMesh.uv = uv;
         }
     }
 }

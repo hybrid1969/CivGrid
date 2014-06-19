@@ -24,7 +24,7 @@ Version 0.3.f
 	+Made resource/improvement relationship more consistant
 	+Cleaned up improvement logic
 	+Improved improvement clicking logic
-	+Renamed "Resource Manager" window to "Add Resource"; window 	class remains the same
+	+Renamed "Resource Manager" window to "Add Resource"; 	window 	class remains the same
 	+Automatic "None" generation for resources
 Version 0.3.5
 	+Added regular hexagon dimension generation
@@ -43,7 +43,7 @@ Version 0.4
 	+Improved editor logic and speed
 	+Resources are now NOT chunked with the hex
 	+Resources are there own object;
-	+Tiles with improvements/resource now correctly update their 	UV data to show the correct texture(IE: A hex with a farm 	improvement shows the terrain texture for the farm)
+	+Tiles with improvements/resource now correctly update 	their 	UV data to show the correct texture(IE: A hex with a 	farm 	improvement shows the terrain texture for the farm)
 	+Tiles now check if they need to change to 	Improvement/Resource texture correctly
 	+Resources now removed faster
 	+Moved actual resource creation to the resource manager
@@ -53,6 +53,11 @@ Version 0.4
 	+Cleaned up Changelog
 	+more stuff that I'm forgeting ;)
 Version 0.4.1f
-	+Fixed resource/improvement GameObject pooling on themselves 	allowing only one present at a time
+	+Fixed resource/improvement GameObject pooling on 	themselves 	allowing only one present at a time
 	+Changed "Tiles" enum to a class; giving more options
 	+Prepared for editor work
+Version 0.5
+	+Automatic asset refresh on atlas build
+	+Fixed UV mapping by removing a clamp
+	+Fixed improvements with a mountain/hill
+	+Fixed UV mapping upon removing an improvement

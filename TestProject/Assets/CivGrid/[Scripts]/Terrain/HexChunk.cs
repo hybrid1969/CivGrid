@@ -24,7 +24,7 @@ namespace CivGrid
 
         //temp
         public Texture2D mountainTexture;
-        public float maxHeight = 1;
+        public float maxHeight = 1.5f;
 
         public void SetSize(int x, int y)
         {
