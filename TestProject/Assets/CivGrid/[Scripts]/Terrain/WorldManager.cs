@@ -8,8 +8,6 @@ namespace CivGrid
 {
     public enum Feature { Flat = 0, Hill = 1, Mountain = 3 }
 
-    public enum TextureAtlasType { Terrain = 0, Resource = 1, Improvement = 2 }
-
     public enum WorldType { Diced, Continents }
 
     [RequireComponent(typeof(TileManager), typeof(ResourceManager), typeof(ImprovementManager))]
@@ -129,7 +127,7 @@ namespace CivGrid
         }
 
         /// <summary>
-        /// Set up dimensions of the hexagons; used for spacing and other algorithms
+        /// Generates and caches a flat hexagon mesh for all the hexagon's to pull down into their localMesh, if they are flat
         /// </summary>
         private void GetHexProperties()
         {
@@ -149,6 +147,7 @@ namespace CivGrid
 
             Vector3[] vertices;
             int[] triangles;
+            Vector2[] uv;
 
             #region verts
 
@@ -170,18 +169,18 @@ namespace CivGrid
 
             //triangles connecting the verts
             triangles = new int[] 
-        {
-            1,5,0,
-            1,4,5,
-            1,2,4,
-            2,3,4
-        };
+            {
+                1,5,0,
+                1,4,5,
+                1,2,4,
+                2,3,4
+            };
 
             #endregion
 
             #region uv
             //uv mappping
-            Vector2[] uv = new Vector2[]
+            uv = new Vector2[]
             {
                 new Vector2(0,0.25f),
                 new Vector2(0,0.75f),
@@ -238,6 +237,8 @@ namespace CivGrid
             chunkObj.AddComponent<HexChunk>().SetSize(chunkSize, chunkSize);
             //setup HexInfo array
             chunkObj.GetComponent<HexChunk>().AllocateHexArray();
+            //assign mountain texture to the chunk
+            chunkObj.GetComponent<HexChunk>().mountainTexture = this.mountainMap;
             //set the texture map for this chunk and add the mesh renderer
             chunkObj.AddComponent<MeshRenderer>().material.mainTexture = textureAtlas.terrainAtlas;
             //add the mesh filter
@@ -315,49 +316,7 @@ namespace CivGrid
             else
             {
                 tile = tM.GetTileFromLattitude(latitude);
-                /*
-                if (latitude > 0.9f)
-                {
-                    tile = Tile.Snow;
-                }
-                else if (latitude > 0.8 && latitude < 0.9)
-                {
-                    tile = (Tile)Random.Range(5, 7);
-                }
-                else if (latitude > 0.6f && latitude < 0.8f)
-                {
-                    tile = Tile.Tundra;
-                }
-                else if (latitude >= 0.5 && latitude < 0.61)
-                {
-                    int index = Random.Range(0, 2);
-                    tile = (Tile)((index < 0.5f) ? Tile.Tundra : Tile.Grass);
-                }
-                else if (latitude < 0.5f && latitude > 0.35f)
-                {
-                    tile = Tile.Grass;
-                }
-                else if (latitude > 0.3 && latitude < 0.35)
-                {
-                    int index = Random.Range(0, 2);
-                    tile = (Tile)((index < 0.5f) ? Tile.Grass : Tile.Grasslands);
-                }
-                else if (latitude < 0.3f && latitude >= 0.15f)
-                {
-                    tile = Tile.Grasslands;
-                }
-                else if (latitude >= 0.1f && latitude < 0.15f)
-                {
-                    int index = Random.Range(0, 2);
-                    tile = (Tile)((index < 0.5f) ? Tile.Grasslands : Tile.Desert);
-                }
-                else
-                {
-                    tile = Tile.Desert;
-                    if (latitude < 0.1f == false)
-                        print("error incorrrect lattitude: " + latitude);
-                }
-                 */
+
             }
 
             return (tile);
@@ -408,7 +367,7 @@ namespace CivGrid
                     HexInfo hex = GetHexFromWorldPosition(mouseWorldPosition, chunkHexIsLocatedIn);
                     if (Input.GetMouseButtonDown(0))
                     {
-                        ImprovementManager.TestedAddImprovementToTile(hex, "Farm");
+                        ImprovementManager.TestedAddImprovementToTile(hex, "Bank");
                         return;
                     }
                     if (Input.GetMouseButtonDown(1))
@@ -430,7 +389,7 @@ namespace CivGrid
                         HexInfo hex = GetHexFromWorldPosition(mouseWorldPosition, chunkHexIsLocatedIn);
                         if (Input.GetMouseButtonDown(0))
                         {
-                            ImprovementManager.TestedAddImprovementToTile(hex, "Farm");
+                            ImprovementManager.TestedAddImprovementToTile(hex, "Bank");
                             return;
                         }
                         if (Input.GetMouseButtonDown(1))

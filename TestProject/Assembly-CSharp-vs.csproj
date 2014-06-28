@@ -57,7 +57,6 @@
      <Compile Include="Assets\CivGrid\[Scripts]\Terrain\NoiseGenerator.cs" />
      <Compile Include="Assets\CivGrid\[Scripts]\Terrain\ResourceManager.cs" />
      <Compile Include="Assets\CivGrid\[Scripts]\Terrain\Saver.cs" />
-     <Compile Include="Assets\CivGrid\[Scripts]\Terrain\TextureManager.cs" />
      <Compile Include="Assets\CivGrid\[Scripts]\Terrain\TexturePacker.cs" />
      <Compile Include="Assets\CivGrid\[Scripts]\Terrain\TileManager.cs" />
      <Compile Include="Assets\CivGrid\[Scripts]\Terrain\WorldManager.cs" />

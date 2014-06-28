@@ -69,6 +69,9 @@ namespace CivGrid
 
 
 
+        /// <summary>
+        /// This is the setup called from HexChunk when it's ready for us to generate our meshes
+        /// </summary>
         public void Start()
         {
             if (terrainFeature == Feature.Mountain) { Tile mountain = parentChunk.worldManager.tM.TryGet("Mountain"); if (mountain != null) { terrainType = mountain; } }
@@ -81,11 +84,15 @@ namespace CivGrid
         {
             if (terrainFeature == Feature.Flat)
             {
-                AssignUV(worldTextureAtlas.resourceLocations.TryGetValue(currentResource));
+                Rect rectArea;
+                worldTextureAtlas.resourceLocations.TryGetValue(currentResource, out rectArea);
+                AssignUV(rectArea);
             }
             else if (terrainFeature == Feature.Hill || terrainFeature == Feature.Mountain)
             {
-                AssignPresetUV(localMesh, worldTextureAtlas.resourceLocations.TryGetValue(currentResource));
+                Rect rectArea;
+                worldTextureAtlas.resourceLocations.TryGetValue(currentResource, out rectArea);
+                AssignPresetUV(localMesh, rectArea);
             }
             parentChunk.RegenerateMesh();
         }
@@ -94,11 +101,15 @@ namespace CivGrid
         {
             if (terrainFeature == Feature.Flat)
             {
-                AssignUV(worldTextureAtlas.improvementLocations.TryGetValue(currentImprovement));
+                Rect rectArea;
+                worldTextureAtlas.improvementLocations.TryGetValue(currentImprovement, out rectArea);
+                AssignUV(rectArea);
             }
             else if (terrainFeature == Feature.Hill || terrainFeature == Feature.Mountain)
             {
-                AssignPresetUV(localMesh, worldTextureAtlas.improvementLocations.TryGetValue(currentImprovement));
+                Rect rectArea;
+                worldTextureAtlas.improvementLocations.TryGetValue(currentImprovement, out rectArea);
+                AssignPresetUV(localMesh, rectArea);
             }
             parentChunk.RegenerateMesh();
         }
@@ -118,14 +129,19 @@ namespace CivGrid
 
         public void MeshSetup()
         {
+            //create new mesh to start fresh
             localMesh = new Mesh();
 
             #region Flat
             if (terrainFeature == Feature.Flat)
             {
+                //pull mesh data from WorldManager
                 localMesh.vertices = parentChunk.worldManager.flatHexagonSharedMesh.vertices;
                 localMesh.triangles = parentChunk.worldManager.flatHexagonSharedMesh.triangles;
-                localMesh.RecalculateBounds();
+                localMesh.uv = parentChunk.worldManager.flatHexagonSharedMesh.uv;
+
+                //recalculate normals to play nicely with lighting
+                localMesh.RecalculateNormals();
 
                 AssignUVToDefaultTile();
 
@@ -249,7 +265,8 @@ namespace CivGrid
         private void AssignUVToDefaultTile()
         {
             Vector2[] rawUV = parentChunk.worldManager.flatHexagonSharedMesh.uv;
-            Rect rectArea = parentChunk.worldManager.textureAtlas.tileLocations.TryGetValue(terrainType);
+            Rect rectArea;
+            parentChunk.worldManager.textureAtlas.tileLocations.TryGetValue(terrainType, out rectArea);
 
             UV = new Vector2[rawUV.Length];
 
@@ -287,7 +304,8 @@ namespace CivGrid
         /// <param name="sectorPercentage">Percent each sector in the atlas takes up in one direction (1/numberOfSectorsInOneDirection)</param>
         private void AssignPresetUVToDefaultTile(Vector2[] rawUV)
         {
-            Rect rectArea = parentChunk.worldManager.textureAtlas.tileLocations.TryGetValue(terrainType);
+            Rect rectArea;
+            parentChunk.worldManager.textureAtlas.tileLocations.TryGetValue(terrainType, out rectArea);
 
             UV = new Vector2[localMesh.vertexCount];
 

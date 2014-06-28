@@ -12,7 +12,7 @@ namespace CivGrid
 
             Debug.Log(textures.Length);
 
-            rectAreas = packedTexture.PackTextures(textures, 5, 2048);
+            rectAreas = packedTexture.PackTextures(textures, 0, 2048);
             packedTexture.Apply();
 
             return packedTexture;

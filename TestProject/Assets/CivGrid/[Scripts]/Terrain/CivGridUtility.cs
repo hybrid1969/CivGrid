@@ -6,19 +6,29 @@ using System;
 
 namespace CivGrid
 {
-
+    /// <summary>
+    /// Helper class for basic utility methods
+    /// </summary>
     public static class CivGridUtility
     {
         #region void
+        /// <summary>
+        /// Converts a two-dimensional array into a single array
+        /// </summary>
+        /// <param name="doubleArray">The two-dimensional array array to convert into a single array</param>
+        /// <param name="singleArray">The converted array</param>
         public static void ToSingleArray(CombineInstance[,] doubleArray, out CombineInstance[] singleArray)
         {
+            //list to copy the values from the two-dimensional array into
             List<CombineInstance> combineList = new List<CombineInstance>();
-            
+
+            //cycle through all the CombineInstances and copy them into the List
             foreach (CombineInstance combine in doubleArray)
             {
                 combineList.Add(combine);
             }
 
+            //convert our List that holds all the CombineInstances into a single array
             singleArray = combineList.ToArray();
         }
 
@@ -113,17 +123,14 @@ namespace CivGrid
     [Serializable]
     public class TextureAtlas
     {
+        [SerializeField]
         public Texture2D terrainAtlas;
-        //public Vector2 texturesInAtlas;
+        [SerializeField]
         public TileItem[] tileLocations;
-
-        //public Texture2D resourceAtlas;
+        [SerializeField]
         public ResourceItem[] resourceLocations;
-        //public Vector2 resourceTexturesInAtlas;
-
-        //public Texture2D improvementAtlas;
+        [SerializeField]
         public ImprovementItem[] improvementLocations;
-        //public Vector2 improvementTexturesInAtlas;
     }
 
     [Serializable]
@@ -260,43 +267,49 @@ namespace CivGrid
 
         #region TryGetValue
 
-        public static Rect TryGetValue(this TileItem[] list, Tile key)
+        public static bool TryGetValue(this TileItem[] list, Tile key, out Rect location)
         {
             foreach (TileItem item in list)
             {
                 if (item.Key.name == key.name)
                 {
-                    return item.Value;
+                    location = item.Value;
+                    return true;
                 }
             }
             Debug.LogError("Couldn't get a value from the given key: " + key.name);
-            return new Rect();
+            location = new Rect();
+            return false;
         }
 
-        public static Rect TryGetValue(this ResourceItem[] list, Resource key)
+        public static bool TryGetValue(this ResourceItem[] list, Resource key, out Rect location)
         {
             foreach (ResourceItem item in list)
             {
                 if (item.Key.name == key.name)
                 {
-                    return item.Value;
+                    location =  item.Value;
+                    return true;
                 }
             }
             Debug.LogError("Couldn't get a value from the given key: " + key.name);
-            return new Rect();
+            location = new Rect();
+            return false;
         }
 
-        public static Rect TryGetValue(this ImprovementItem[] list, Improvement key)
+        public static bool TryGetValue(this ImprovementItem[] list, Improvement key, out Rect location)
         {
             foreach (ImprovementItem item in list)
             {
                 if (item.Key.name == key.name)
                 {
-                    return item.Value;
+                    location = item.Value;
+                    return true;
                 }
             }
             Debug.LogError("Couldn't get a value from the given key: " + key.name);
-            return new Rect();
+            location = new Rect();
+            return false;
         }
 
         #endregion

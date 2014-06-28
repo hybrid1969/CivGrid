@@ -5,9 +5,9 @@ using CivGrid;
 
 namespace CivGrid
 {
+
     public class ResourceManager : MonoBehaviour
     {
-
         public List<Resource> resources;
         public string[] resourceNames;
         public WorldManager worldManager;
@@ -18,7 +18,7 @@ namespace CivGrid
         {
             worldManager = GetComponent<WorldManager>();
 
-            resources.Insert(0, new Resource("None", 0, null, null));
+            resources.Insert(0, new Resource("None", 0, null, null, null));
             resources[0].meshToSpawn = null;
             resources[0].spawnAmount = 0;
 
@@ -40,6 +40,12 @@ namespace CivGrid
         public void AddResource(Resource r)
         {
             resources.Add(r);
+            UpdateResourceNames();
+        }
+
+        public void AddResourceAt(Resource r, int index)
+        {
+            resources.Insert(index, r);
             UpdateResourceNames();
         }
 
@@ -108,7 +114,8 @@ namespace CivGrid
                 hex.rObject = holder;
 
                 //UV mapping
-                Rect rectArea = worldManager.textureAtlas.resourceLocations.TryGetValue(r);
+                Rect rectArea;
+                worldManager.textureAtlas.resourceLocations.TryGetValue(r, out rectArea);
                 uv = new Vector2[filter.mesh.vertexCount];
 
                 for (int i = 0; i < filter.mesh.vertexCount; i++)
@@ -188,7 +195,7 @@ namespace CivGrid
             returnResource = resources[0];
         }
 
-        private static bool Test(HexInfo hex, ResourceRules rule)
+        private static bool Test(HexInfo hex, ResourceRule rule)
         {
             bool returnVal;
             TileManager tM = hex.parentChunk.worldManager.tM;
@@ -228,7 +235,7 @@ namespace CivGrid
     public class Resource
     {
         public string name;
-        public ResourceRules rule;
+        public ResourceRule rule;
         bool possible;
         public float rarity;
 
@@ -238,22 +245,23 @@ namespace CivGrid
         public Texture2D resourceMeshTexture;
         public int spawnAmount = 3;
 
-        public Resource(string name, float rarity, Mesh mesh, ResourceRules rule)
+        public Resource(string name, float rarity, Mesh mesh, Texture2D resourceMeshTexture, ResourceRule rule)
         {
             this.name = name;
             this.rule = rule;
             this.rarity = rarity;
             this.meshToSpawn = mesh;
+            this.resourceMeshTexture = resourceMeshTexture;
         }
     }
 
     [System.Serializable]
-    public class ResourceRules
+    public class ResourceRule
     {
         public int[] possibleTiles;
         public Feature[] possibleFeatures;
 
-        public ResourceRules(int[] possibleTiles, Feature[] possibleFeatures)
+        public ResourceRule(int[] possibleTiles, Feature[] possibleFeatures)
         {
             this.possibleTiles = possibleTiles;
             this.possibleFeatures = possibleFeatures;

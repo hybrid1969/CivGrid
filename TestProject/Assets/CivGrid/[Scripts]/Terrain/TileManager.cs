@@ -19,7 +19,6 @@ namespace CivGrid
             tiles.Insert(0, new Tile("None", 0, 0));
 
             UpdateTileNames();
-          
         }
 
         public void UpdateTileNames()
@@ -37,7 +36,7 @@ namespace CivGrid
             UpdateTileNames();
         }
 
-        public void DeleteResource(Tile t)
+        public void DeleteTile(Tile t)
         {
             tiles.Remove(t);
             UpdateTileNames();
@@ -53,6 +52,11 @@ namespace CivGrid
                 }
             }
             return null;
+        }
+
+        public Tile TryGet(int index)
+        {
+            return tiles[index];
         }
 
         public Tile GetOcean()
@@ -77,13 +81,13 @@ namespace CivGrid
 
         public Tile GetTileFromLattitude(float lat)
         {
-            foreach (Tile t in tiles)
+            for(int i = 0; i < tiles.Count; i++)
             {
-                if (lat < t.bottomLat) {continue; }
-                if (lat > t.topLat) {continue; }
+                if (lat < tiles[i].bottomLat) {continue; }
+                if (lat > tiles[i].topLat) {continue; }
                 else
                 {
-                    return t;
+                    return tiles[i];
                 }
             }
             Debug.LogError("Couldn't find tile for this lattitude: " + lat);
