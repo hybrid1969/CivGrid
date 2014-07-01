@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -15,25 +16,19 @@ namespace CivGrid
     {
         #region fields
 
-        [HideInInspector]
         public CivGridCamera civGridCamera;
+        public bool useCivGridCamera;
 
         public bool keepSymmetrical;
 
         //Moving
-        [HideInInspector]
         public Vector3 currentHex;
-        [HideInInspector]
         public Vector3 goToHex;
-        [HideInInspector]
         public int distance;
 
         //hexInstances
-        [HideInInspector]
         public Vector3 hexExt;
-        [HideInInspector]
         public Vector3 hexSize;
-        [HideInInspector]
         public Vector3 hexCenter;
 
         //internals
@@ -49,7 +44,6 @@ namespace CivGrid
         [HideInInspector]
         public Mesh flatHexagonSharedMesh;
 
-        public bool debugMode;
         public bool useWorldTypeValues;
 
         //World Values
@@ -72,11 +66,11 @@ namespace CivGrid
 
         //managers
         [HideInInspector]
-        public ResourceManager rM;
+        public ResourceManager resourceManager;
         [HideInInspector]
-        public ImprovementManager iM;
+        public ImprovementManager improvementManager;
         [HideInInspector]
-        public TileManager tM;
+        public TileManager tileManager;
         #endregion
 
         /// <summary>
@@ -84,18 +78,21 @@ namespace CivGrid
         /// </summary>
         void Awake()
         {
-            rM = GetComponent<ResourceManager>();
-            iM = GetComponent<ImprovementManager>();
-            tM = GetComponent<TileManager>();
-            rM.SetUp();
-            iM.SetUp();
-            civGridCamera = Camera.main.GetComponent<CivGridCamera>();
-            if (civGridCamera == null) { Debug.LogError("Please add the 'CivGridCamera' to the mainCamera"); }
+            resourceManager = GetComponent<ResourceManager>();
+            improvementManager = GetComponent<ImprovementManager>();
+            tileManager = GetComponent<TileManager>();
+            resourceManager.SetUp();
+            improvementManager.SetUp();
+            if (useCivGridCamera)
+            {
+                civGridCamera = GameObject.FindObjectOfType<CivGridCamera>();
+                if (civGridCamera == null) { Debug.LogError("Please add the 'CivGridCamera' to the mainCamera"); }
+            }
             DetermineWorldType();
             GetHexProperties();
             GenerateMap();
 
-            rM.InitResourceTexturesOnHexs();
+            resourceManager.InitResourceTexturesOnHexs();
         }
 
         void SetNoiseScaleToTrueValue()
@@ -114,13 +111,20 @@ namespace CivGrid
 
             SetNoiseScaleToTrueValue();
             if (noiseScale == 0) { Debug.LogException(new UnityException("Noise scale is zero, this produces artifacts.")); }
-            noiseScale = Random.Range(noiseScale / 1.35f, noiseScale * 1.35f);
+            noiseScale = UnityEngine.Random.Range(noiseScale / 1.35f, noiseScale * 1.35f);
             tileMap = NoiseGenerator.SmoothPerlinNoise((int)mapSize.x, (int)mapSize.y, noiseScale);
         }
 
         void Start()
         {
-            civGridCamera.SetupCameras(this);
+            if (useCivGridCamera)
+            {
+                civGridCamera.SetupCameras(this);
+            }
+            else if (civGridCamera != null)
+            {
+                Debug.LogError("Please Remove the CivGridCamera Script if you do not wish to use it; otherwise enable it in the WorldManager");
+            }
             Saver.SaveTexture(tileMap, "terrian", false);
             //Saver.SaveTerrain("terrainTest", this);
             //Saver.LoadTerrain("terrainTest", this);
@@ -182,12 +186,12 @@ namespace CivGrid
             //uv mappping
             uv = new Vector2[]
             {
-                new Vector2(0,0.25f),
-                new Vector2(0,0.75f),
-                new Vector2(0.5f,1),
-                new Vector2(1,0.75f),
-                new Vector2(1,0.25f),
-                new Vector2(0.5f,0),
+                new Vector2(0.05f,0.25f),
+                new Vector2(0.05f,0.75f),
+                new Vector2(0.5f,0.95f),
+                new Vector2(0.95f,0.75f),
+                new Vector2(0.95f,0.25f),
+                new Vector2(0.5f,0.05f),
             };
             #endregion
 
@@ -306,20 +310,49 @@ namespace CivGrid
             //temp no influence from rainfall values
             float latitude = Mathf.Abs((mapSize.y / 2) - h) / (mapSize.y / 2);//1 == snow (top) 0 == eqautor
             //add more results
-            latitude *= (1 + Random.Range(-0.2f, 0.2f));
+            latitude *= (1 + UnityEngine.Random.Range(-0.2f, 0.2f));
             Tile tile;
 
             if (tileMap.GetPixel(x, h).r == 0)
             {
-                tile = tM.GetOcean();
+                if (CheckIfCoast(x, h))
+                {
+                    tile = tileManager.TryGetShore();
+                }
+                else
+                {
+                    tile = tileManager.TryGetOcean();
+                }
             }
             else
             {
-                tile = tM.GetTileFromLattitude(latitude);
-
+                tile = tileManager.GetTileFromLattitude(latitude);
             }
 
             return (tile);
+        }
+
+        private bool CheckIfCoast(int x, int y)
+        {
+            float[] surrondingPixels = CivGridUtility.GetSurrondingPixels(tileMap, x, y);
+
+            int numberWater = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                if (surrondingPixels[i] < 0.5f)
+                {
+                    numberWater++;
+                }
+            }
+
+            if (numberWater < 8)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public Feature PickFeature(int xArrayPosition, int yArrayPosition, bool edge)
@@ -334,6 +367,10 @@ namespace CivGrid
             else if (value == 1f)
             {
                 returnVal = Feature.Mountain;
+            }
+            else
+            {
+                returnVal = Feature.Flat;
             }
             if (edge)
             {
@@ -543,6 +580,149 @@ namespace CivGrid
         {
             GUI.Label(new Rect(20, 0, 100, 20), goToHex.ToString());
             GUI.Label(new Rect(20, 30, 100, 20), distance.ToString("Distance: #."));
+        }
+    }
+
+    [Serializable]
+    public class TextureAtlas
+    {
+        [SerializeField]
+        public Texture2D terrainAtlas;
+        [SerializeField]
+        public TileItem[] tileLocations;
+        [SerializeField]
+        public ResourceItem[] resourceLocations;
+        [SerializeField]
+        public ImprovementItem[] improvementLocations;
+    }
+
+    [Serializable]
+    public class TileItem
+    {
+        [SerializeField]
+        private Tile key;
+
+        [SerializeField]
+        public Tile Key
+        {
+            get
+            {
+                return key;
+            }
+            set
+            {
+                key = value;
+            }
+        }
+
+        [SerializeField]
+        private Rect value;
+
+        [SerializeField]
+        public Rect Value
+        {
+            get
+            {
+                return value;
+            }
+            set
+            {
+                this.value = value;
+            }
+        }
+
+        [SerializeField]
+        public TileItem(Tile key, Rect value)
+        {
+            this.key = key;
+            this.value = value;
+        }
+
+    }
+
+    [Serializable]
+    public class ResourceItem
+    {
+        [SerializeField]
+        private Resource key;
+
+        [SerializeField]
+        public Resource Key
+        {
+            get
+            {
+                return key;
+            }
+            set
+            {
+                key = value;
+            }
+        }
+
+        [SerializeField]
+        private Rect value;
+
+        [SerializeField]
+        public Rect Value
+        {
+            get
+            {
+                return value;
+            }
+            set
+            {
+                this.value = value;
+            }
+        }
+
+        [SerializeField]
+        public ResourceItem(Resource key, Rect value)
+        {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    [Serializable]
+    public class ImprovementItem
+    {
+        [SerializeField]
+        private Improvement key;
+
+        [SerializeField]
+        public Improvement Key
+        {
+            get
+            {
+                return key;
+            }
+            set
+            {
+                key = value;
+            }
+        }
+
+        [SerializeField]
+        private Rect value;
+
+        [SerializeField]
+        public Rect Value
+        {
+            get
+            {
+                return value;
+            }
+            set
+            {
+                this.value = value;
+            }
+        }
+
+        [SerializeField]
+        public ImprovementItem(Improvement key, Rect value)
+        {
+            this.key = key;
+            this.value = value;
         }
     }
 }

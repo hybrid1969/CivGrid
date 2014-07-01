@@ -81,7 +81,7 @@ namespace CivGrid
             {
                 for (int y = 0; y < texture.height; y++)
                 {
-                    float[] surrondingTiles = GetSurrondingPixels(texture, x, y);
+                    float[] surrondingTiles = CivGridUtility.GetSurrondingPixels(texture, x, y);
 
                     //WATER
                     if (texture.GetPixel(x, y).r == 0)
@@ -133,29 +133,6 @@ namespace CivGrid
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Get the surronding pixels of the passed in pixel
-        /// </summary>
-        /// <param name="tex">Texture where the pixel is located</param>
-        /// <param name="x">"X" cords of the pixel</param>
-        /// <param name="y">"Y" cords of the pixel</param>
-        /// <returns>The eight surronding pixels</returns>
-        public static float[] GetSurrondingPixels(Texture2D tex, int x, int y)
-        {
-            float[] returnArray = new float[8];
-
-            returnArray[0] = tex.GetPixel(x + 1, y).r;
-            returnArray[1] = tex.GetPixel(x + 1, y + 1).r;
-            returnArray[2] = tex.GetPixel(x, y + 1).r;
-            returnArray[3] = tex.GetPixel(x - 1, y + 1).r;
-            returnArray[4] = tex.GetPixel(x - 1, y).r;
-            returnArray[5] = tex.GetPixel(x - 1, y - 1).r;
-            returnArray[6] = tex.GetPixel(x, y - 1).r;
-            returnArray[7] = tex.GetPixel(x + 1, x - 1).r;
-
-            return returnArray;
         }
 
         /// <summary>

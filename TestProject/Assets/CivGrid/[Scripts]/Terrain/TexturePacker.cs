@@ -10,8 +10,6 @@ namespace CivGrid
         {
             Texture2D packedTexture = new Texture2D(2048, 2048);
 
-            Debug.Log(textures.Length);
-
             rectAreas = packedTexture.PackTextures(textures, 0, 2048);
             packedTexture.Apply();
 

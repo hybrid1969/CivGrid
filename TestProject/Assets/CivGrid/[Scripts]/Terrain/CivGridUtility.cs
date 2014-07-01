@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using System;
 
 namespace CivGrid
@@ -11,6 +12,45 @@ namespace CivGrid
     /// </summary>
     public static class CivGridUtility
     {
+        #region CivGrid Component Spawner
+
+        [MenuItem("CivGrid/Create CivGrid Camera", priority = 6)]
+        public static void CreateCivGridCamera()
+        {
+            GameObject camera = new GameObject("CivGrid Camera", typeof(Camera), typeof(GUILayer), typeof(AudioListener), typeof(CivGridCamera));
+        }
+
+        [MenuItem("CivGrid/Create CivGrid World Manager", priority = 5)]
+        public static void CreateCivGridWorldManager()
+        {
+            GameObject manager = new GameObject("CivGrid World Manager", typeof(TileManager), typeof(ResourceManager), typeof(ImprovementManager), typeof(WorldManager));
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Get the surronding pixels of the passed in pixel
+        /// </summary>
+        /// <param name="tex">Texture where the pixel is located</param>
+        /// <param name="x">"X" cords of the pixel</param>
+        /// <param name="y">"Y" cords of the pixel</param>
+        /// <returns>The eight surronding pixels</returns>
+        public static float[] GetSurrondingPixels(Texture2D tex, int x, int y)
+        {
+            float[] returnArray = new float[8];
+
+            returnArray[0] = tex.GetPixel(x + 1, y).r;
+            returnArray[1] = tex.GetPixel(x + 1, y + 1).r;
+            returnArray[2] = tex.GetPixel(x, y + 1).r;
+            returnArray[3] = tex.GetPixel(x - 1, y + 1).r;
+            returnArray[4] = tex.GetPixel(x - 1, y).r;
+            returnArray[5] = tex.GetPixel(x - 1, y - 1).r;
+            returnArray[6] = tex.GetPixel(x, y - 1).r;
+            returnArray[7] = tex.GetPixel(x + 1, x - 1).r;
+
+            return returnArray;
+        }
+
         #region void
         /// <summary>
         /// Converts a two-dimensional array into a single array
@@ -118,148 +158,6 @@ namespace CivGrid
             return (combineList.ToArray());
         }
         #endregion
-    }
-
-    [Serializable]
-    public class TextureAtlas
-    {
-        [SerializeField]
-        public Texture2D terrainAtlas;
-        [SerializeField]
-        public TileItem[] tileLocations;
-        [SerializeField]
-        public ResourceItem[] resourceLocations;
-        [SerializeField]
-        public ImprovementItem[] improvementLocations;
-    }
-
-    [Serializable]
-    public class TileItem
-    {
-        [SerializeField]
-        private Tile key;
-
-        [SerializeField]
-        public Tile Key
-        {
-            get
-            {
-                return key;
-            }
-            set
-            {
-                key = value;
-            }
-        }
-
-        [SerializeField]
-        private Rect value;
-
-        [SerializeField]
-        public Rect Value
-        {
-            get
-            {
-                return value;
-            }
-            set
-            {
-                this.value = value;
-            }
-        }
-
-        [SerializeField]
-        public TileItem(Tile key, Rect value)
-        {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
-    [Serializable]
-    public class ResourceItem
-    {
-        [SerializeField]
-        private Resource key;
-
-        [SerializeField]
-        public Resource Key
-        {
-            get
-            {
-                return key;
-            }
-            set
-            {
-                key = value;
-            }
-        }
-
-        [SerializeField]
-        private Rect value;
-
-        [SerializeField]
-        public Rect Value
-        {
-            get
-            {
-                return value;
-            }
-            set
-            {
-                this.value = value;
-            }
-        }
-
-        [SerializeField]
-        public ResourceItem(Resource key, Rect value)
-        {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
-    [Serializable]
-    public class ImprovementItem
-    {
-        [SerializeField]
-        private Improvement key;
-
-        [SerializeField]
-        public Improvement Key
-        {
-            get
-            {
-                return key;
-            }
-            set
-            {
-                key = value;
-            }
-        }
-
-        [SerializeField]
-        private Rect value;
-
-        [SerializeField]
-        public Rect Value
-        {
-            get
-            {
-                return value;
-            }
-            set
-            {
-                this.value = value;
-            }
-        }
-
-        [SerializeField]
-        public ImprovementItem(Improvement key, Rect value)
-        {
-            this.key = key;
-            this.value = value;
-        }
     }
 
     public static class DictionaryExtensionMethods
@@ -373,4 +271,5 @@ namespace CivGrid
 
         #endregion
     }
+
 }

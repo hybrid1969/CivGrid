@@ -8,18 +8,30 @@ namespace CivGrid.Editors
     public class TileManagerEditor : Editor
     {
         TileManager tileManager;
-        bool[] foldoutOpen;
+        bool[] foldoutOpen = new bool[0];
+
 
         public void Awake()
         {
             tileManager = (TileManager)target;
-            foldoutOpen = new bool[tileManager.tiles.Count];
+            if (tileManager.tiles != null)
+            {
+                foldoutOpen = new bool[tileManager.tiles.Count];
+            }
         }
 
+        bool done;
         public override void OnInspectorGUI()
         {
-            if (tileManager == null) { tileManager = (TileManager)target; }
-            if (foldoutOpen == null || foldoutOpen.Length != tileManager.tiles.Count) { foldoutOpen = new bool[tileManager.tiles.Count]; }
+            if (done == false)
+            {
+                Awake();
+
+                done = true;
+            }
+
+            if (tileManager == null) { Awake(); }
+            if (tileManager.tiles != null && foldoutOpen.Length != tileManager.tiles.Count) { Awake(); }
 
             if (GUILayout.Button("Add New Tile"))
             {
@@ -29,7 +41,7 @@ namespace CivGrid.Editors
                 window.tileIndexToEdit = 0;
             }
 
-            if (tileManager.tiles != null)
+            if (tileManager.tiles != null && tileManager.tiles.Count > 0)
             {
                 EditorGUI.indentLevel++;
                 for (int i = 0; i < tileManager.tiles.Count; i++)
@@ -58,9 +70,14 @@ namespace CivGrid.Editors
                     if (foldoutOpen[i])
                     {
                         tile.name = EditorGUILayout.TextField("Name:", tile.name);
-                        tile.isWater = EditorGUILayout.Toggle("Is Water:", tile.isWater);
-                        tile.topLat = EditorGUILayout.FloatField("Top Lattitude:", tile.topLat);
-                        tile.bottomLat = EditorGUILayout.FloatField("Bottom Lattitude:", tile.bottomLat);
+                        tile.isShore = EditorGUILayout.Toggle("Is Shore:", tile.isShore);
+                        tile.isOcean = EditorGUILayout.Toggle("Is Ocean:", tile.isOcean);
+                        tile.isMountain = EditorGUILayout.Toggle("Is Mountain:", tile.isMountain);
+                        if (tile.isShore == false && tile.isOcean == false && tile.isMountain == false)
+                        {
+                            tile.topLat = EditorGUILayout.FloatField("Top Lattitude:", tile.topLat);
+                            tile.bottomLat = EditorGUILayout.FloatField("Bottom Lattitude:", tile.bottomLat);
+                        }
                     }
                 }
             }

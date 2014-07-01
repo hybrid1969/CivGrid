@@ -38,8 +38,7 @@ namespace CivGrid
         //resources
         [SerializeField]
         public Resource currentResource;
-        public ResourceManager rM;
-        public bool hideResources;
+        public ResourceManager resourceManager;
         public List<Vector3> resourceLocations = new List<Vector3>();
 
         [HideInInspector]
@@ -74,9 +73,10 @@ namespace CivGrid
         /// </summary>
         public void Start()
         {
-            if (terrainFeature == Feature.Mountain) { Tile mountain = parentChunk.worldManager.tM.TryGet("Mountain"); if (mountain != null) { terrainType = mountain; } }
+            if (terrainType.isMountain == true && terrainFeature != Feature.Mountain) { Debug.Log("errrr..... uhhhh" + "Chunk: " + parentChunk.gameObject.name);  }
+            if (terrainFeature == Feature.Mountain) { Tile mountain = parentChunk.worldManager.tileManager.TryGetMountain(); if (mountain != null) {  terrainType = mountain; } }
             MeshSetup();
-            rM.CheckForResource(this, out currentResource);
+            resourceManager.CheckForResource(this, out currentResource);
             worldTextureAtlas = parentChunk.worldManager.textureAtlas;
         }
 

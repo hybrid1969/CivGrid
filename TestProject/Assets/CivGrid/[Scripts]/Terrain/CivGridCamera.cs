@@ -88,38 +88,46 @@ namespace CivGrid
 
         void UpdateCamera()
         {
-            Vector3 pos = cam1.ScreenToViewportPoint(worldManager.mousePos);
+            try
+            {
+                Vector3 pos = cam1.ScreenToViewportPoint(worldManager.mousePos);
 
-            //x vals
-            if (pos.x >= 1)
-            {
-                pos.x = 1;
-                moveVector.x = 1;
-            }
-            else if (pos.x <= 0)
-            {
-                pos.x = 0;
-                moveVector.x = -1;
-            }
-            else
-            {
-                moveVector.x = 0;
-            }
 
-            //y vals
-            if (pos.y >= 1)
-            {
-                pos.y = 1;
-                moveVector.z = 1;
+                //x vals
+                if (pos.x >= 1)
+                {
+                    pos.x = 1;
+                    moveVector.x = 1;
+                }
+                else if (pos.x <= 0)
+                {
+                    pos.x = 0;
+                    moveVector.x = -1;
+                }
+                else
+                {
+                    moveVector.x = 0;
+                }
+
+                //y vals
+                if (pos.y >= 1)
+                {
+                    pos.y = 1;
+                    moveVector.z = 1;
+                }
+                else if (pos.y <= 0)
+                {
+                    pos.y = 0;
+                    moveVector.z = -1;
+                }
+                else
+                {
+                    moveVector.z = 0;
+                }
             }
-            else if (pos.y <= 0)
+            catch (System.Exception e)
             {
-                pos.y = 0;
-                moveVector.z = -1;
-            }
-            else
-            {
-                moveVector.z = 0;
+                Debug.LogError("Please Remove the CivGridCamera Script if you do not wish to use it; otherwise enable it in the WorldManager" + "/n" + e);
             }
 
             cam1T.Translate(moveVector * (cameraSpeed * Time.deltaTime), Space.World);

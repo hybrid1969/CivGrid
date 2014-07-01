@@ -61,23 +61,30 @@ namespace CivGrid.Editors
                 rTexture = (Texture2D)EditorGUILayout.ObjectField("Resource Mesh Texture:", (Object)rTexture, typeof(Texture2D), false);
                 GUILayout.Label("Possible Tiles", EditorStyles.boldLabel);
 
-                if (GUILayout.Button("+"))
+                if (tileManager.tiles.Count > 0)
                 {
-                    rPossibleTiles.Add(0);
-                }
-
-                for (int i = 0; i < rPossibleTiles.Count; i++)
-                {
-                    GUILayout.BeginHorizontal();
-
-                    rPossibleTiles[i] = (int)EditorGUILayout.Popup(rPossibleTiles[i], tileManager.tileNames);
-
-                    if (GUILayout.Button("-"))
+                    if (GUILayout.Button("+"))
                     {
-                        rPossibleTiles.RemoveAt(i);
+                        rPossibleTiles.Add(0);
                     }
 
-                    GUILayout.EndHorizontal();
+                    for (int i = 0; i < rPossibleTiles.Count; i++)
+                    {
+                        GUILayout.BeginHorizontal();
+
+                        rPossibleTiles[i] = (int)EditorGUILayout.Popup(rPossibleTiles[i], tileManager.tileNames);
+
+                        if (GUILayout.Button("-"))
+                        {
+                            rPossibleTiles.RemoveAt(i);
+                        }
+
+                        GUILayout.EndHorizontal();
+                    }
+                }
+                else
+                {
+                    GUILayout.Label("There are no possible tiles to assign the resource to. Please create some tiles.");
                 }
 
                 GUILayout.Label("Possible Features", EditorStyles.boldLabel);
@@ -108,6 +115,8 @@ namespace CivGrid.Editors
                 if (GUILayout.Button("Create"))
                 {
                     CreateResource(rName, rRariety, rMesh, rTexture);
+                    EditorUtility.UnloadUnusedAssets();
+                    Resources.UnloadUnusedAssets();
                     this.Close();
                 }
 
@@ -144,23 +153,30 @@ namespace CivGrid.Editors
                     doneAddingResources = true;
                 }
 
-                if (GUILayout.Button("+"))
+                if (tileManager.tiles.Count > 0)
                 {
-                    rPossibleTiles.Add(0);
-                }
-
-                for (int i = 0; i < rPossibleTiles.Count; i++)
-                {
-                    GUILayout.BeginHorizontal();
-
-                    rPossibleTiles[i] = (int)EditorGUILayout.Popup(rPossibleTiles[i], tileManager.tileNames);
-
-                    if (GUILayout.Button("-"))
+                    if (GUILayout.Button("+"))
                     {
-                        rPossibleTiles.RemoveAt(i);
+                        rPossibleTiles.Add(0);
                     }
 
-                    GUILayout.EndHorizontal();
+                    for (int i = 0; i < rPossibleTiles.Count; i++)
+                    {
+                        GUILayout.BeginHorizontal();
+
+                        rPossibleTiles[i] = (int)EditorGUILayout.Popup(rPossibleTiles[i], tileManager.tileNames);
+
+                        if (GUILayout.Button("-"))
+                        {
+                            rPossibleTiles.RemoveAt(i);
+                        }
+
+                        GUILayout.EndHorizontal();
+                    }
+                }
+                else
+                {
+                    GUILayout.Label("There are no possible tiles to assign the resource to. Please create some tiles.");
                 }
 
                 GUILayout.Label("Possible Features", EditorStyles.boldLabel);
@@ -192,6 +208,8 @@ namespace CivGrid.Editors
                 {
                     EditResource(r.name, r.rarity, r.meshToSpawn, r.resourceMeshTexture, resourceIndexToEdit);
                     resourceManager.resources.RemoveAt(resourceIndexToEdit+1);
+                    EditorUtility.UnloadUnusedAssets();
+                    Resources.UnloadUnusedAssets();
                     this.Close();
                 }
 
@@ -291,7 +309,6 @@ namespace CivGrid.Editors
 
         //adding fields
         string iName = "None";
-        float iRariety;
         Mesh iMesh;
         Texture2D iTexture;
         ImprovementManager improvementManager;
@@ -326,28 +343,34 @@ namespace CivGrid.Editors
 
                 GUILayout.Label("Add Improvement:", EditorStyles.boldLabel);
                 iName = EditorGUILayout.TextField("Improvement Name", iName);
-                iRariety = EditorGUILayout.FloatField("Rariety", iRariety);
                 iMesh = (Mesh)EditorGUILayout.ObjectField("Improvement Mesh:", (Object)iMesh, typeof(Mesh), false);
                 iTexture = (Texture2D)EditorGUILayout.ObjectField("Improvement Mesh Texture:", (Object)iTexture, typeof(Texture2D), false);
                 GUILayout.Label("Possible Tiles", EditorStyles.boldLabel);
 
-                if (GUILayout.Button("+"))
+                if (tileManager.tiles.Count > 0)
                 {
-                    iPossibleTiles.Add(0);
-                }
-
-                for (int i = 0; i < iPossibleTiles.Count; i++)
-                {
-                    GUILayout.BeginHorizontal();
-
-                    iPossibleTiles[i] = (int)EditorGUILayout.Popup(iPossibleTiles[i], tileManager.tileNames);
-
-                    if (GUILayout.Button("-"))
+                    if (GUILayout.Button("+"))
                     {
-                        iPossibleTiles.RemoveAt(i);
+                        iPossibleTiles.Add(0);
                     }
 
-                    GUILayout.EndHorizontal();
+                    for (int i = 0; i < iPossibleTiles.Count; i++)
+                    {
+                        GUILayout.BeginHorizontal();
+
+                        iPossibleTiles[i] = (int)EditorGUILayout.Popup(iPossibleTiles[i], tileManager.tileNames);
+
+                        if (GUILayout.Button("-"))
+                        {
+                            iPossibleTiles.RemoveAt(i);
+                        }
+
+                        GUILayout.EndHorizontal();
+                    }
+                }
+                else
+                {
+                    GUILayout.Label("There are no possible tiles to assign the improvement to. Please create some tiles.");
                 }
 
                 GUILayout.Label("Possible Features", EditorStyles.boldLabel);
@@ -377,7 +400,9 @@ namespace CivGrid.Editors
 
                 if (GUILayout.Button("Create"))
                 {
-                    CreateImprovement(iName, iRariety, iMesh, iTexture);
+                    CreateImprovement(iName, iMesh, iTexture);
+                    EditorUtility.UnloadUnusedAssets();
+                    Resources.UnloadUnusedAssets();
                     this.Close();
                 }
 
@@ -395,7 +420,6 @@ namespace CivGrid.Editors
                 scrollPosition = GUILayout.BeginScrollView(scrollPosition);
 
                 improvement.name = EditorGUILayout.TextField("Resource Name", improvement.name);
-                improvement.rarity = EditorGUILayout.FloatField("Rariety", improvement.rarity);
                 improvement.meshToSpawn = (Mesh)EditorGUILayout.ObjectField("Resource Mesh:", (Object)improvement.meshToSpawn, typeof(Mesh), false);
                 improvement.improvementMeshTexture = (Texture2D)EditorGUILayout.ObjectField("Resource Mesh Texture:", (Object)improvement.improvementMeshTexture, typeof(Texture2D), false);
                 GUILayout.Label("Possible Tiles", EditorStyles.boldLabel);
@@ -414,23 +438,30 @@ namespace CivGrid.Editors
                     doneAddingImprovements = true;
                 }
 
-                if (GUILayout.Button("+"))
+                if (tileManager.tiles.Count > 0)
                 {
-                    iPossibleTiles.Add(0);
-                }
-
-                for (int i = 0; i < iPossibleTiles.Count; i++)
-                {
-                    GUILayout.BeginHorizontal();
-
-                    iPossibleTiles[i] = (int)EditorGUILayout.Popup(iPossibleTiles[i], tileManager.tileNames);
-
-                    if (GUILayout.Button("-"))
+                    if (GUILayout.Button("+"))
                     {
-                        iPossibleTiles.RemoveAt(i);
+                        iPossibleTiles.Add(0);
                     }
 
-                    GUILayout.EndHorizontal();
+                    for (int i = 0; i < iPossibleTiles.Count; i++)
+                    {
+                        GUILayout.BeginHorizontal();
+
+                        iPossibleTiles[i] = (int)EditorGUILayout.Popup(iPossibleTiles[i], tileManager.tileNames);
+
+                        if (GUILayout.Button("-"))
+                        {
+                            iPossibleTiles.RemoveAt(i);
+                        }
+
+                        GUILayout.EndHorizontal();
+                    }
+                }
+                else
+                {
+                    GUILayout.Label("There are no possible tiles to assign the improvement to. Please create some tiles.");
                 }
 
                 GUILayout.Label("Possible Features", EditorStyles.boldLabel);
@@ -460,8 +491,10 @@ namespace CivGrid.Editors
 
                 if (GUILayout.Button("Close"))
                 {
-                    EditImprovement(improvement.name, improvement.rarity, improvement.meshToSpawn, improvement.improvementMeshTexture, improvementIndexToEdit);
+                    EditImprovement(improvement.name, improvement.meshToSpawn, improvement.improvementMeshTexture, improvementIndexToEdit);
                     improvementManager.searalizableImprovements.RemoveAt(improvementIndexToEdit+1);
+                    EditorUtility.UnloadUnusedAssets();
+                    Resources.UnloadUnusedAssets();
                     this.Close();
                 }
 
@@ -469,7 +502,7 @@ namespace CivGrid.Editors
             }
         }
 
-        void CreateImprovement(string name, float rariety, Mesh mesh, Texture2D texture)
+        void CreateImprovement(string name, Mesh mesh, Texture2D texture)
         {
             int[] finalTiles = new int[iPossibleTiles.Count];
             List<Feature> finalFeatures = new List<Feature>();
@@ -508,10 +541,10 @@ namespace CivGrid.Editors
                 }
             }
 
-            improvementManager.AddImprovement(new Improvement(name, rariety, mesh, texture, new ImprovementRule(finalTiles, finalFeatures.ToArray())));
+            improvementManager.AddImprovement(new Improvement(name, mesh, texture, new ImprovementRule(finalTiles, finalFeatures.ToArray())));
         }
 
-        void EditImprovement(string name, float rariety, Mesh mesh, Texture2D texture, int index)
+        void EditImprovement(string name, Mesh mesh, Texture2D texture, int index)
         {
             int[] finalTiles = new int[iPossibleTiles.Count];
             List<Feature> finalFeatures = new List<Feature>();
@@ -550,7 +583,7 @@ namespace CivGrid.Editors
                 }
             }
 
-            improvementManager.AddImprovementAtIndex(new Improvement(name, rariety, mesh, texture, new ImprovementRule(finalTiles, finalFeatures.ToArray())), index);
+            improvementManager.AddImprovementAtIndex(new Improvement(name, mesh, texture, new ImprovementRule(finalTiles, finalFeatures.ToArray())), index);
         }
     }
 
@@ -560,7 +593,9 @@ namespace CivGrid.Editors
         public int tileIndexToEdit;
 
         public string tName;
-        public bool tIsWater;
+        public bool tIsShore;
+        public bool tIsOcean;
+        public bool tIsMountain;
         public float tTopLat;
         public float tBottomLat;
 
@@ -591,9 +626,19 @@ namespace CivGrid.Editors
                 GUILayout.Label("Add Tile:", EditorStyles.boldLabel);
 
                 tName = EditorGUILayout.TextField("Name:", tName);
-                tIsWater = EditorGUILayout.Toggle("Is Water:", tIsWater);
-                tTopLat = EditorGUILayout.FloatField("Top Lattitude:", tTopLat);
-                tBottomLat = EditorGUILayout.FloatField("Bottom Lattitude:", tBottomLat);
+                tIsShore = EditorGUILayout.Toggle("Is Shore:", tIsShore);
+                tIsOcean = EditorGUILayout.Toggle("Is Ocean:", tIsOcean);
+                tIsMountain = EditorGUILayout.Toggle("Is Mountain:", tIsMountain);
+                if (tIsShore == false && tIsOcean == false && tIsMountain == false)
+                {
+                    tTopLat = EditorGUILayout.FloatField("Top Lattitude:", tTopLat);
+                    tBottomLat = EditorGUILayout.FloatField("Bottom Lattitude:", tBottomLat);
+                }
+                else
+                {
+                    tTopLat = 0;
+                    tBottomLat = 0;
+                }
 
                 GUILayout.EndScrollView();
 
@@ -601,7 +646,9 @@ namespace CivGrid.Editors
 
                 if (GUILayout.Button("Create"))
                 {
-                    CreateTile(tName, tIsWater, tTopLat, tBottomLat);
+                    CreateTile(tName, tIsShore, tIsOcean, tIsMountain, tTopLat, tBottomLat);
+                    EditorUtility.UnloadUnusedAssets();
+                    Resources.UnloadUnusedAssets();
                     this.Close();
                 }
             }
@@ -618,9 +665,19 @@ namespace CivGrid.Editors
                 Tile tile = tileManager.tiles[tileIndexToEdit];
 
                 tile.name = EditorGUILayout.TextField("Name:", tile.name);
-                tile.isWater = EditorGUILayout.Toggle("Is Water:", tile.isWater);
-                tile.topLat = EditorGUILayout.FloatField("Top Lattitude:", tile.topLat);
-                tile.bottomLat = EditorGUILayout.FloatField("Bottom Lattitude:", tile.bottomLat);
+                tile.isShore = EditorGUILayout.Toggle("Is Shore:", tile.isShore);
+                tile.isOcean = EditorGUILayout.Toggle("Is Ocean:", tile.isOcean);
+                tile.isMountain = EditorGUILayout.Toggle("Is Mountain:", tile.isMountain);
+                if (tile.isShore == false && tile.isOcean == false && tile.isMountain == false)
+                {
+                    tile.topLat = EditorGUILayout.FloatField("Top Lattitude:", tile.topLat);
+                    tile.bottomLat = EditorGUILayout.FloatField("Bottom Lattitude:", tile.bottomLat);
+                }
+                else
+                {
+                    tile.topLat = 0;
+                    tile.bottomLat = 0;
+                }
 
                 GUILayout.EndScrollView();
 
@@ -628,14 +685,16 @@ namespace CivGrid.Editors
 
                 if (GUILayout.Button("Close"))
                 {
+                    EditorUtility.UnloadUnusedAssets();
+                    Resources.UnloadUnusedAssets();
                     this.Close();
                 }
             }
         }
 
-        private void CreateTile(string name, bool isWater, float topLat, float bottomLat)
+        private void CreateTile(string name, bool isShore, bool isOcean, bool isMountain, float topLat, float bottomLat)
         {
-            tileManager.AddTile(new Tile(name, bottomLat, topLat, isWater));
+            tileManager.AddTile(new Tile(name, isShore, isOcean, isMountain, bottomLat, topLat));
         }
     }
 
@@ -710,19 +769,19 @@ namespace CivGrid.Editors
                     GUILayout.BeginVertical();
                     GUILayout.Label("Settings for texture (" + x + "," + y + "):");
                     catagory[x, y] = (TypeofEditorTile)EditorGUILayout.EnumPopup("Type:", catagory[x, y], GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
-                    if (catagory[x, y] == TypeofEditorTile.Terrain)
+                    if (catagory[x, y] == TypeofEditorTile.Terrain && (tileManager.tiles != null && tileManager.tiles.Count > 0))
                     {
                         tempTileType[x, y] = (int)EditorGUILayout.Popup("Tile Type:", tempTileType[x, y], tileManager.tileNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
                         tempResourceType[x,y] = 0;
                         tempImprovementType[x,y] = 0;
                     }
-                    else if (catagory[x, y] == TypeofEditorTile.Resource)
+                    else if (catagory[x, y] == TypeofEditorTile.Resource && (resourceManager.resources != null && resourceManager.resources.Count > 0))
                     {
                         tempResourceType[x, y] = (int)EditorGUILayout.Popup("Resource Type:", tempResourceType[x, y], resourceManager.resourceNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
                         tempTileType[x, y] = 0;
                         tempImprovementType[x,y] = 0;
                     }
-                    else if (catagory[x, y] == TypeofEditorTile.Improvement)
+                    else if (catagory[x, y] == TypeofEditorTile.Improvement && (improvementManager.searalizableImprovements != null && improvementManager.searalizableImprovements.Count > 0))
                     {
                         tempImprovementType[x, y] = (int)EditorGUILayout.Popup("Improvement Type:", tempImprovementType[x, y], improvementManager.improvementNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
                         tempTileType[x,y] = 0;
@@ -730,7 +789,7 @@ namespace CivGrid.Editors
                     }
                     else
                     {
-                        Debug.LogError("Something went wrong; send dump file!");
+                        EditorGUILayout.SelectableLabel("There are no options for this type.", GUILayout.ExpandHeight(true));
                     }
                     GUILayout.EndVertical();
                 }
@@ -745,7 +804,7 @@ namespace CivGrid.Editors
 
             if (GUILayout.Button("Edit"))
             {
-                string tempLoc = EditorUtility.OpenFolderPanel("Folder to save texture...", loc, "atlas.png"); ;
+                string tempLoc = EditorUtility.OpenFolderPanel("Folder to save texture...", loc, "Folder to save"); ;
                 if (tempLoc != null && tempLoc != "")
                 {
                     loc = tempLoc;
@@ -822,16 +881,15 @@ namespace CivGrid.Editors
             }
 
             Saver.SaveTexture(returnTexture, loc, "TerrainAtlas", false);
-            returnTexture.hideFlags = HideFlags.HideAndDontSave;
             worldManager.textureAtlas.terrainAtlas = (Texture2D)AssetDatabase.LoadAssetAtPath(editedLoc + "/TerrainAtlas.png", typeof(Texture2D));
             worldManager.textureAtlas.tileLocations = (TileItem[])tileLocations.ToArray().Clone();
             worldManager.textureAtlas.resourceLocations = (ResourceItem[])resourceLocations.ToArray().Clone();
             worldManager.textureAtlas.improvementLocations = (ImprovementItem[])improvementLocations.ToArray().Clone();
-            
-            
 
+
+            EditorUtility.UnloadUnusedAssets();
+            Resources.UnloadUnusedAssets();
             this.Close();
         }
     }
-}
-    
+}   

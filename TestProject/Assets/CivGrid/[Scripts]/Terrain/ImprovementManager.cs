@@ -13,18 +13,18 @@ namespace CivGrid
         public List<Improvement> searalizableImprovements;
         public string[] improvementNames;
 
-        public ResourceManager rM;
-        public TileManager tM;
+        public ResourceManager resourceManager;
+        public TileManager tileManager;
 
         public void SetUp()
         {
             improvements = searalizableImprovements;
-            improvements.Insert(0, new Improvement("None", 0, null, null, null));
+            improvements.Insert(0, new Improvement("None", null, null, null));
             improvements[0].meshToSpawn = null;
             improvements[0].spawnAmount = 0;
 
-            rM = GetComponent<ResourceManager>();
-            tM = GetComponent<TileManager>();
+            resourceManager = GetComponent<ResourceManager>();
+            tileManager = GetComponent<TileManager>();
 
             if (improvementNames == null)
             {
@@ -52,10 +52,13 @@ namespace CivGrid
 
         public void UpdateImprovementNames()
         {
-            improvementNames = new string[searalizableImprovements.Count];
-            for (int i = 0; i < searalizableImprovements.Count; i++)
+            if (improvements != null && improvements.Count > 0)
             {
-                improvementNames[i] = searalizableImprovements[i].name;
+                improvementNames = new string[searalizableImprovements.Count];
+                for (int i = 0; i < searalizableImprovements.Count; i++)
+                {
+                    improvementNames[i] = searalizableImprovements[i].name;
+                }
             }
         }
 
@@ -66,7 +69,7 @@ namespace CivGrid
         /// <param name="improvementName">"Improvement to attempt to add</param>
         public static void TestedAddImprovementToTile(HexInfo hex, string improvementName)
         {
-            Debug.Log("I want a stack trace");
+            //Debug.Log("I want a stack trace");
             bool possible = false;
 
             Improvement improvement = new Improvement();
@@ -91,7 +94,7 @@ namespace CivGrid
             if (possible)
             {
                 hex.currentImprovement = improvement;
-                hex.parentChunk.worldManager.iM.InitiateImprovement(hex, improvement);
+                hex.parentChunk.worldManager.improvementManager.InitiateImprovement(hex, improvement);
             }
         }
 
@@ -117,7 +120,7 @@ namespace CivGrid
             if (possible)
             {
                 hex.currentImprovement = improvement;
-                hex.parentChunk.worldManager.iM.InitiateImprovement(hex, improvement);
+                hex.parentChunk.worldManager.improvementManager.InitiateImprovement(hex, improvement);
             }
         }
 
@@ -141,7 +144,7 @@ namespace CivGrid
                     //respawn resource model
                     if (hex.currentResource.name != "None")
                     {
-                        hex.rM.SpawnResource(hex, hex.currentResource, true);
+                        hex.resourceManager.SpawnResource(hex, hex.currentResource, true);
                     }
                 }
             }
@@ -159,7 +162,7 @@ namespace CivGrid
             Destroy(hex.iObject);
 
             //remove current resource gameobjects
-            rM.HideResourceMesh(hex);
+            resourceManager.HideResourceMesh(hex);
 
             hex.ChangeTextureToImprovement();
            
@@ -182,7 +185,7 @@ namespace CivGrid
         private static bool Test(ImprovementRule rule, HexInfo hex)
         {
             bool returnVal;
-            TileManager tM = hex.parentChunk.worldManager.tM;
+            TileManager tM = hex.parentChunk.worldManager.tileManager;
 
             for (int i = 0; i < rule.possibleTiles.Length; i++)
             {
@@ -229,7 +232,6 @@ namespace CivGrid
         public string name;
         public ImprovementRule rule;
         bool possible;
-        public float rarity;
 
         //public Vector2 atlasLocation;
 
@@ -237,11 +239,10 @@ namespace CivGrid
         public Texture2D improvementMeshTexture;
         public int spawnAmount = 3;
 
-        public Improvement(string name, float rarity, Mesh mesh, Texture2D improvementMeshTexture, ImprovementRule rule)
+        public Improvement(string name, Mesh mesh, Texture2D improvementMeshTexture, ImprovementRule rule)
         {
             this.name = name;
             this.rule = rule;
-            this.rarity = rarity;
             this.improvementMeshTexture = improvementMeshTexture;
             this.meshToSpawn = mesh;
         }

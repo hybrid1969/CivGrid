@@ -19,16 +19,26 @@ namespace CivGrid.Editors
         {
             resourceManager = (ResourceManager)target;
             tileManager = resourceManager.GetComponent<TileManager>();
-            foldoutOpen = new bool[resourceManager.resources.Count];
-            extraInfoFoldout = new bool[resourceManager.resources.Count];
+            if (resourceManager.resources != null)
+            {
+                foldoutOpen = new bool[resourceManager.resources.Count];
+                extraInfoFoldout = new bool[resourceManager.resources.Count];
+            }
         }
-
+        bool done;
         public override void OnInspectorGUI()
         {
+            if (done == false)
+            {
+                Awake();
+
+                done = true;
+            }
+
             if (resourceManager == null) { resourceManager = (ResourceManager)target; }
             if (tileManager == null) { tileManager = resourceManager.GetComponent<TileManager>(); }
-            if (foldoutOpen == null || foldoutOpen.Length != resourceManager.resources.Count) { foldoutOpen = new bool[resourceManager.resources.Count]; }
-            if (extraInfoFoldout == null || extraInfoFoldout.Length != resourceManager.resources.Count) { extraInfoFoldout = new bool[resourceManager.resources.Count]; }
+            if (resourceManager.resources != null && (foldoutOpen == null || foldoutOpen.Length == 0 || foldoutOpen.Length != resourceManager.resources.Count)) { foldoutOpen = new bool[resourceManager.resources.Count]; }
+            if (resourceManager.resources != null && (extraInfoFoldout == null || extraInfoFoldout.Length != resourceManager.resources.Count)) { extraInfoFoldout = new bool[resourceManager.resources.Count]; }
 
             if (GUILayout.Button("Add New Resource"))
             {
@@ -38,7 +48,7 @@ namespace CivGrid.Editors
                 window.resourceIndexToEdit = 0;
             }
 
-            if (resourceManager.resources != null)
+            if (resourceManager.resources != null && resourceManager.resources.Count > 0)
             {
                 for (int i = 0; i < resourceManager.resources.Count; i++)
                 {

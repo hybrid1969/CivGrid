@@ -19,16 +19,27 @@ namespace CivGrid.Editors
         {
             ImprovementManager improvementManager = (ImprovementManager)target;
             tileManager = improvementManager.GetComponent<TileManager>();
-            foldoutOpen = new bool[improvementManager.searalizableImprovements.Count];
-            extraInfoFoldout = new bool[improvementManager.searalizableImprovements.Count];
+            if (improvementManager.searalizableImprovements != null)
+            {
+                foldoutOpen = new bool[improvementManager.searalizableImprovements.Count];
+                extraInfoFoldout = new bool[improvementManager.searalizableImprovements.Count];
+            }
         }
 
+        bool done;
         public override void OnInspectorGUI()
         {
+            if (done == false)
+            {
+                Awake();
+
+                done = true;
+            }
+
             if (improvementManager == null) { improvementManager = (ImprovementManager)target; }
             if (tileManager == null) { tileManager = improvementManager.GetComponent<TileManager>(); }
-            if (foldoutOpen == null || foldoutOpen.Length != improvementManager.searalizableImprovements.Count) { foldoutOpen = new bool[improvementManager.searalizableImprovements.Count]; }
-            if (extraInfoFoldout == null || extraInfoFoldout.Length != improvementManager.searalizableImprovements.Count) { extraInfoFoldout = new bool[improvementManager.searalizableImprovements.Count]; }
+            if (improvementManager.searalizableImprovements != null && (foldoutOpen == null || foldoutOpen.Length != improvementManager.searalizableImprovements.Count)) { foldoutOpen = new bool[improvementManager.searalizableImprovements.Count]; }
+            if (improvementManager.searalizableImprovements != null && (extraInfoFoldout == null || extraInfoFoldout.Length != improvementManager.searalizableImprovements.Count)) { extraInfoFoldout = new bool[improvementManager.searalizableImprovements.Count]; }
 
             if (GUILayout.Button("Add New Improvement"))
             {
@@ -38,7 +49,7 @@ namespace CivGrid.Editors
                 window.improvementIndexToEdit = 0;
             }
 
-            if (improvementManager.searalizableImprovements != null)
+            if (improvementManager.searalizableImprovements != null && improvementManager.searalizableImprovements.Count > 0)
             {
                 for (int i = 0; i < improvementManager.searalizableImprovements.Count; i++)
                 {
@@ -67,7 +78,6 @@ namespace CivGrid.Editors
                     if (foldoutOpen[i])
                     {
                         improvement.name = EditorGUILayout.TextField("Improvement Name:", improvement.name);
-                        improvement.rarity = EditorGUILayout.FloatField("Rarity:", improvement.rarity);
                         improvement.spawnAmount = EditorGUILayout.IntField("Spawn Amount:", improvement.spawnAmount);
 
                         extraInfoFoldout[i] = EditorGUILayout.Foldout(extraInfoFoldout[i], "Rules:");
@@ -96,16 +106,20 @@ namespace CivGrid.Editors
                         //improvement.improvementMeshTexture.SetPixel(0, 0, improvement.improvementMeshTexture.GetPixel(0, 0));
                         //try
                         //{
-                         //   improvement.improvementMeshTexture.SetPixel(0, 0, improvement.improvementMeshTexture.GetPixel(0, 0));
+                        //   improvement.improvementMeshTexture.SetPixel(0, 0, improvement.improvementMeshTexture.GetPixel(0, 0));
                         //}
                         //catch (UnityException e)
                         //{
-                          //  Debug.Log(e);
-                            //EditorGUILayout.HelpBox("Please enable read/write on this texture in its import settings", MessageType.Error);
+                        //  Debug.Log(e);
+                        //EditorGUILayout.HelpBox("Please enable read/write on this texture in its import settings", MessageType.Error);
                         //}
                     }
                     EditorGUI.indentLevel--;
                 }
+            }
+            else
+            {
+                GUILayout.Label("No Improvements Created; Please Add Some");
             }
 
             if (GUILayout.Button("Finalize"))

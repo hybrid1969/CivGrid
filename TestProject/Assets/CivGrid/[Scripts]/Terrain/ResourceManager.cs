@@ -30,10 +30,13 @@ namespace CivGrid
 
         public void UpdateResourceNames()
         {
-            resourceNames = new string[resources.Count];
-            for (int i = 0; i < resources.Count; i++)
+            if (resources != null && resources.Count > 0)
             {
-                resourceNames[i] = resources[i].name;
+                resourceNames = new string[resources.Count];
+                for (int i = 0; i < resources.Count; i++)
+                {
+                    resourceNames[i] = resources[i].name;
+                }
             }
         }
 
@@ -198,7 +201,7 @@ namespace CivGrid
         private static bool Test(HexInfo hex, ResourceRule rule)
         {
             bool returnVal;
-            TileManager tM = hex.parentChunk.worldManager.tM;
+            TileManager tM = hex.parentChunk.worldManager.tileManager;
 
             for(int i =0; i < rule.possibleTiles.Length; i++)
             {

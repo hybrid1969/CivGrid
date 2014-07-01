@@ -106,19 +106,18 @@ namespace CivGrid
             worldArrayPosition.x = x + (chunkSize.x * xSector);
             worldArrayPosition.y = y + (chunkSize.y * ySector);
 
-
             hex.CubeGridPosition = new Vector3(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f), worldArrayPosition.y, -(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f) + worldArrayPosition.y));
-            //set local position of hex; this is the hex cord postion local to the chunk
+            //set local position of hex; this is the hex cord position local to the chunk
             hex.localPosition = new Vector3(x * ((worldManager.hexExt.x * 2)), 0, (y * worldManager.hexExt.z) * 1.5f);
-            //set world position of hex; this is the hex cord postion local to the world
+            //set world position of hex; this is the hex cord position local to the world
             hex.worldPosition = new Vector3(hex.localPosition.x + (xSector * (chunkSize.x * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((ySector * (chunkSize.y * hexSize.z)) * (.75f)));
 
             ///Set Hex values
-            hex.terrainType = worldManager.PickHex((int)worldArrayPosition.x, (int)worldArrayPosition.y);
             hex.terrainFeature = worldManager.PickFeature((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
+            hex.terrainType = worldManager.PickHex((int)worldArrayPosition.x, (int)worldArrayPosition.y);
             hex.hexExt = worldManager.hexExt;
             hex.hexCenter = worldManager.hexCenter;
-            hex.rM = worldManager.rM;
+            hex.resourceManager = worldManager.resourceManager;
         }
 
         /// <summary>
@@ -138,20 +137,18 @@ namespace CivGrid
             worldArrayPosition.x = x + (chunkSize.x * xSector);
             worldArrayPosition.y = y + (chunkSize.y * ySector);
 
-
-
             hex.CubeGridPosition = new Vector3(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f), worldArrayPosition.y, -(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f) + worldArrayPosition.y));
             //set local position of hex; this is the hex cord position local to the chunk
             hex.localPosition = new Vector3((x * (worldManager.hexExt.x * 2) + worldManager.hexExt.x), 0, (y * worldManager.hexExt.z) * 1.5f);
-            //set world position of hex; this is the hex cord postion local to the world
+            //set world position of hex; this is the hex cord position local to the world
             hex.worldPosition = new Vector3(hex.localPosition.x + (xSector * (chunkSize.x * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((ySector * (chunkSize.y * hexSize.z)) * (.75f)));
 
             ///Set Hex values
-            hex.terrainType = worldManager.PickHex((int)worldArrayPosition.x, (int)worldArrayPosition.y);
             hex.terrainFeature = worldManager.PickFeature((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
+            hex.terrainType = worldManager.PickHex((int)worldArrayPosition.x, (int)worldArrayPosition.y);
             hex.hexExt = worldManager.hexExt;
             hex.hexCenter = worldManager.hexCenter;
-            hex.rM = worldManager.rM;
+            hex.resourceManager = worldManager.resourceManager;
         }
 
         /// <summary>
