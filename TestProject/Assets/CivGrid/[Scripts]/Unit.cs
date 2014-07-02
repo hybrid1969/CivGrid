@@ -122,6 +122,7 @@ namespace CivGrid
             }
         }
 
+
         //TODO impliment this method
         public int MovesToCompleteAction()
         {

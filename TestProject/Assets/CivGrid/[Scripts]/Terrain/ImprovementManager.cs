@@ -103,9 +103,38 @@ namespace CivGrid
         /// </summary>
         /// <param name="hex">Hex to attempt to add the improvement upon</param>
         /// <param name="improvementName">"Improvement to attempt to add</param>
+        [System.Obsolete("Use improvementIndex overload; otherwise retrieve [index+1] to return correct improvement")]
         public static void TestedAddImprovementToTile(HexInfo hex, Improvement improvement)
         {
             bool possible = false;
+
+            if (Test(improvement.rule, hex))
+            {
+                possible = true;
+            }
+            else
+            {
+                possible = false;
+            }
+
+
+            if (possible)
+            {
+                hex.currentImprovement = improvement;
+                hex.parentChunk.worldManager.improvementManager.InitiateImprovement(hex, improvement);
+            }
+        }
+
+        /// <summary>
+        /// Adds improvement to specified hex if it meets the rule requirements
+        /// </summary>
+        /// <param name="hex">Hex to attempt to add the improvement upon</param>
+        /// <param name="improvementIndex">Index of the improvement within the improvement manager to attemp to add</param>
+        public static void TestedAddImprovementToTile(HexInfo hex, int improvementIndex)
+        {
+            bool possible = false;
+
+            Improvement improvement = improvements[improvementIndex + 1];
 
             if (Test(improvement.rule, hex))
             {

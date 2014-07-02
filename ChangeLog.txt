@@ -53,7 +53,7 @@ Version 0.4
 	+Cleaned up Changelog
 	+more stuff that I'm forgeting ;)
 Version 0.4.1f
-	+Fixed resource/improvement GameObject pooling on 	themselves 	allowing only one present at a time
+	+Fixed resource/improvement GameObject pooling on 	themselves allowing only one present at a time
 	+Changed "Tiles" enum to a class; giving more options
 	+Prepared for editor work
 Version 0.5
@@ -63,10 +63,14 @@ Version 0.5
 	+Fixed UV mapping upon removing an improvement
 	+Fixed padding on texture atlasing
 	+Multiple fixes in Texture atlasing
-	+Removed padding from texture atlasing and implimented in UV
+	+Removed padding from texture atlasing and implimented in 	UV
 	+Custom editor windows for Improvements, Resources, and 	
 	Tiles
 	+Custom inspectors for WorldManager, ImprovementManager, 	ResourceManager, and TileManager
 	+Implimented edit mode for editor windows
 	+General code cleanup
 	+Naming more consistant between classes
+	+Moved some methods into CivGridUtility
+	+Made startup improvements in TileManager
+	+Small improvements
+	+Started work on small game demo

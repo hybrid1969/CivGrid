@@ -8,18 +8,15 @@ namespace CivGrid
     public class TileManager : MonoBehaviour
     {
         public List<Tile> tiles;
+        private Tile[] internalTiles;
         public string[] tileNames;
-        [HideInInspector]
-        public WorldManager worldManager;
 
         public void SetUp()
         {
-            worldManager = GetComponent<WorldManager>();
-
-            tiles.Insert(0, new Tile("None", 0, 0));
-
+            internalTiles = tiles.ToArray();
             UpdateTileNames();
         }
+
 
         public void UpdateTileNames()
         {
@@ -47,7 +44,7 @@ namespace CivGrid
 
         public Tile TryGet(string name)
         {
-            foreach (Tile t in tiles)
+            foreach (Tile t in internalTiles)
             {
                 if (name == t.name)
                 {
@@ -59,12 +56,12 @@ namespace CivGrid
 
         public Tile TryGet(int index)
         {
-            return tiles[index];
+            return internalTiles[index];
         }
 
         public Tile TryGetOcean()
         {
-            foreach (Tile t in tiles)
+            foreach (Tile t in internalTiles)
             {
                 if (t.name == "Ocean" && t.isOcean)
                 {
@@ -72,7 +69,7 @@ namespace CivGrid
                 }
             }
             //only is we didnt find ocean
-            foreach (Tile t in tiles)
+            foreach (Tile t in internalTiles)
             {
                 if (t.isOcean)
                 {
@@ -84,7 +81,7 @@ namespace CivGrid
 
         public Tile TryGetMountain()
         {
-            foreach (Tile t in tiles)
+            foreach (Tile t in internalTiles)
             {
                 if (t.isMountain)
                 {
@@ -96,7 +93,7 @@ namespace CivGrid
 
         public Tile TryGetShore()
         {
-            foreach (Tile t in tiles)
+            foreach (Tile t in internalTiles)
             {
                 if (t.isShore)
                 {
@@ -108,7 +105,7 @@ namespace CivGrid
 
         public Tile GetTileFromLattitude(float lat)
         {
-            for(int i = 0; i < tiles.Count; i++)
+            for (int i = 0; i < internalTiles.Length; i++)
             {
                 if ((tiles[i].isMountain == false && tiles[i].isOcean == false && tiles[i].isShore == false))
                 {

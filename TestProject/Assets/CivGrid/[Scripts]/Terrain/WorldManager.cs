@@ -83,6 +83,7 @@ namespace CivGrid
             tileManager = GetComponent<TileManager>();
             resourceManager.SetUp();
             improvementManager.SetUp();
+            tileManager.SetUp();
             if (useCivGridCamera)
             {
                 civGridCamera = GameObject.FindObjectOfType<CivGridCamera>();
@@ -296,7 +297,7 @@ namespace CivGrid
                 //begin chunk operations since we are done with value generation
                 chunk.Begin();
             }
-
+            GameManager.worldEvent.Invoke("World Done", null);
         }
 
         /// <summary>
@@ -311,6 +312,7 @@ namespace CivGrid
             float latitude = Mathf.Abs((mapSize.y / 2) - h) / (mapSize.y / 2);//1 == snow (top) 0 == eqautor
             //add more results
             latitude *= (1 + UnityEngine.Random.Range(-0.2f, 0.2f));
+            latitude = Mathf.Clamp(latitude, 0f, 1f);
             Tile tile;
 
             if (tileMap.GetPixel(x, h).r == 0)
@@ -404,7 +406,7 @@ namespace CivGrid
                     HexInfo hex = GetHexFromWorldPosition(mouseWorldPosition, chunkHexIsLocatedIn);
                     if (Input.GetMouseButtonDown(0))
                     {
-                        ImprovementManager.TestedAddImprovementToTile(hex, "Bank");
+                        ImprovementManager.TestedAddImprovementToTile(hex, 0);
                         return;
                     }
                     if (Input.GetMouseButtonDown(1))
@@ -426,7 +428,7 @@ namespace CivGrid
                         HexInfo hex = GetHexFromWorldPosition(mouseWorldPosition, chunkHexIsLocatedIn);
                         if (Input.GetMouseButtonDown(0))
                         {
-                            ImprovementManager.TestedAddImprovementToTile(hex, "Bank");
+                            ImprovementManager.TestedAddImprovementToTile(hex, 0);
                             return;
                         }
                         if (Input.GetMouseButtonDown(1))
@@ -445,7 +447,7 @@ namespace CivGrid
         /// </summary>
         /// <param name="worldPosition">The position of the needed hexagon</param>
         /// <returns>The hex at the nearest position</returns>
-        HexInfo GetHexFromWorldPosition(Vector3 worldPosition)
+        public HexInfo GetHexFromWorldPosition(Vector3 worldPosition)
         {
             HexInfo hexToReturn = null;
 
@@ -474,7 +476,7 @@ namespace CivGrid
         /// <param name="worldPosition">The position of the needed hexagon</param>
         /// <param name="chunk">The chunk that contains the hexagon</param>
         /// <returns>The hex at the nearest position within the provided chunk</returns>
-        HexInfo GetHexFromWorldPosition(Vector3 worldPosition, HexChunk originalchunk)
+        public HexInfo GetHexFromWorldPosition(Vector3 worldPosition, HexChunk originalchunk)
         {
             //print(worldPosition);
             HexInfo hexToReturn = null;
@@ -498,6 +500,18 @@ namespace CivGrid
             }
 
             return hexToReturn;
+        }
+
+        public HexInfo GetHexFromAxialPosition(Vector2 position)
+        {
+            foreach (HexChunk chunk in hexChunks)
+            {
+                foreach (HexInfo hex in chunk.hexArray)
+                {
+                    if (hex.AxialGridPosition == position) { return hex; }
+                }
+            }
+            return null;
         }
 
         private HexChunk[] FindPossibleChunks(HexChunk chunk)

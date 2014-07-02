@@ -17,13 +17,13 @@ namespace CivGrid
         [MenuItem("CivGrid/Create CivGrid Camera", priority = 6)]
         public static void CreateCivGridCamera()
         {
-            GameObject camera = new GameObject("CivGrid Camera", typeof(Camera), typeof(GUILayer), typeof(AudioListener), typeof(CivGridCamera));
+            new GameObject("CivGrid Camera", typeof(Camera), typeof(GUILayer), typeof(AudioListener), typeof(CivGridCamera));
         }
 
         [MenuItem("CivGrid/Create CivGrid World Manager", priority = 5)]
         public static void CreateCivGridWorldManager()
         {
-            GameObject manager = new GameObject("CivGrid World Manager", typeof(TileManager), typeof(ResourceManager), typeof(ImprovementManager), typeof(WorldManager));
+            new GameObject("CivGrid World Manager", typeof(TileManager), typeof(ResourceManager), typeof(ImprovementManager), typeof(WorldManager));
         }
 
         #endregion
