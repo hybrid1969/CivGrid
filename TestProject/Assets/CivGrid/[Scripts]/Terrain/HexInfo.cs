@@ -17,13 +17,12 @@ namespace CivGrid
         public Vector3 worldPosition;
         public Vector2 pixelLocation;
 
-        public string name;
         public bool isSelected;
         public Unit currentUnit;
-        public bool isWater;
         public Tile terrainType;
         public Feature terrainFeature;
         public Vector3[] vertsx;
+        Vector2[] defaultFeatureUV;
 
         public HexChunk parentChunk;
 
@@ -39,9 +38,13 @@ namespace CivGrid
         //resources
         [SerializeField]
         public Resource currentResource;
-        public ResourceManager rM;
-        public bool hideResources;
+        public ResourceManager resourceManager;
         public List<Vector3> resourceLocations = new List<Vector3>();
+
+        [HideInInspector]
+        public GameObject iObject;
+        [HideInInspector]
+        public GameObject rObject;
 
         //improvments
         [SerializeField]
@@ -65,24 +68,31 @@ namespace CivGrid
 
 
 
+        /// <summary>
+        /// This is the setup called from HexChunk when it's ready for us to generate our meshes
+        /// </summary>
         public void Start()
         {
+            if (terrainType.isMountain == true && terrainFeature != Feature.Mountain) { Debug.Log("errrr..... uhhhh" + "Chunk: " + parentChunk.gameObject.name);  }
+            if (terrainFeature == Feature.Mountain) { Tile mountain = parentChunk.worldManager.tileManager.TryGetMountain(); if (mountain != null) {  terrainType = mountain; } }
             MeshSetup();
-            rM.CheckForResource(this, out currentResource);
+            resourceManager.CheckForResource(this, out currentResource);
             worldTextureAtlas = parentChunk.worldManager.textureAtlas;
-
-            if (terrainType == Tile.Ocean) { isWater = true; }
         }
 
         public void ChangeTextureToResource()
         {
             if (terrainFeature == Feature.Flat)
             {
-                AssignUV(worldTextureAtlas.resourceLocations.TryGetValue(currentResource));
+                Rect rectArea;
+                worldTextureAtlas.resourceLocations.TryGetValue(currentResource, out rectArea);
+                AssignUV(rectArea);
             }
             else if (terrainFeature == Feature.Hill || terrainFeature == Feature.Mountain)
             {
-                AssignPresetUV(localMesh, worldTextureAtlas.resourceLocations.TryGetValue(currentResource));
+                Rect rectArea;
+                worldTextureAtlas.resourceLocations.TryGetValue(currentResource, out rectArea);
+                AssignPresetUV(localMesh, rectArea);
             }
             parentChunk.RegenerateMesh();
         }
@@ -91,11 +101,15 @@ namespace CivGrid
         {
             if (terrainFeature == Feature.Flat)
             {
-                AssignUV(worldTextureAtlas.improvementLocations.TryGetValue(currentImprovement));
+                Rect rectArea;
+                worldTextureAtlas.improvementLocations.TryGetValue(currentImprovement, out rectArea);
+                AssignUV(rectArea);
             }
             else if (terrainFeature == Feature.Hill || terrainFeature == Feature.Mountain)
             {
-                AssignPresetUV(localMesh, worldTextureAtlas.improvementLocations.TryGetValue(currentImprovement));
+                Rect rectArea;
+                worldTextureAtlas.improvementLocations.TryGetValue(currentImprovement, out rectArea);
+                AssignPresetUV(localMesh, rectArea);
             }
             parentChunk.RegenerateMesh();
         }
@@ -108,21 +122,26 @@ namespace CivGrid
             }
             else if (terrainFeature == Feature.Hill || terrainFeature == Feature.Mountain)
             {
-                AssignPresetUV(localMesh, worldTextureAtlas.tileLocations.TryGetValue(terrainType));
+                AssignPresetUVToDefaultTile(defaultFeatureUV);
             }
             parentChunk.RegenerateMesh();
         }
 
         public void MeshSetup()
         {
+            //create new mesh to start fresh
             localMesh = new Mesh();
 
             #region Flat
-            if (terrainFeature == Feature.Flat || terrainFeature == Feature.NextToWater)
+            if (terrainFeature == Feature.Flat)
             {
+                //pull mesh data from WorldManager
                 localMesh.vertices = parentChunk.worldManager.flatHexagonSharedMesh.vertices;
                 localMesh.triangles = parentChunk.worldManager.flatHexagonSharedMesh.triangles;
-                localMesh.RecalculateBounds();
+                localMesh.uv = parentChunk.worldManager.flatHexagonSharedMesh.uv;
+
+                //recalculate normals to play nicely with lighting
+                localMesh.RecalculateNormals();
 
                 AssignUVToDefaultTile();
 
@@ -188,6 +207,7 @@ namespace CivGrid
                         tangents[y * width + x] = new Vector4(tan.x, tan.y, tan.z, -1.0f);
                     }
                 }
+                defaultFeatureUV = rawUV;
                 #endregion
 
                 // Assign them to the mesh
@@ -235,6 +255,8 @@ namespace CivGrid
                 // Assign tangents after recalculating normals
                 localMesh.tangents = tangents;
 
+                hexExt = localMesh.bounds.extents;
+
                 AssignPresetUVToDefaultTile(rawUV);
             }
             #endregion
@@ -243,8 +265,8 @@ namespace CivGrid
         private void AssignUVToDefaultTile()
         {
             Vector2[] rawUV = parentChunk.worldManager.flatHexagonSharedMesh.uv;
-
-            Rect rectArea = parentChunk.worldManager.textureAtlas.tileLocations.TryGetValue(terrainType);
+            Rect rectArea;
+            parentChunk.worldManager.textureAtlas.tileLocations.TryGetValue(terrainType, out rectArea);
 
             UV = new Vector2[rawUV.Length];
 
@@ -252,7 +274,7 @@ namespace CivGrid
             {
                 UV[i] = new Vector2(rawUV[i].x * rectArea.width + rectArea.x, rawUV[i].y * rectArea.height + rectArea.y);
 
-                UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
+                //UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
             }
 
             localMesh.uv = UV;
@@ -269,7 +291,7 @@ namespace CivGrid
             {
                 UV[i] = new Vector2(rawUV[i].x * rectArea.width + rectArea.x, rawUV[i].y * rectArea.height + rectArea.y);
                 
-                UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
+                //UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
             }
 
             localMesh.uv = UV;
@@ -282,7 +304,8 @@ namespace CivGrid
         /// <param name="sectorPercentage">Percent each sector in the atlas takes up in one direction (1/numberOfSectorsInOneDirection)</param>
         private void AssignPresetUVToDefaultTile(Vector2[] rawUV)
         {
-            Rect rectArea = parentChunk.worldManager.textureAtlas.tileLocations.TryGetValue(terrainType);
+            Rect rectArea;
+            parentChunk.worldManager.textureAtlas.tileLocations.TryGetValue(terrainType, out rectArea);
 
             UV = new Vector2[localMesh.vertexCount];
 
@@ -290,7 +313,7 @@ namespace CivGrid
             {
                 UV[i] = new Vector2(rawUV[i].x * rectArea.width + rectArea.x, rawUV[i].y  * rectArea.height + rectArea.y);
 
-                UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
+                //UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
             }
 
             localMesh.uv = UV;
@@ -304,10 +327,22 @@ namespace CivGrid
             {
                 UV[i] = new Vector2(mesh.uv[i].x * rectArea.width + rectArea.x, mesh.uv[i].y * rectArea.height + rectArea.y);
 
-                UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
+                //UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
             }
 
-            mesh.uv = UV;
+            localMesh.uv = UV;
+        }
+
+        private void AssignPresetUV(Vector2[] uv, Rect rectArea)
+        {
+            UV = new Vector2[uv.Length];
+
+            for (int i = 0; i < uv.Length; i++)
+            {
+                UV[i] = new Vector2(uv[i].x * rectArea.width + rectArea.x, uv[i].y * rectArea.height + rectArea.y);
+            }
+
+            localMesh.uv = uv;
         }
     }
 }

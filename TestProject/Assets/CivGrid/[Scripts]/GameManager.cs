@@ -14,35 +14,36 @@ namespace CivGrid
         public GameObject Barbarian;
 
         public static WorldEvent worldEvent;
+        public static NextTurn nextTurn;
 
-        public bool worldGenDone
-        {
-            get { return true; }
-            set { worldEvent("World", "World Done"); }
-        }
-
-        public static event NextTurn nextTurn;
+        WorldManager worldManager;
 
         void Awake()
         {
             GameManager.worldEvent += EventManager;
+            GameManager.nextTurn += NextTurn;
+            worldManager = GameObject.FindObjectOfType<WorldManager>();
+        }
 
+        void OnDisable()
+        {
+            GameManager.worldEvent -= EventManager;
+            GameManager.nextTurn -= NextTurn;
         }
 
         void StartSpawning()
         {
-            SpawnUnit(Barbarian, new Vector3(-9, 28, -19));
-            SpawnUnit(Barbarian, new Vector3(-10, 29, -19));
+            SpawnUnit(Barbarian, new Vector2(10,12));
+            SpawnUnit(Barbarian, new Vector2(10, 13));
         }
 
-        void SpawnUnit(GameObject obj, Vector3 hexLoc)
+        void SpawnUnit(GameObject obj, Vector2 hexLoc)
         {
-            GameObject hex = GameObject.Find("HexTile " + hexLoc);
+            HexInfo hex = worldManager.GetHexFromAxialPosition(hexLoc);
 
-            GameObject unit = (GameObject)Instantiate(obj, hex.transform.position, Quaternion.identity);
+            GameObject unit = (GameObject)Instantiate(obj, hex.worldPosition, Quaternion.identity);
 
-            //TODO: FIX
-            //unit.GetComponent<Unit>().currentLocation = hex.GetComponent<HexInfo>();
+            unit.GetComponent<Unit>().currentLocation = hex;
         }
 
         void Update()
@@ -53,6 +54,11 @@ namespace CivGrid
             }
         }
 
+        void NextTurn()
+        {
+            Debug.Log("going to next turn on GameManager");
+        }
+
         void EventManager(string type, string message)
         {
             if (type == "Death")
@@ -60,7 +66,7 @@ namespace CivGrid
                 print(message);
             }
 
-            if (type == "World" && message == "World Done")
+            if (type == "World Done")
             {
                 StartSpawning();
             }

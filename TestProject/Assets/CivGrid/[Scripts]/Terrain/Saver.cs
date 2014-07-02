@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEditor;
 using System.Collections;
 using System.IO;
 using System.Xml;
@@ -17,6 +18,7 @@ namespace CivGrid
             byte[] bytes = texture.EncodeToPNG();
             File.WriteAllBytes(Application.dataPath + "/../" + name + ".png", bytes);
             if (openTextureToView) { Application.OpenURL(Application.dataPath + "/../" + name + ".png"); }
+            AssetDatabase.Refresh();
         }
 
         public static void SaveTexture(Texture2D texture, string location, string name, bool openTextureToView)
@@ -24,6 +26,14 @@ namespace CivGrid
             byte[] bytes = texture.EncodeToPNG();
             File.WriteAllBytes(location + "/" + name + ".png", bytes);
             if (openTextureToView) { Application.OpenURL(location + "/" + name + ".png"); }
+            AssetDatabase.Refresh();
+        }
+
+        public static void SaveTexture(byte[] texture, string location, string name, bool openTextureToView)
+        {
+            File.WriteAllBytes(location + "/" + name + ".png", texture);
+            if (openTextureToView) { Application.OpenURL(location + "/" + name + ".png"); }
+            AssetDatabase.Refresh();
         }
 
         public static void SaveTerrain(string name, WorldManager manager)
@@ -106,7 +116,7 @@ namespace CivGrid
                         writer.WriteValue(hex.CubeGridPosition.y);
                         writer.WriteEndElement();
 
-                        writer.WriteElementString("Type", ((int)hex.terrainType).ToString());
+                        writer.WriteElementString("Type", (hex.terrainType.ToString()));
 
                         writer.WriteElementString("Feature", ((int)hex.terrainFeature).ToString());
 
@@ -126,7 +136,7 @@ namespace CivGrid
             //hexagon data buffer
             float xLoc;
             float yLoc = 0;
-            Tile type;
+            string typeName;
             Feature feature;
 
             using (XmlTextReader reader = new XmlTextReader(name + ".xml"))
@@ -175,7 +185,7 @@ namespace CivGrid
                                 //Debug.Log("X: " + xLoc);
                                 break;
                             case "Type":
-                                type = ((Tile)(XmlConvert.ToInt32(reader.ReadString())));
+                                typeName = reader.ReadString();
                                 //Debug.Log("Type: " + type);
                                 break;
                             case "Feature":
@@ -192,11 +202,6 @@ namespace CivGrid
                     }
                 }
             }
-        }
-
-        public static void SaveTexture(byte[] texture)
-        {
-            Debug.Log("Not done yet");
         }
 
         public static Texture2D LoadTexture(string location)

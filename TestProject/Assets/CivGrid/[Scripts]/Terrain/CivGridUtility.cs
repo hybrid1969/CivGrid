@@ -2,23 +2,73 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using System;
 
 namespace CivGrid
 {
-
+    /// <summary>
+    /// Helper class for basic utility methods
+    /// </summary>
     public static class CivGridUtility
     {
+        #region CivGrid Component Spawner
+
+        [MenuItem("CivGrid/Create CivGrid Camera", priority = 6)]
+        public static void CreateCivGridCamera()
+        {
+            new GameObject("CivGrid Camera", typeof(Camera), typeof(GUILayer), typeof(AudioListener), typeof(CivGridCamera));
+        }
+
+        [MenuItem("CivGrid/Create CivGrid World Manager", priority = 5)]
+        public static void CreateCivGridWorldManager()
+        {
+            new GameObject("CivGrid World Manager", typeof(TileManager), typeof(ResourceManager), typeof(ImprovementManager), typeof(WorldManager));
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Get the surronding pixels of the passed in pixel
+        /// </summary>
+        /// <param name="tex">Texture where the pixel is located</param>
+        /// <param name="x">"X" cords of the pixel</param>
+        /// <param name="y">"Y" cords of the pixel</param>
+        /// <returns>The eight surronding pixels</returns>
+        public static float[] GetSurrondingPixels(Texture2D tex, int x, int y)
+        {
+            float[] returnArray = new float[8];
+
+            returnArray[0] = tex.GetPixel(x + 1, y).r;
+            returnArray[1] = tex.GetPixel(x + 1, y + 1).r;
+            returnArray[2] = tex.GetPixel(x, y + 1).r;
+            returnArray[3] = tex.GetPixel(x - 1, y + 1).r;
+            returnArray[4] = tex.GetPixel(x - 1, y).r;
+            returnArray[5] = tex.GetPixel(x - 1, y - 1).r;
+            returnArray[6] = tex.GetPixel(x, y - 1).r;
+            returnArray[7] = tex.GetPixel(x + 1, x - 1).r;
+
+            return returnArray;
+        }
+
         #region void
+        /// <summary>
+        /// Converts a two-dimensional array into a single array
+        /// </summary>
+        /// <param name="doubleArray">The two-dimensional array array to convert into a single array</param>
+        /// <param name="singleArray">The converted array</param>
         public static void ToSingleArray(CombineInstance[,] doubleArray, out CombineInstance[] singleArray)
         {
+            //list to copy the values from the two-dimensional array into
             List<CombineInstance> combineList = new List<CombineInstance>();
-            
+
+            //cycle through all the CombineInstances and copy them into the List
             foreach (CombineInstance combine in doubleArray)
             {
                 combineList.Add(combine);
             }
 
+            //convert our List that holds all the CombineInstances into a single array
             singleArray = combineList.ToArray();
         }
 
@@ -110,193 +160,54 @@ namespace CivGrid
         #endregion
     }
 
-    [Serializable]
-    public class TextureAtlas
-    {
-        public Texture2D terrainAtlas;
-        //public Vector2 texturesInAtlas;
-        public TileItem[] tileLocations;
-
-        //public Texture2D resourceAtlas;
-        public ResourceItem[] resourceLocations;
-        //public Vector2 resourceTexturesInAtlas;
-
-        //public Texture2D improvementAtlas;
-        public ImprovementItem[] improvementLocations;
-        //public Vector2 improvementTexturesInAtlas;
-    }
-
-    [Serializable]
-    public class TileItem
-    {
-        [SerializeField]
-        private Tile key;
-
-        [SerializeField]
-        public Tile Key
-        {
-            get
-            {
-                return key;
-            }
-            set
-            {
-                key = value;
-            }
-        }
-
-        [SerializeField]
-        private Rect value;
-
-        [SerializeField]
-        public Rect Value
-        {
-            get
-            {
-                return value;
-            }
-            set
-            {
-                this.value = value;
-            }
-        }
-
-        [SerializeField]
-        public TileItem(Tile key, Rect value)
-        {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
-    [Serializable]
-    public class ResourceItem
-    {
-        [SerializeField]
-        private Resource key;
-
-        [SerializeField]
-        public Resource Key
-        {
-            get
-            {
-                return key;
-            }
-            set
-            {
-                key = value;
-            }
-        }
-
-        [SerializeField]
-        private Rect value;
-
-        [SerializeField]
-        public Rect Value
-        {
-            get
-            {
-                return value;
-            }
-            set
-            {
-                this.value = value;
-            }
-        }
-
-        [SerializeField]
-        public ResourceItem(Resource key, Rect value)
-        {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
-    [Serializable]
-    public class ImprovementItem
-    {
-        [SerializeField]
-        private Improvement key;
-
-        [SerializeField]
-        public Improvement Key
-        {
-            get
-            {
-                return key;
-            }
-            set
-            {
-                key = value;
-            }
-        }
-
-        [SerializeField]
-        private Rect value;
-
-        [SerializeField]
-        public Rect Value
-        {
-            get
-            {
-                return value;
-            }
-            set
-            {
-                this.value = value;
-            }
-        }
-
-        [SerializeField]
-        public ImprovementItem(Improvement key, Rect value)
-        {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
     public static class DictionaryExtensionMethods
     {
 
         #region TryGetValue
 
-        public static Rect TryGetValue(this TileItem[] list, Tile key)
+        public static bool TryGetValue(this TileItem[] list, Tile key, out Rect location)
         {
             foreach (TileItem item in list)
             {
-                if (item.Key == key)
+                if (item.Key.name == key.name)
                 {
-                    return item.Value;
+                    location = item.Value;
+                    return true;
                 }
             }
-            Debug.LogError("Couldn't get a value from the given key: " + key.ToString());
-            return new Rect();
+            Debug.LogError("Couldn't get a value from the given key: " + key.name);
+            location = new Rect();
+            return false;
         }
 
-        public static Rect TryGetValue(this ResourceItem[] list, Resource key)
+        public static bool TryGetValue(this ResourceItem[] list, Resource key, out Rect location)
         {
             foreach (ResourceItem item in list)
             {
-                if (item.Key.resourceName == key.resourceName)
+                if (item.Key.name == key.name)
                 {
-                    return item.Value;
+                    location =  item.Value;
+                    return true;
                 }
             }
-            Debug.LogError("Couldn't get a value from the given key: " + key.resourceName);
-            return new Rect();
+            Debug.LogError("Couldn't get a value from the given key: " + key.name);
+            location = new Rect();
+            return false;
         }
 
-        public static Rect TryGetValue(this ImprovementItem[] list, Improvement key)
+        public static bool TryGetValue(this ImprovementItem[] list, Improvement key, out Rect location)
         {
             foreach (ImprovementItem item in list)
             {
-                if (item.Key.improvementName == key.improvementName)
+                if (item.Key.name == key.name)
                 {
-                    return item.Value;
+                    location = item.Value;
+                    return true;
                 }
             }
-            Debug.LogError("Couldn't get a value from the given key: " + key.improvementName);
-            return new Rect();
+            Debug.LogError("Couldn't get a value from the given key: " + key.name);
+            location = new Rect();
+            return false;
         }
 
         #endregion
@@ -360,4 +271,5 @@ namespace CivGrid
 
         #endregion
     }
+
 }

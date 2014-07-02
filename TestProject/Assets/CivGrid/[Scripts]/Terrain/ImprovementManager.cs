@@ -13,16 +13,18 @@ namespace CivGrid
         public List<Improvement> searalizableImprovements;
         public string[] improvementNames;
 
-        public ResourceManager rM;
+        public ResourceManager resourceManager;
+        public TileManager tileManager;
 
         public void SetUp()
         {
             improvements = searalizableImprovements;
-            improvements.Insert(0, new Improvement("None", 0, null, null));
+            improvements.Insert(0, new Improvement("None", null, null, null));
             improvements[0].meshToSpawn = null;
             improvements[0].spawnAmount = 0;
 
-            rM = GetComponent<ResourceManager>();
+            resourceManager = GetComponent<ResourceManager>();
+            tileManager = GetComponent<TileManager>();
 
             if (improvementNames == null)
             {
@@ -36,6 +38,12 @@ namespace CivGrid
             UpdateImprovementNames();
         }
 
+        public void AddImprovementAtIndex(Improvement i, int index)
+        {
+            searalizableImprovements.Insert(index, i);
+            UpdateImprovementNames();
+        }
+
         public void DeleteImprovement(Improvement i)
         {
             searalizableImprovements.Remove(i);
@@ -44,33 +52,36 @@ namespace CivGrid
 
         public void UpdateImprovementNames()
         {
-            improvementNames = new string[searalizableImprovements.Count];
-            for (int i = 0; i < searalizableImprovements.Count; i++)
+            if (improvements != null && improvements.Count > 0)
             {
-                improvementNames[i] = searalizableImprovements[i].improvementName;
+                improvementNames = new string[searalizableImprovements.Count];
+                for (int i = 0; i < searalizableImprovements.Count; i++)
+                {
+                    improvementNames[i] = searalizableImprovements[i].name;
+                }
             }
         }
 
         /// <summary>
-        /// Adds improvement to specified hex if it meets the rule requirements
+        /// Adds improvement to specified hex if it meets the rule requirements; slower than passing in an Improvement
         /// </summary>
         /// <param name="hex">Hex to attempt to add the improvement upon</param>
-        /// <param name="improvementName">"Improvement to attemp to add</param>
-        /// <param name="returnImprovement">Improvement that has been added</param>
+        /// <param name="improvementName">"Improvement to attempt to add</param>
         public static void TestedAddImprovementToTile(HexInfo hex, string improvementName)
         {
+            //Debug.Log("I want a stack trace");
             bool possible = false;
 
-            Improvement returnImprovement = new Improvement();
+            Improvement improvement = new Improvement();
             foreach (Improvement i in improvements)
             {
-                if (improvementName == i.improvementName)
+                if (improvementName == i.name)
                 {
-                    returnImprovement = i;
+                    improvement = i;
                 }
             }
 
-            if (Test(returnImprovement.rule, hex))
+            if (Test(improvement.rule, hex))
             {
                 possible = true;
             }
@@ -82,8 +93,63 @@ namespace CivGrid
 
             if (possible)
             {
-                hex.currentImprovement = returnImprovement;
-                hex.parentChunk.worldManager.iM.InitiateImprovement(hex, returnImprovement);
+                hex.currentImprovement = improvement;
+                hex.parentChunk.worldManager.improvementManager.InitiateImprovement(hex, improvement);
+            }
+        }
+
+        /// <summary>
+        /// Adds improvement to specified hex if it meets the rule requirements
+        /// </summary>
+        /// <param name="hex">Hex to attempt to add the improvement upon</param>
+        /// <param name="improvementName">"Improvement to attempt to add</param>
+        [System.Obsolete("Use improvementIndex overload; otherwise retrieve [index+1] to return correct improvement")]
+        public static void TestedAddImprovementToTile(HexInfo hex, Improvement improvement)
+        {
+            bool possible = false;
+
+            if (Test(improvement.rule, hex))
+            {
+                possible = true;
+            }
+            else
+            {
+                possible = false;
+            }
+
+
+            if (possible)
+            {
+                hex.currentImprovement = improvement;
+                hex.parentChunk.worldManager.improvementManager.InitiateImprovement(hex, improvement);
+            }
+        }
+
+        /// <summary>
+        /// Adds improvement to specified hex if it meets the rule requirements
+        /// </summary>
+        /// <param name="hex">Hex to attempt to add the improvement upon</param>
+        /// <param name="improvementIndex">Index of the improvement within the improvement manager to attemp to add</param>
+        public static void TestedAddImprovementToTile(HexInfo hex, int improvementIndex)
+        {
+            bool possible = false;
+
+            Improvement improvement = improvements[improvementIndex + 1];
+
+            if (Test(improvement.rule, hex))
+            {
+                possible = true;
+            }
+            else
+            {
+                possible = false;
+            }
+
+
+            if (possible)
+            {
+                hex.currentImprovement = improvement;
+                hex.parentChunk.worldManager.improvementManager.InitiateImprovement(hex, improvement);
             }
         }
 
@@ -95,19 +161,19 @@ namespace CivGrid
         {
             if (hex.currentImprovement != null)
             {
-                if (hex.currentImprovement.improvementName != "None")
+                if (hex.currentImprovement.name != "None")
                 {
                     //change texture of this hexagon back to its original if it has a resource it will be corrected below
                     hex.ChangeTextureToNormalTile();
 
 
                     //destory improvement children
-                    Destroy(hex.currentImprovement.iObject);
+                    Destroy(hex.iObject);
 
                     //respawn resource model
-                    if (hex.currentResource.resourceName != "None")
+                    if (hex.currentResource.name != "None")
                     {
-                        hex.rM.SpawnResource(hex, hex.currentResource, true);
+                        hex.resourceManager.SpawnResource(hex, hex.currentResource, true);
                     }
                 }
             }
@@ -122,10 +188,10 @@ namespace CivGrid
             if (resourceHolder == null) { Debug.LogError("Could not find the resource holder!"); }
 
             //remove current improvements
-            Destroy(hex.currentImprovement.iObject);
+            Destroy(hex.iObject);
 
             //remove current resource gameobjects
-            rM.HideResourceMesh(hex);
+            resourceManager.HideResourceMesh(hex);
 
             hex.ChangeTextureToImprovement();
            
@@ -133,26 +199,26 @@ namespace CivGrid
             //spawn gameObject if needed
             if (i.meshToSpawn != null)
             {
-                
-                float y = (hex.worldPosition.y + hex.hexExt.y) - ((hex.worldPosition.y + hex.hexExt.y) / Random.Range(3, 6)); if (y == 0) { y -= ((hex.worldPosition.y + hex.hexExt.y) / Random.Range(4, 8)); }
-                GameObject holder = new GameObject(i.improvementName + " at " + hex.CubeGridPosition, typeof(MeshFilter), typeof(MeshRenderer));
+                float y = (hex.worldPosition.y + hex.hexExt.y) - ((hex.hexExt.y) / 5f); if (y == 0) { y -= ((hex.worldPosition.y + hex.hexExt.y) / Random.Range(4, 8)); }
+                GameObject holder = new GameObject(i.name + " at " + hex.CubeGridPosition, typeof(MeshFilter), typeof(MeshRenderer));
                 holder.GetComponent<MeshFilter>().mesh = hex.currentImprovement.meshToSpawn;
                 holder.transform.position = new Vector3((hex.worldPosition.x + hex.hexCenter.x + Random.Range(-0.2f, 0.2f)), y, (hex.worldPosition.z + hex.hexCenter.z + Random.Range(-0.2f, 0.2f)));
                 holder.transform.rotation = Quaternion.identity;
                 holder.renderer.material.mainTexture = i.improvementMeshTexture;
                 holder.transform.parent = hex.parentChunk.transform;
 
-                hex.currentImprovement.iObject = holder;
+                hex.iObject = holder;
             }
         }
 
         private static bool Test(ImprovementRule rule, HexInfo hex)
         {
             bool returnVal;
+            TileManager tM = hex.parentChunk.worldManager.tileManager;
 
             for (int i = 0; i < rule.possibleTiles.Length; i++)
             {
-                returnVal = TestRule(hex, rule.possibleTiles[i]);
+                returnVal = TestRule(hex, tM.tiles[rule.possibleTiles[i]]);
                 if (returnVal == true) break;
                 if (i == (rule.possibleTiles.Length - 1)) { return false; }
             }
@@ -186,20 +252,15 @@ namespace CivGrid
         }
     }
 
-
-
     /// <summary>
     /// Improvement
     /// </summary>
     [System.Serializable]
     public class Improvement
     {
-        [HideInInspector]
-        public GameObject iObject;
-        public string improvementName;
+        public string name;
         public ImprovementRule rule;
         bool possible;
-        public float rarity;
 
         //public Vector2 atlasLocation;
 
@@ -207,11 +268,11 @@ namespace CivGrid
         public Texture2D improvementMeshTexture;
         public int spawnAmount = 3;
 
-        public Improvement(string name, float rarity, Mesh mesh, ImprovementRule rule)
+        public Improvement(string name, Mesh mesh, Texture2D improvementMeshTexture, ImprovementRule rule)
         {
-            this.improvementName = name;
+            this.name = name;
             this.rule = rule;
-            this.rarity = rarity;
+            this.improvementMeshTexture = improvementMeshTexture;
             this.meshToSpawn = mesh;
         }
 
@@ -221,10 +282,10 @@ namespace CivGrid
     [System.Serializable]
     public class ImprovementRule
     {
-        public Tile[] possibleTiles;
+        public int[] possibleTiles;
         public Feature[] possibleFeatures;
 
-        public ImprovementRule(Tile[] possibleTiles, Feature[] possibleFeatures)
+        public ImprovementRule(int[] possibleTiles, Feature[] possibleFeatures)
         {
             this.possibleTiles = possibleTiles;
             this.possibleFeatures = possibleFeatures;

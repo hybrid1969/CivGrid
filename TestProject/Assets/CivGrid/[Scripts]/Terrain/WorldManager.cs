@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -6,36 +7,28 @@ using CivGrid;
 
 namespace CivGrid
 {
-    public enum Tile { None = 0, Desert = 1, Grass = 2, Grasslands = 3, Ocean = 4, Shore = 5, Snow = 6, Tundra = 7 }
-    public enum Feature { Flat = 0, Hill = 1, Mountain = 3, NextToWater = 4 }
-
-    public enum TextureAtlasType { Terrain = 0, Resource = 1, Improvement = 2 }
+    public enum Feature { Flat = 0, Hill = 1, Mountain = 3 }
 
     public enum WorldType { Diced, Continents }
 
+    [RequireComponent(typeof(TileManager), typeof(ResourceManager), typeof(ImprovementManager))]
     public class WorldManager : MonoBehaviour
     {
         #region fields
 
-        [HideInInspector]
         public CivGridCamera civGridCamera;
+        public bool useCivGridCamera;
 
         public bool keepSymmetrical;
 
         //Moving
-        [HideInInspector]
         public Vector3 currentHex;
-        [HideInInspector]
         public Vector3 goToHex;
-        [HideInInspector]
         public int distance;
 
         //hexInstances
-        [HideInInspector]
         public Vector3 hexExt;
-        [HideInInspector]
         public Vector3 hexSize;
-        [HideInInspector]
         public Vector3 hexCenter;
 
         //internals
@@ -51,9 +44,7 @@ namespace CivGrid
         [HideInInspector]
         public Mesh flatHexagonSharedMesh;
 
-        public bool debugMode;
         public bool useWorldTypeValues;
-
 
         //World Values
         private Texture2D tileMap;
@@ -75,9 +66,11 @@ namespace CivGrid
 
         //managers
         [HideInInspector]
-        public ResourceManager rM;
+        public ResourceManager resourceManager;
         [HideInInspector]
-        public ImprovementManager iM;
+        public ImprovementManager improvementManager;
+        [HideInInspector]
+        public TileManager tileManager;
         #endregion
 
         /// <summary>
@@ -85,17 +78,22 @@ namespace CivGrid
         /// </summary>
         void Awake()
         {
-            rM = GetComponent<ResourceManager>();
-            iM = GetComponent<ImprovementManager>();
-            rM.SetUp();
-            iM.SetUp();
-            civGridCamera = Camera.main.GetComponent<CivGridCamera>();
-            if (civGridCamera == null) { Debug.LogError("Please add the 'CivGridCamera' to the mainCamera"); }
+            resourceManager = GetComponent<ResourceManager>();
+            improvementManager = GetComponent<ImprovementManager>();
+            tileManager = GetComponent<TileManager>();
+            resourceManager.SetUp();
+            improvementManager.SetUp();
+            tileManager.SetUp();
+            if (useCivGridCamera)
+            {
+                civGridCamera = GameObject.FindObjectOfType<CivGridCamera>();
+                if (civGridCamera == null) { Debug.LogError("Please add the 'CivGridCamera' to the mainCamera"); }
+            }
             DetermineWorldType();
             GetHexProperties();
             GenerateMap();
 
-            rM.InitResourceTexturesOnHexs();
+            resourceManager.InitResourceTexturesOnHexs();
         }
 
         void SetNoiseScaleToTrueValue()
@@ -114,45 +112,52 @@ namespace CivGrid
 
             SetNoiseScaleToTrueValue();
             if (noiseScale == 0) { Debug.LogException(new UnityException("Noise scale is zero, this produces artifacts.")); }
-            noiseScale = Random.Range(noiseScale / 1.35f, noiseScale * 1.35f);
+            noiseScale = UnityEngine.Random.Range(noiseScale / 1.35f, noiseScale * 1.35f);
             tileMap = NoiseGenerator.SmoothPerlinNoise((int)mapSize.x, (int)mapSize.y, noiseScale);
         }
 
         void Start()
         {
-            civGridCamera.SetupCameras(this);
+            if (useCivGridCamera)
+            {
+                civGridCamera.SetupCameras(this);
+            }
+            else if (civGridCamera != null)
+            {
+                Debug.LogError("Please Remove the CivGridCamera Script if you do not wish to use it; otherwise enable it in the WorldManager");
+            }
             Saver.SaveTexture(tileMap, "terrian", false);
             //Saver.SaveTerrain("terrainTest", this);
             //Saver.LoadTerrain("terrainTest", this);
         }
 
         /// <summary>
-        /// Set up dimensions of the hexagons; used for spacing and other algorithms
+        /// Generates and caches a flat hexagon mesh for all the hexagon's to pull down into their localMesh, if they are flat
         /// </summary>
-        void GetHexProperties()
+        private void GetHexProperties()
         {
-
-            //creates GameObject that holds our test mesh to calculate bounds/dimensions
+            //Creates mesh to calculate bounds
             GameObject inst = new GameObject("Bounds Set Up: Flat");
-            //creates a MeshFilter to hold our mesh data
+            //add mesh filter to our temp object
             inst.AddComponent<MeshFilter>();
-            //creates a MeshCollider that we can use to get size dimesnsions easily from
+            //add a renderer to our temp object
+            inst.AddComponent<MeshRenderer>();
+            //add a mesh collider to our temp object; this is for determining dimensions cheaply and easily
             inst.AddComponent<MeshCollider>();
-            
-            //set to zero position/rotation to eliminate local/world confusion
+            //reset the position to global zero
             inst.transform.position = Vector3.zero;
+            //reset all rotation
             inst.transform.rotation = Quaternion.identity;
 
-            //array of vertices we will generate for our test mesh
+
             Vector3[] vertices;
-            //array of triangles we will generate for our test mesh
             int[] triangles;
+            Vector2[] uv;
 
             #region verts
 
-            //y position of the vertices; consistant to create flat hexagons
             float floorLevel = 0;
-            //setting our vertex position using hexRadiusSize to determine radius size that generates a geometric regular hexagon
+            //positions vertices of the hexagon to make a normal hexagon
             vertices = new Vector3[]
             {
                 /*0*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(3+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(3+0.5)/6)))),
@@ -162,12 +167,12 @@ namespace CivGrid
                 /*4*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(5+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(5+0.5)/6)))),
                 /*5*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(4+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(4+0.5)/6))))
             };
-            
+
             #endregion
 
             #region triangles
 
-            //setting triangles for our hexagon
+            //triangles connecting the verts
             triangles = new int[] 
             {
                 1,5,0,
@@ -179,32 +184,42 @@ namespace CivGrid
             #endregion
 
             #region uv
-
-            Vector2[] uv = new Vector2[]
+            //uv mappping
+            uv = new Vector2[]
             {
-                new Vector2(0,0.25f),
-                new Vector2(0,0.75f),
-                new Vector2(0.5f,1),
-                new Vector2(1,0.75f),
-                new Vector2(1,0.25f),
-                new Vector2(0.5f,0),
+                new Vector2(0.05f,0.25f),
+                new Vector2(0.05f,0.75f),
+                new Vector2(0.5f,0.95f),
+                new Vector2(0.95f,0.75f),
+                new Vector2(0.95f,0.25f),
+                new Vector2(0.5f,0.05f),
             };
-
             #endregion
 
             #region finalize
+            //create new mesh to hold the data for the flat hexagon
             flatHexagonSharedMesh = new Mesh();
+            //assign verts
             flatHexagonSharedMesh.vertices = vertices;
+            //assign triangles
             flatHexagonSharedMesh.triangles = triangles;
+            //assign uv
             flatHexagonSharedMesh.uv = uv;
+            //set temp gameObject's mesh to the flat hexagon mesh
             inst.GetComponent<MeshFilter>().mesh = flatHexagonSharedMesh;
+            //make object play nicely with lighting
             inst.GetComponent<MeshFilter>().mesh.RecalculateNormals();
+            //set mesh collider's mesh to the flat hexagon
             inst.GetComponent<MeshCollider>().sharedMesh = flatHexagonSharedMesh;
             #endregion
 
+            //calculate the extents of the flat hexagon
             hexExt = new Vector3(inst.gameObject.collider.bounds.extents.x, inst.gameObject.collider.bounds.extents.y, inst.gameObject.collider.bounds.extents.z);
+            //calculate the size of the flat hexagon
             hexSize = new Vector3(inst.gameObject.collider.bounds.size.x, inst.gameObject.collider.bounds.size.y, inst.gameObject.collider.bounds.size.z);
+            //calculate the center of the flat hexagon
             hexCenter = new Vector3(inst.gameObject.collider.bounds.center.x, inst.gameObject.collider.bounds.center.y, inst.gameObject.collider.bounds.center.z);
+            //destroy the temp object that we used to calculate the flat hexagon's size
             Destroy(inst);
         }
 
@@ -225,8 +240,10 @@ namespace CivGrid
             GameObject chunkObj = new GameObject("Chunk[" + x + "," + y + "]");
             //add the hexChunk script and set it's size
             chunkObj.AddComponent<HexChunk>().SetSize(chunkSize, chunkSize);
-            //allocate the hexagon array
+            //setup HexInfo array
             chunkObj.GetComponent<HexChunk>().AllocateHexArray();
+            //assign mountain texture to the chunk
+            chunkObj.GetComponent<HexChunk>().mountainTexture = this.mountainMap;
             //set the texture map for this chunk and add the mesh renderer
             chunkObj.AddComponent<MeshRenderer>().material.mainTexture = textureAtlas.terrainAtlas;
             //add the mesh filter
@@ -280,7 +297,7 @@ namespace CivGrid
                 //begin chunk operations since we are done with value generation
                 chunk.Begin();
             }
-
+            GameManager.worldEvent.Invoke("World Done", null);
         }
 
         /// <summary>
@@ -289,65 +306,55 @@ namespace CivGrid
         /// <param name="x">The x cords of the tile</param>
         /// <param name="h">The h(height) cord of the tile</param>
         /// <returns>An int corresponding to the biome it should be within</returns>
-        public int PickHex(int x, int h)
+        public Tile PickHex(int x, int h)
         {
             //temp no influence from rainfall values
             float latitude = Mathf.Abs((mapSize.y / 2) - h) / (mapSize.y / 2);//1 == snow (top) 0 == eqautor
             //add more results
-            latitude *= (1 + Random.Range(-0.2f, 0.2f));
+            latitude *= (1 + UnityEngine.Random.Range(-0.2f, 0.2f));
+            latitude = Mathf.Clamp(latitude, 0f, 1f);
             Tile tile;
 
             if (tileMap.GetPixel(x, h).r == 0)
             {
-                tile = Tile.Ocean;
-            }
-            else
-            {
-
-                if (latitude > 0.9f)
+                if (CheckIfCoast(x, h))
                 {
-                    tile = Tile.Snow;
-                }
-                else if (latitude > 0.8 && latitude < 0.9)
-                {
-                    tile = (Tile)Random.Range(5, 7);
-                }
-                else if (latitude > 0.6f && latitude < 0.8f)
-                {
-                    tile = Tile.Tundra;
-                }
-                else if (latitude >= 0.5 && latitude < 0.61)
-                {
-                    int index = Random.Range(0, 2);
-                    tile = (Tile)((index < 0.5f) ? Tile.Tundra : Tile.Grass);
-                }
-                else if (latitude < 0.5f && latitude > 0.35f)
-                {
-                    tile = Tile.Grass;
-                }
-                else if (latitude > 0.3 && latitude < 0.35)
-                {
-                    int index = Random.Range(0, 2);
-                    tile = (Tile)((index < 0.5f) ? Tile.Grass : Tile.Grasslands);
-                }
-                else if (latitude < 0.3f && latitude >= 0.15f)
-                {
-                    tile = Tile.Grasslands;
-                }
-                else if (latitude >= 0.1f && latitude < 0.15f)
-                {
-                    int index = Random.Range(0, 2);
-                    tile = (Tile)((index < 0.5f) ? Tile.Grasslands : Tile.Desert);
+                    tile = tileManager.TryGetShore();
                 }
                 else
                 {
-                    tile = Tile.Desert;
-                    if (latitude < 0.1f == false)
-                        print("error incorrrect lattitude: " + latitude);
+                    tile = tileManager.TryGetOcean();
+                }
+            }
+            else
+            {
+                tile = tileManager.GetTileFromLattitude(latitude);
+            }
+
+            return (tile);
+        }
+
+        private bool CheckIfCoast(int x, int y)
+        {
+            float[] surrondingPixels = CivGridUtility.GetSurrondingPixels(tileMap, x, y);
+
+            int numberWater = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                if (surrondingPixels[i] < 0.5f)
+                {
+                    numberWater++;
                 }
             }
 
-            return ((int)tile);
+            if (numberWater < 8)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public Feature PickFeature(int xArrayPosition, int yArrayPosition, bool edge)
@@ -362,6 +369,10 @@ namespace CivGrid
             else if (value == 1f)
             {
                 returnVal = Feature.Mountain;
+            }
+            else
+            {
+                returnVal = Feature.Flat;
             }
             if (edge)
             {
@@ -395,7 +406,7 @@ namespace CivGrid
                     HexInfo hex = GetHexFromWorldPosition(mouseWorldPosition, chunkHexIsLocatedIn);
                     if (Input.GetMouseButtonDown(0))
                     {
-                        ImprovementManager.TestedAddImprovementToTile(hex, "Farm");
+                        ImprovementManager.TestedAddImprovementToTile(hex, 0);
                         return;
                     }
                     if (Input.GetMouseButtonDown(1))
@@ -417,7 +428,7 @@ namespace CivGrid
                         HexInfo hex = GetHexFromWorldPosition(mouseWorldPosition, chunkHexIsLocatedIn);
                         if (Input.GetMouseButtonDown(0))
                         {
-                            ImprovementManager.TestedAddImprovementToTile(hex, "Farm");
+                            ImprovementManager.TestedAddImprovementToTile(hex, 0);
                             return;
                         }
                         if (Input.GetMouseButtonDown(1))
@@ -436,7 +447,7 @@ namespace CivGrid
         /// </summary>
         /// <param name="worldPosition">The position of the needed hexagon</param>
         /// <returns>The hex at the nearest position</returns>
-        HexInfo GetHexFromWorldPosition(Vector3 worldPosition)
+        public HexInfo GetHexFromWorldPosition(Vector3 worldPosition)
         {
             HexInfo hexToReturn = null;
 
@@ -465,7 +476,7 @@ namespace CivGrid
         /// <param name="worldPosition">The position of the needed hexagon</param>
         /// <param name="chunk">The chunk that contains the hexagon</param>
         /// <returns>The hex at the nearest position within the provided chunk</returns>
-        HexInfo GetHexFromWorldPosition(Vector3 worldPosition, HexChunk originalchunk)
+        public HexInfo GetHexFromWorldPosition(Vector3 worldPosition, HexChunk originalchunk)
         {
             //print(worldPosition);
             HexInfo hexToReturn = null;
@@ -489,6 +500,18 @@ namespace CivGrid
             }
 
             return hexToReturn;
+        }
+
+        public HexInfo GetHexFromAxialPosition(Vector2 position)
+        {
+            foreach (HexChunk chunk in hexChunks)
+            {
+                foreach (HexInfo hex in chunk.hexArray)
+                {
+                    if (hex.AxialGridPosition == position) { return hex; }
+                }
+            }
+            return null;
         }
 
         private HexChunk[] FindPossibleChunks(HexChunk chunk)
@@ -571,6 +594,149 @@ namespace CivGrid
         {
             GUI.Label(new Rect(20, 0, 100, 20), goToHex.ToString());
             GUI.Label(new Rect(20, 30, 100, 20), distance.ToString("Distance: #."));
+        }
+    }
+
+    [Serializable]
+    public class TextureAtlas
+    {
+        [SerializeField]
+        public Texture2D terrainAtlas;
+        [SerializeField]
+        public TileItem[] tileLocations;
+        [SerializeField]
+        public ResourceItem[] resourceLocations;
+        [SerializeField]
+        public ImprovementItem[] improvementLocations;
+    }
+
+    [Serializable]
+    public class TileItem
+    {
+        [SerializeField]
+        private Tile key;
+
+        [SerializeField]
+        public Tile Key
+        {
+            get
+            {
+                return key;
+            }
+            set
+            {
+                key = value;
+            }
+        }
+
+        [SerializeField]
+        private Rect value;
+
+        [SerializeField]
+        public Rect Value
+        {
+            get
+            {
+                return value;
+            }
+            set
+            {
+                this.value = value;
+            }
+        }
+
+        [SerializeField]
+        public TileItem(Tile key, Rect value)
+        {
+            this.key = key;
+            this.value = value;
+        }
+
+    }
+
+    [Serializable]
+    public class ResourceItem
+    {
+        [SerializeField]
+        private Resource key;
+
+        [SerializeField]
+        public Resource Key
+        {
+            get
+            {
+                return key;
+            }
+            set
+            {
+                key = value;
+            }
+        }
+
+        [SerializeField]
+        private Rect value;
+
+        [SerializeField]
+        public Rect Value
+        {
+            get
+            {
+                return value;
+            }
+            set
+            {
+                this.value = value;
+            }
+        }
+
+        [SerializeField]
+        public ResourceItem(Resource key, Rect value)
+        {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    [Serializable]
+    public class ImprovementItem
+    {
+        [SerializeField]
+        private Improvement key;
+
+        [SerializeField]
+        public Improvement Key
+        {
+            get
+            {
+                return key;
+            }
+            set
+            {
+                key = value;
+            }
+        }
+
+        [SerializeField]
+        private Rect value;
+
+        [SerializeField]
+        public Rect Value
+        {
+            get
+            {
+                return value;
+            }
+            set
+            {
+                this.value = value;
+            }
+        }
+
+        [SerializeField]
+        public ImprovementItem(Improvement key, Rect value)
+        {
+            this.key = key;
+            this.value = value;
         }
     }
 }

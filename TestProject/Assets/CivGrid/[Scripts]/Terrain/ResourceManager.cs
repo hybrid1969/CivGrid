@@ -5,9 +5,9 @@ using CivGrid;
 
 namespace CivGrid
 {
+
     public class ResourceManager : MonoBehaviour
     {
-
         public List<Resource> resources;
         public string[] resourceNames;
         public WorldManager worldManager;
@@ -18,7 +18,7 @@ namespace CivGrid
         {
             worldManager = GetComponent<WorldManager>();
 
-            resources.Insert(0, new Resource("None", 0, null, null));
+            resources.Insert(0, new Resource("None", 0, null, null, null));
             resources[0].meshToSpawn = null;
             resources[0].spawnAmount = 0;
 
@@ -28,19 +28,28 @@ namespace CivGrid
             }
         }
 
+        public void UpdateResourceNames()
+        {
+            if (resources != null && resources.Count > 0)
+            {
+                resourceNames = new string[resources.Count];
+                for (int i = 0; i < resources.Count; i++)
+                {
+                    resourceNames[i] = resources[i].name;
+                }
+            }
+        }
+
         public void AddResource(Resource r)
         {
             resources.Add(r);
             UpdateResourceNames();
         }
 
-        public void UpdateResourceNames()
+        public void AddResourceAt(Resource r, int index)
         {
-            resourceNames = new string[resources.Count];
-            for (int i = 0; i < resources.Count; i++)
-            {
-                resourceNames[i] = resources[i].resourceName;
-            }
+            resources.Insert(index, r);
+            UpdateResourceNames();
         }
 
         public void DeleteResource(Resource r)
@@ -51,21 +60,21 @@ namespace CivGrid
 
         public void HideResourceMesh(HexInfo hex)
         {
-            Destroy(hex.currentResource.rObject);
+            Destroy(hex.rObject);
         }
 
         public void SpawnResource(HexInfo hex, Resource r, bool regenerateChunk)
         {
             hex.resourceLocations.Clear();
-            if (hex.currentResource.rObject != null)
+            if (hex.rObject != null)
             {
-                Destroy(hex.currentResource.rObject);
+                Destroy(hex.rObject);
             }
 
             float y = (hex.localMesh.bounds.extents.y); if (y == 0) { y -= ((hex.worldPosition.y + hex.localMesh.bounds.extents.y) / Random.Range(4, 8)); } else { y = hex.worldPosition.y + hex.localMesh.bounds.extents.y + hex.currentResource.meshToSpawn.bounds.extents.y; }
             for (int i = 0; i < r.spawnAmount; i++)
             {
-                if (hex.currentResource.meshToSpawn == null && hex.currentResource.resourceName != "None") { Debug.LogWarning("No Mesh was assigned to spawn for resource: " + hex.currentResource.resourceName + ". Aborting spawning of graphics for this resource."); return; }
+                if (hex.currentResource.meshToSpawn == null && hex.currentResource.name != "None") { Debug.LogWarning("No Mesh was assigned to spawn for resource: " + hex.currentResource.name + ". Aborting spawning of graphics for this resource."); return; }
 
                 hex.localMesh.RecalculateBounds();
 
@@ -93,7 +102,7 @@ namespace CivGrid
                     combine[k].transform = matrix;
                 }
 
-                GameObject holder = new GameObject(r.resourceName, typeof(MeshFilter), typeof(MeshRenderer));
+                GameObject holder = new GameObject(r.name, typeof(MeshFilter), typeof(MeshRenderer));
 
                 holder.transform.position = hex.worldPosition;
                 holder.transform.parent = hex.parentChunk.transform;
@@ -105,10 +114,11 @@ namespace CivGrid
                 filter.mesh = new Mesh();
                 filter.mesh.CombineMeshes(combine);
 
-                hex.currentResource.rObject = holder;
+                hex.rObject = holder;
 
                 //UV mapping
-                Rect rectArea = worldManager.textureAtlas.resourceLocations.TryGetValue(r);
+                Rect rectArea;
+                worldManager.textureAtlas.resourceLocations.TryGetValue(r, out rectArea);
                 uv = new Vector2[filter.mesh.vertexCount];
 
                 for (int i = 0; i < filter.mesh.vertexCount; i++)
@@ -134,7 +144,7 @@ namespace CivGrid
             {
                 foreach (HexInfo hex in chunk.hexArray)
                 {
-                    if (hex.currentResource.resourceName != "None")
+                    if (hex.currentResource.name != "None")
                     {
                         hex.ChangeTextureToResource();
                     }
@@ -188,13 +198,14 @@ namespace CivGrid
             returnResource = resources[0];
         }
 
-        private static bool Test(HexInfo hex, ResourceRules rule)
+        private static bool Test(HexInfo hex, ResourceRule rule)
         {
             bool returnVal;
+            TileManager tM = hex.parentChunk.worldManager.tileManager;
 
             for(int i =0; i < rule.possibleTiles.Length; i++)
             {
-                returnVal = TestRule(hex, rule.possibleTiles[i]);
+                returnVal = TestRule(hex, tM.tiles[rule.possibleTiles[i]]);
                 if (returnVal == true) break;
                 if(i == (rule.possibleTiles.Length-1)) { return false;}
             }
@@ -226,10 +237,8 @@ namespace CivGrid
     [System.Serializable]
     public class Resource
     {
-        [HideInInspector]
-        public GameObject rObject;
-        public string resourceName;
-        public ResourceRules rule;
+        public string name;
+        public ResourceRule rule;
         bool possible;
         public float rarity;
 
@@ -239,22 +248,23 @@ namespace CivGrid
         public Texture2D resourceMeshTexture;
         public int spawnAmount = 3;
 
-        public Resource(string name, float rarity, Mesh mesh, ResourceRules rule)
+        public Resource(string name, float rarity, Mesh mesh, Texture2D resourceMeshTexture, ResourceRule rule)
         {
-            this.resourceName = name;
+            this.name = name;
             this.rule = rule;
             this.rarity = rarity;
             this.meshToSpawn = mesh;
+            this.resourceMeshTexture = resourceMeshTexture;
         }
     }
 
     [System.Serializable]
-    public class ResourceRules
+    public class ResourceRule
     {
-        public Tile[] possibleTiles;
+        public int[] possibleTiles;
         public Feature[] possibleFeatures;
 
-        public ResourceRules(Tile[] possibleTiles, Feature[] possibleFeatures)
+        public ResourceRule(int[] possibleTiles, Feature[] possibleFeatures)
         {
             this.possibleTiles = possibleTiles;
             this.possibleFeatures = possibleFeatures;

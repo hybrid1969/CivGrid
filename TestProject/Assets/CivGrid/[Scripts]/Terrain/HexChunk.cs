@@ -10,8 +10,7 @@ namespace CivGrid
 
         [SerializeField]
         public HexInfo[,] hexArray;
-        public int xSize;
-        public int ySize;
+        public Vector2 chunkSize;
         public Vector3 hexSize;
 
         //set by world master
@@ -24,138 +23,132 @@ namespace CivGrid
 
         //temp
         public Texture2D mountainTexture;
-        public float maxHeight = 1;
+        public float maxHeight = 1.5f;
 
+        /// <summary>
+        /// Sets the amount of hexagons in the chunk
+        /// </summary>
+        /// <param name="x">Amount of hexagons in "x" axis</param>
+        /// <param name="y">Amount of hexagons in "y" axis</param>
         public void SetSize(int x, int y)
         {
-            xSize = x;
-            ySize = y;
+            chunkSize = new Vector2(x, y);
         }
 
+        /// <summary>
+        /// Cleans up the material on this object after it is destroyed
+        /// </summary>
         public void OnDestroy()
         {
             Destroy(renderer.material);
         }
 
+        /// <summary>
+        /// Allocates the hex array of this chunk
+        /// </summary>
         public void AllocateHexArray()
         {
-            hexArray = new HexInfo[xSize, ySize];
+            hexArray = new HexInfo[(int)chunkSize.x, (int)chunkSize.y];
         }
 
+        /// <summary>
+        /// Generates all hexagons in this chunk in their location
+        /// </summary>
         public void GenerateChunk()
         {
-            mountainTexture = worldManager.mountainMap;
+            //create the hexagons in memory
+            hexArray = new HexInfo[(int)chunkSize.x, (int)chunkSize.y];
 
-            bool odd;
+            //if this is an offset row
+            bool notOdd;
 
-            for (int y = 0; y < ySize; y++)
+            //cycle through all hexagons in this chunk in the "y" axis
+            for (int y = 0; y < chunkSize.y; y++)
             {
-                odd = (y % 2) == 0;
-                if (odd == true)
+                //determine if we are in an odd row; if so we need to offset the hexagons
+                notOdd = ((y % 2) == 0);
+                //actually not 
+                if (notOdd == true)
                 {
-                    for (int x = 0; x < xSize; x++)
+                    //generate the hexagons in the normal positioning for this row
+                    for (int x = 0; x < chunkSize.x; x++)
                     {
-                        //cache and create hex hex
-                        HexInfo hex;
-                        Vector2 worldArrayPosition;
-                        hexArray[x, y] = new HexInfo();
-                        hex = hexArray[x, y];
-
-                        //set world array position
-                        worldArrayPosition.x = x + (xSize * xSector);
-                        worldArrayPosition.y = y + (ySize * ySector);
-
-                        //set pixel location
-                        hex.pixelLocation = worldArrayPosition;
-
-                        hex.CubeGridPosition = new Vector3(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f), worldArrayPosition.y, -(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f) + worldArrayPosition.y));
-                        //set local position of hex; this is the hex cord postion local to the chunk
-                        hex.localPosition = new Vector3(x * ((worldManager.hexExt.x * 2)), 0, (y * worldManager.hexExt.z) * 1.5f);
-                        //set world position of hex; this is the hex cord postion local to the world
-                        hex.worldPosition = new Vector3(hex.localPosition.x + (xSector * (xSize * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((ySector * (ySize * hexSize.z)) * (.75f)));
-
-                        ///Set Hex values
-                        hex.terrainType = (Tile)(worldManager.PickHex((int)worldArrayPosition.x, (int)worldArrayPosition.y));
-                        hex.name = "HexTile " + hex.CubeGridPosition;
-                        hex.terrainFeature = worldManager.PickFeature((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
-                        hex.hexExt = worldManager.hexExt;
-                        hex.hexCenter = worldManager.hexCenter;
-                        hex.rM = worldManager.rM;
+                        //spawn hexagon
+                        GenerateHex(x, y);
                     }
                 }
                 else
                 {
-                    if (worldManager.keepSymmetrical)
+                    //generate the hexagons in the offset positioning for this row
+                    for (int x = 0; x < chunkSize.x; x++)
                     {
-
-                        for (int x = 0; x < xSize - 1; x++)
-                        {
-                            //cache and create hex hex
-                            HexInfo hex;
-                            Vector2 worldArrayPosition;
-                            hexArray[x, y] = new HexInfo();
-                            hex = hexArray[x, y];
-
-                            //set world array position
-                            worldArrayPosition.x = x + (xSize * xSector);
-                            worldArrayPosition.y = y + (ySize * ySector);
-
-                            //set pixel location
-                            hex.pixelLocation = worldArrayPosition;
-
-
-                            hex.CubeGridPosition = new Vector3(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f), worldArrayPosition.y, -(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f) + worldArrayPosition.y));
-                            //set local position of hex; this is the hex cord position local to the chunk
-                            hex.localPosition = new Vector3((x * (worldManager.hexExt.x * 2) + worldManager.hexExt.x), 0, (y * worldManager.hexExt.z) * 1.5f);
-                            //set world position of hex; this is the hex cord postion local to the world
-                            hex.worldPosition = new Vector3(hex.localPosition.x + (xSector * (xSize * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((ySector * (ySize * hexSize.z)) * (.75f)));
-
-                            ///Set Hex values
-                            hex.terrainType = (Tile)(worldManager.PickHex((int)worldArrayPosition.x, (int)worldArrayPosition.y));
-                            hex.name = "HexTile " + hex.CubeGridPosition;
-                            hex.terrainFeature = worldManager.PickFeature((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
-                            hex.hexExt = worldManager.hexExt;
-                            hex.hexCenter = worldManager.hexCenter;
-                            hex.rM = worldManager.rM;
-                        }
-                    }
-                    else
-                    {
-                        for (int x = 0; x < xSize; x++)
-                        {
-                            //cache and create hex hex
-                            HexInfo hex;
-                            Vector2 worldArrayPosition;
-                            hexArray[x, y] = new HexInfo();
-                            hex = hexArray[x, y];
-
-                            //set world array position for real texture positioning
-                            worldArrayPosition.x = x + (xSize * xSector);
-                            worldArrayPosition.y = y + (ySize * ySector);
-
-                            //set pixel location
-                            hex.pixelLocation = worldArrayPosition;
-
-                            hex.CubeGridPosition = new Vector3(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f), worldArrayPosition.y, -(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f) + worldArrayPosition.y));
-                            //set local position of hex; this is the hex cord postion local to the chunk
-                            hex.localPosition = new Vector3((x * (worldManager.hexExt.x * 2) + worldManager.hexExt.x), 0, (y * worldManager.hexExt.z) * 1.5f);
-                            //set world position of hex; this is the hex cord postion local to the world
-                            hex.worldPosition = new Vector3(hex.localPosition.x + (xSector * (xSize * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((ySector * (ySize * hexSize.z)) * (.75f)));
-
-
-                            //print(hex.CubeGridPosition + "is in chunk " + gameObject.name + " at local position " + hex.localPosition + " and at world position " + hex.worldPosition); 
-
-                            ///Set Hex values
-                            hex.terrainType = (Tile)(worldManager.PickHex((int)worldArrayPosition.x, (int)worldArrayPosition.y));
-                            hex.name = "HexTile " + hex.CubeGridPosition;
-                            hex.terrainFeature = worldManager.PickFeature((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
-                            hex.hexExt = worldManager.hexExt;
-                            hex.hexCenter = worldManager.hexCenter;
-                            hex.rM = worldManager.rM;
-                        }
+                        //spawn offset hexagon
+                        GenerateHexOffset(x, y);
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Generates the hex in the provided array location
+        /// </summary>
+        /// <param name="x">Array location of hex in x axis</param>
+        /// <param name="y">Array location of hex in y axis</param>
+        private void GenerateHex(int x, int y)
+        {
+            //cache and create hex hex
+            HexInfo hex;
+            Vector2 worldArrayPosition;
+            hexArray[x, y] = new HexInfo();
+            hex = hexArray[x, y];
+
+            //set world array position
+            worldArrayPosition.x = x + (chunkSize.x * xSector);
+            worldArrayPosition.y = y + (chunkSize.y * ySector);
+
+            hex.CubeGridPosition = new Vector3(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f), worldArrayPosition.y, -(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f) + worldArrayPosition.y));
+            //set local position of hex; this is the hex cord position local to the chunk
+            hex.localPosition = new Vector3(x * ((worldManager.hexExt.x * 2)), 0, (y * worldManager.hexExt.z) * 1.5f);
+            //set world position of hex; this is the hex cord position local to the world
+            hex.worldPosition = new Vector3(hex.localPosition.x + (xSector * (chunkSize.x * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((ySector * (chunkSize.y * hexSize.z)) * (.75f)));
+
+            ///Set Hex values
+            hex.terrainFeature = worldManager.PickFeature((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
+            hex.terrainType = worldManager.PickHex((int)worldArrayPosition.x, (int)worldArrayPosition.y);
+            hex.hexExt = worldManager.hexExt;
+            hex.hexCenter = worldManager.hexCenter;
+            hex.resourceManager = worldManager.resourceManager;
+        }
+
+        /// <summary>
+        /// Generates the offset hex in the provided array location
+        /// </summary>
+        /// <param name="x">Array location of hex in x axis</param>
+        /// <param name="y">Array location of hex in y axis</param>
+        private void GenerateHexOffset(int x, int y)
+        {
+            //cache and create hex hex
+            HexInfo hex;
+            Vector2 worldArrayPosition;
+            hexArray[x, y] = new HexInfo();
+            hex = hexArray[x, y];
+
+            //set world array position
+            worldArrayPosition.x = x + (chunkSize.x * xSector);
+            worldArrayPosition.y = y + (chunkSize.y * ySector);
+
+            hex.CubeGridPosition = new Vector3(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f), worldArrayPosition.y, -(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f) + worldArrayPosition.y));
+            //set local position of hex; this is the hex cord position local to the chunk
+            hex.localPosition = new Vector3((x * (worldManager.hexExt.x * 2) + worldManager.hexExt.x), 0, (y * worldManager.hexExt.z) * 1.5f);
+            //set world position of hex; this is the hex cord position local to the world
+            hex.worldPosition = new Vector3(hex.localPosition.x + (xSector * (chunkSize.x * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((ySector * (chunkSize.y * hexSize.z)) * (.75f)));
+
+            ///Set Hex values
+            hex.terrainFeature = worldManager.PickFeature((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
+            hex.terrainType = worldManager.PickHex((int)worldArrayPosition.x, (int)worldArrayPosition.y);
+            hex.hexExt = worldManager.hexExt;
+            hex.hexCenter = worldManager.hexCenter;
+            hex.resourceManager = worldManager.resourceManager;
         }
 
         /// <summary>
@@ -167,95 +160,126 @@ namespace CivGrid
         /// <returns>If the hex is on the world edge</returns>
         private bool DetermineWorldEdge(HexInfo hex, int x, int y)
         {
+            //check if hex is in a chunk on the horizontal sides
             if (xSector == 0 || xSector == ((worldManager.mapSize.x / worldManager.chunkSize) - 1))
             {
-                if (x == (xSize - 1) || x == 0)
+                //checks if hex is on the horizontal edge of a horizontal edge chunk
+                if (x == (chunkSize.x - 1) || x == 0)
                 {
                     return true;
                 }
             }
 
+            //check if hex is in a chunk on the vertical sides
             if (ySector == 0 || ySector == ((worldManager.mapSize.y / worldManager.chunkSize) - 1))
             {
-                if (y == (ySize - 1) || y == 0)
+                //checks if hex is on the vettical edge of a vertical edge chunk
+                if (y == (chunkSize.y - 1) || y == 0)
                 {
                     return true;
                 }
             }
 
+            //not an edge hex
             return false;
         }
 
-        //begin hexagon rendering
+        /// <summary>
+        /// Starts chunk operations of spawning the hexagons and then chunking them
+        /// </summary>
         public void Begin()
         {
+            //begin making hexagons
             GenerateChunk();
-            for (int x = 0; x < xSize; x++)
+
+            //cycle through all hexagons
+            for (int x = 0; x < chunkSize.x; x++)
             {
-                for (int z = 0; z < ySize; z++)
+                for (int z = 0; z < chunkSize.y; z++)
                 {
+                    //check if this hexagon is null; if so throw an error
                     if (hexArray[x, z] != null)
                     {
+                        //set parent chunk of the hex to this
                         hexArray[x, z].parentChunk = this;
+                        //start hex operations(pulling down the mesh)
                         hexArray[x, z].Start();
                     }
                     else
                     {
-                        print("null hexagon found in memory");
+                        //throw error if the hexagon is null in memory
+                        Debug.LogError("null hexagon found in memory: " + x + " " + z);
                     }
                 }
             }
+
+            //combine all the hexagon's meshes in this chunk into one mesh
             Combine();
         }
 
+        /// <summary>
+        /// Refreshes the chunk mesh
+        /// </summary>
         public void RegenerateMesh()
         {
             Combine();
         }
 
+        /// <summary>
+        /// Adds a collider if there is none; resizes to meshes' size
+        /// </summary>
         void MakeCollider()
         {
+            //if we dont have a collider, add one
             if (collider == null)
             {
                 collider = gameObject.AddComponent<BoxCollider>();
             }
+            //set the collider's center and size to our mesh's size/center
             collider.center = filter.mesh.bounds.center;
             collider.size = filter.mesh.bounds.size;
         }
 
+        /// <summary>
+        /// Combines all localMeshes' in hexs of this chunk into one mesh
+        /// </summary>
         private void Combine()
         {
-            CombineInstance[,] combine = new CombineInstance[xSize, ySize];
+            //make a two-dimensional array to remain constant with our hexArray
+            CombineInstance[,] combine = new CombineInstance[(int)chunkSize.x, (int)chunkSize.y];
 
-            for (int x = 0; x < xSize; x++)
+            //cycle through all the hexagons in this chunk
+            for (int x = 0; x < chunkSize.x; x++)
             {
-                for (int z = 0; z < ySize; z++)
+                for (int z = 0; z < chunkSize.y; z++)
                 {
-
+                    //set the CombineInstance's mesh to this hexagon's localMesh
                     combine[x, z].mesh = hexArray[x, z].localMesh;
+                    //create a Matrix4x4 for the meshes positioning
                     Matrix4x4 matrix = new Matrix4x4();
-                    if (hexArray[x, z].terrainFeature != Feature.Mountain)
-                    {
-                        matrix.SetTRS(hexArray[x, z].localPosition, Quaternion.identity, Vector3.one);
-                    }
-                    else if (hexArray[x, z].terrainFeature == Feature.Mountain)
-                    {
-                        matrix.SetTRS(new Vector3(hexArray[x, z].localPosition.x, hexArray[x, z].localPosition.y - 0.01f, hexArray[x, z].localPosition.z), Quaternion.identity, Vector3.one);
-                    }
+                    //set the matrix position, rotation, and scale to correct values
+                    matrix.SetTRS(hexArray[x, z].localPosition, Quaternion.identity, Vector3.one);
+                    //assign the CombineInstance's transform to the matrix; therefore correctly positioning it
                     combine[x, z].transform = matrix;
                 }
             }
 
+            //get the filter on the chunk gameObject
             filter = gameObject.GetComponent<MeshFilter>();
+            //create a new mesh on it
             filter.mesh = new Mesh();
 
+            //convert our two-dimensional array into a normal array so that we can use mesh.CombineMeshes()
             CombineInstance[] final;
 
+            //conver to single array
             CivGridUtility.ToSingleArray(combine, out final);
 
+            //set the chunk's mesh to the combined mesh of all the hexagon's in this chunk
             filter.mesh.CombineMeshes(final);
+            //recalculate the normals of the new mesh to play nicely with lighting
             filter.mesh.RecalculateNormals();
-            filter.mesh.RecalculateBounds();
+            //generate/set the collider dimensions for this chunk
             MakeCollider();
         }
     }
