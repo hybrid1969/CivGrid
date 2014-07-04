@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -127,7 +126,7 @@ namespace CivGrid
                 Debug.LogError("Please Remove the CivGridCamera Script if you do not wish to use it; otherwise enable it in the WorldManager");
             }
             Saver.SaveTexture(tileMap, "terrian", false);
-            //Saver.SaveTerrain("terrainTest", this);
+            Saver.SaveTerrain("terrainTest", this);
             //Saver.LoadTerrain("terrainTest", this);
         }
 
@@ -297,7 +296,7 @@ namespace CivGrid
                 //begin chunk operations since we are done with value generation
                 chunk.Begin();
             }
-            GameManager.worldEvent.Invoke("World Done", null);
+            //GameManager.worldEvent.Invoke("World Done", null);
         }
 
         /// <summary>
@@ -306,7 +305,7 @@ namespace CivGrid
         /// <param name="x">The x cords of the tile</param>
         /// <param name="h">The h(height) cord of the tile</param>
         /// <returns>An int corresponding to the biome it should be within</returns>
-        public Tile PickHex(int x, int h)
+        public Tile PickHexType(int x, int h)
         {
             //temp no influence from rainfall values
             float latitude = Mathf.Abs((mapSize.y / 2) - h) / (mapSize.y / 2);//1 == snow (top) 0 == eqautor
@@ -357,7 +356,7 @@ namespace CivGrid
             }
         }
 
-        public Feature PickFeature(int xArrayPosition, int yArrayPosition, bool edge)
+        public Feature PickFeatureType(int xArrayPosition, int yArrayPosition, bool edge)
         {
             float value = tileMap.GetPixel(xArrayPosition, yArrayPosition).r;
             Feature returnVal = 0;
@@ -597,7 +596,7 @@ namespace CivGrid
         }
     }
 
-    [Serializable]
+    [System.Serializable]
     public class TextureAtlas
     {
         [SerializeField]
@@ -610,7 +609,7 @@ namespace CivGrid
         public ImprovementItem[] improvementLocations;
     }
 
-    [Serializable]
+    [System.Serializable]
     public class TileItem
     {
         [SerializeField]
@@ -654,7 +653,7 @@ namespace CivGrid
 
     }
 
-    [Serializable]
+    [System.Serializable]
     public class ResourceItem
     {
         [SerializeField]
@@ -697,7 +696,7 @@ namespace CivGrid
         }
     }
 
-    [Serializable]
+    [System.Serializable]
     public class ImprovementItem
     {
         [SerializeField]

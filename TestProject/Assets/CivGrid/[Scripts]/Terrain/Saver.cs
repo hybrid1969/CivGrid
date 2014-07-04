@@ -38,90 +38,124 @@ namespace CivGrid
 
         public static void SaveTerrain(string name, WorldManager manager)
         {
+            System.Text.StringBuilder assetPrefix = new System.Text.StringBuilder(Application.dataPath);
+            assetPrefix.Remove((assetPrefix.Length - 6), 6);
+
             using (XmlWriter writer = XmlWriter.Create(name + ".xml"))
             {
                 writer.WriteStartDocument();
-                writer.WriteStartElement("Start");
+                writer.WriteStartElement("Root");
 
                 #region WorldManager
                 writer.WriteStartElement("WorldManager");
 
-                //camera settings
-                writer.WriteStartElement("enableWrapping");
-                writer.WriteValue(manager.civGridCamera.enableWrapping);
-                writer.WriteEndElement();
-
-                writer.WriteStartElement("keepSymmetrical");
-                writer.WriteValue(manager.keepSymmetrical);
-                writer.WriteEndElement();
-
-                writer.WriteStartElement("cameraHeight");
-                writer.WriteValue(manager.civGridCamera.cameraHeight);
-                writer.WriteEndElement();
-
-                writer.WriteStartElement("cameraAngle");
-                writer.WriteValue(manager.civGridCamera.cameraAngle);
-                writer.WriteEndElement();
-
-                writer.WriteStartElement("cameraSpeed");
-                writer.WriteValue(manager.civGridCamera.cameraSpeed);
-                writer.WriteEndElement();
-
+                writer.WriteElementString("keepSymmetrical", manager.keepSymmetrical.ToString());
+                writer.WriteElementString("useCivGridCamera", manager.useCivGridCamera.ToString());
+                writer.WriteElementString("usePresetWorldValue", manager.useWorldTypeValues.ToString());
                 writer.WriteElementString("worldType", manager.worldType.ToString());
-
-                writer.WriteStartElement("mapSizeX");
-                writer.WriteValue(manager.mapSize.x);
-                writer.WriteEndElement();
-
-                writer.WriteStartElement("mapSizeY");
-                writer.WriteValue(manager.mapSize.y);
-                writer.WriteEndElement();
-
-                writer.WriteStartElement("chunkSize");
-                writer.WriteValue(manager.chunkSize);
-                writer.WriteEndElement();
+                writer.WriteElementString("mapSizeX", manager.mapSize.x.ToString());
+                writer.WriteElementString("mapSizeY", manager.mapSize.y.ToString());
+                writer.WriteElementString("chunkSize", manager.chunkSize.ToString());
+                writer.WriteElementString("hexRadiusSize", manager.hexRadiusSize.ToString());
+                writer.WriteElementString("mountainMapLocation", (assetPrefix.ToString()  + AssetDatabase.GetAssetPath(manager.mountainMap)));
 
                 writer.WriteEndElement();
+                #endregion
+
+                #region TileManager
+
+                TileManager tileManager = manager.tileManager;
+
+                writer.WriteStartElement("TileManager");
+
+                writer.WriteElementString("tileCount", tileManager.tiles.Count.ToString());
+
+                writer.WriteStartElement("Tiles");
+                for (int i = 0; i < tileManager.tiles.Count; i++)
+                {
+                    writer.WriteStartElement("Tile");
+
+                    writer.WriteElementString("name", tileManager.tiles[i].name);
+                    writer.WriteElementString("isShore", tileManager.tiles[i].isShore.ToString());
+                    writer.WriteElementString("isOcean", tileManager.tiles[i].isOcean.ToString());
+                    writer.WriteElementString("isMountain", tileManager.tiles[i].isMountain.ToString());
+
+                    writer.WriteEndElement();
+                }
+                writer.WriteEndElement();
+
+                writer.WriteEndElement();
+
+                #endregion
+
+                //finish this
+                #region ResourceManager
+
+                ResourceManager resourceManager = manager.resourceManager;
+
+                writer.WriteStartElement("ResourceManager");
+
+                writer.WriteElementString("resourceCount", resourceManager.resources.Count.ToString());
+
+                writer.WriteStartElement("Resources");
+                for (int i = 0; i < resourceManager.resources.Count; i++)
+                {
+                    writer.WriteStartElement("Resource");
+
+                    writer.WriteElementString("name", resourceManager.resources[i].name);
+                    writer.WriteElementString("rarity", resourceManager.resources[i].rarity.ToString());
+                    writer.WriteElementString("spawnAmount", resourceManager.resources[i].spawnAmount.ToString());
+
+                    writer.WriteEndElement();
+                }
+                writer.WriteEndElement();
+
+                writer.WriteEndElement();
+
+                #endregion
+
+                #region CivGridCamera
+
+                writer.WriteStartElement("CivGridCamera");
+
+                //camera settings
+                writer.WriteElementString("enableWrapping", manager.civGridCamera.enableWrapping.ToString());
+                writer.WriteElementString("cameraHeight", manager.civGridCamera.cameraHeight.ToString());
+                writer.WriteElementString("cameraAngle", manager.civGridCamera.cameraAngle.ToString());
+                writer.WriteElementString("cameraSpeed", manager.civGridCamera.cameraSpeed.ToString());
+
+                writer.WriteEndElement();
+
                 #endregion
 
 
                 foreach (HexChunk chunk in manager.hexChunks)
                 {
+                    #region Chunk
+
                     writer.WriteStartElement("Chunk");
-
-                    //xLoc
-                    writer.WriteStartElement("xSector");
-                    writer.WriteValue(chunk.xSector);
-                    writer.WriteEndElement();
-                    //yLoc
-                    writer.WriteStartElement("ySector");
-                    writer.WriteValue(chunk.ySector);
-                    writer.WriteEndElement();
-
-                    writer.WriteEndElement();
 
                     foreach (HexInfo hex in chunk.hexArray)
                     {
+                        #region Hex
+
                         writer.WriteStartElement("Hexagon");
-
-
-                        writer.WriteStartElement("gridPositionX");
-                        writer.WriteValue(hex.CubeGridPosition.x);
-                        writer.WriteEndElement();
-
-                        writer.WriteStartElement("Buffer");
-                        writer.WriteEndElement();
-
-                        writer.WriteStartElement("gridPositionY");
-                        writer.WriteValue(hex.CubeGridPosition.y);
-                        writer.WriteEndElement();
 
                         writer.WriteElementString("Type", (hex.terrainType.ToString()));
 
                         writer.WriteElementString("Feature", ((int)hex.terrainFeature).ToString());
 
+                        writer.WriteElementString("Resource", hex.currentResource.ToString());
+
+                        writer.WriteElementString("Improvement", hex.currentImprovement.name);
+
                         writer.WriteEndElement();
+
+                        #endregion
                     }
+                    writer.WriteEndElement();
+
+                    #endregion
                 }
 
                 writer.WriteEndElement();

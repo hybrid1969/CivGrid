@@ -60,15 +60,15 @@ namespace CivGrid
             hexArray = new HexInfo[(int)chunkSize.x, (int)chunkSize.y];
 
             //if this is an offset row
-            bool notOdd;
+            bool even;
 
             //cycle through all hexagons in this chunk in the "y" axis
             for (int y = 0; y < chunkSize.y; y++)
             {
                 //determine if we are in an odd row; if so we need to offset the hexagons
-                notOdd = ((y % 2) == 0);
+                even = ((y % 2) == 0);
                 //actually not 
-                if (notOdd == true)
+                if (even == true)
                 {
                     //generate the hexagons in the normal positioning for this row
                     for (int x = 0; x < chunkSize.x; x++)
@@ -113,8 +113,8 @@ namespace CivGrid
             hex.worldPosition = new Vector3(hex.localPosition.x + (xSector * (chunkSize.x * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((ySector * (chunkSize.y * hexSize.z)) * (.75f)));
 
             ///Set Hex values
-            hex.terrainFeature = worldManager.PickFeature((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
-            hex.terrainType = worldManager.PickHex((int)worldArrayPosition.x, (int)worldArrayPosition.y);
+            hex.terrainFeature = worldManager.PickFeatureType((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
+            hex.terrainType = worldManager.PickHexType((int)worldArrayPosition.x, (int)worldArrayPosition.y);
             hex.hexExt = worldManager.hexExt;
             hex.hexCenter = worldManager.hexCenter;
             hex.resourceManager = worldManager.resourceManager;
@@ -144,8 +144,8 @@ namespace CivGrid
             hex.worldPosition = new Vector3(hex.localPosition.x + (xSector * (chunkSize.x * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((ySector * (chunkSize.y * hexSize.z)) * (.75f)));
 
             ///Set Hex values
-            hex.terrainFeature = worldManager.PickFeature((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
-            hex.terrainType = worldManager.PickHex((int)worldArrayPosition.x, (int)worldArrayPosition.y);
+            hex.terrainFeature = worldManager.PickFeatureType((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
+            hex.terrainType = worldManager.PickHexType((int)worldArrayPosition.x, (int)worldArrayPosition.y);
             hex.hexExt = worldManager.hexExt;
             hex.hexCenter = worldManager.hexCenter;
             hex.resourceManager = worldManager.resourceManager;
@@ -214,15 +214,7 @@ namespace CivGrid
             }
 
             //combine all the hexagon's meshes in this chunk into one mesh
-            Combine();
-        }
-
-        /// <summary>
-        /// Refreshes the chunk mesh
-        /// </summary>
-        public void RegenerateMesh()
-        {
-            Combine();
+            RegenerateMesh();
         }
 
         /// <summary>
@@ -243,7 +235,7 @@ namespace CivGrid
         /// <summary>
         /// Combines all localMeshes' in hexs of this chunk into one mesh
         /// </summary>
-        private void Combine()
+        public void RegenerateMesh()
         {
             //make a two-dimensional array to remain constant with our hexArray
             CombineInstance[,] combine = new CombineInstance[(int)chunkSize.x, (int)chunkSize.y];

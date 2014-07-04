@@ -27,7 +27,7 @@ namespace CivGrid
 
         private WorldManager worldManager;
 
-        //set up camera for wrapping/general use(move to seperate script soon)
+
         public void SetupCameras(WorldManager manager)
         {
             cam1 = this.gameObject.GetComponent<Camera>();
