@@ -74,3 +74,9 @@ Version 0.5
 	+Made startup improvements in TileManager
 	+Small improvements
 	+Started work on small game demo
+Version 0.5.1f
+	+Added ability to resize texture atlas without starting 	over
+	+Resource/Improvement ground texture swapping is now 	optional
+	+Added ability to determine when to start world generation
+	+Basic code cleanup
+	+New hierarchy layout
