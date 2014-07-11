@@ -203,9 +203,6 @@ namespace CivGrid
                         vertices[y * width + x] = Vector3.Scale(sizeScale, vertex);
                         rawUV[y * width + x] = Vector2.Scale(uvScale, new Vector2(vertex.x, vertex.z));
 
-                        //rawUV[y * width + x].x /= parentChunk.worldManager.textureAtlas.texturesInAtlas.x;
-                        //rawUV[y * width + x].y /= parentChunk.worldManager.textureAtlas.texturesInAtlas.y;
-
                         // Calculate tangent vector: a vector that goes from previous vertex
                         // to next along X direction. We need tangents if we intend to
                         // use bumpmap shaders on the mesh.

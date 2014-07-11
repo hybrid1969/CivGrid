@@ -23,7 +23,7 @@ namespace CivGrid
 
         //temp
         public Texture2D mountainTexture;
-        public float maxHeight = 1.5f;
+        public float maxHeight;
 
         /// <summary>
         /// Sets the amount of hexagons in the chunk

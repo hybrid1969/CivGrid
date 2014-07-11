@@ -95,13 +95,17 @@ namespace CivGrid.Editors
                             EditorGUILayout.SelectableLabel("Possible Tiles", EditorStyles.boldLabel, GUILayout.ExpandHeight(false), GUILayout.MaxHeight(15));
                             foreach (int t in resource.rule.possibleTiles)
                             {
+                                EditorGUI.indentLevel++;
                                 EditorGUILayout.SelectableLabel(tileManager.EditorTryGet(t).name, GUILayout.ExpandHeight(false), GUILayout.MaxHeight(18));
+                                EditorGUI.indentLevel--;
                             }
 
                             EditorGUILayout.SelectableLabel("Possible Features", EditorStyles.boldLabel, GUILayout.ExpandHeight(false), GUILayout.MaxHeight(15));
                             foreach (Feature f in resource.rule.possibleFeatures)
                             {
+                                EditorGUI.indentLevel++;
                                 EditorGUILayout.SelectableLabel(f.ToString(), GUILayout.ExpandHeight(false), GUILayout.MaxHeight(18));
+                                EditorGUI.indentLevel--;
                             }
                         }
                         resource.meshToSpawn = (Mesh)EditorGUILayout.ObjectField("Resource Mesh", (Object)resource.meshToSpawn, typeof(Mesh), false);

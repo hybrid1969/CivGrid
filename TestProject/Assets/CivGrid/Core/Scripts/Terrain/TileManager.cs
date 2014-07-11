@@ -61,11 +61,15 @@ namespace CivGrid
 
         public Tile EditorTryGet(int index)
         {
-            if (internalTiles.Length == 0)
+            if ((internalTiles == null || internalTiles.Length == 0) && (tiles != null && tiles.Count > 0))
             {
-                return tiles[index-1];
+                return tiles[index];
             }
-            else { return internalTiles[index]; }
+            else if (internalTiles != null && internalTiles.Length > 0) { return internalTiles[index]; }
+            else
+            {
+                return new Tile("Tile Index: " + index, 0, 0);
+            }
         }
 
         public Tile TryGetOcean()

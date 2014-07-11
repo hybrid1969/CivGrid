@@ -62,6 +62,7 @@ namespace CivGrid
         //Hill and mountains
         [SerializeField]
         public Texture2D mountainMap;
+        public float mountainScaleY;
 
 
         //managers
@@ -86,6 +87,7 @@ namespace CivGrid
             {
                 //LoadAndGenerateMap("C:/Users/Landon/Desktop/CivGridRepository/TestProject/terrainTest");
                 GenerateNewMap();
+                //System.Diagnostics.T
                 CivGridSaver.SaveTerrain("terrainTest", this);
             }
             else { civGridCamera.enabled = false; }
@@ -249,12 +251,16 @@ namespace CivGrid
             }
             //create the chunk object
             GameObject chunkObj = new GameObject("Chunk[" + x + "," + y + "]");
-            //add the hexChunk script and set it's size
-            chunkObj.AddComponent<HexChunk>().SetSize(chunkSize, chunkSize);
+            //add the hexChunk script and cache it
+            HexChunk hexChunk = chunkObj.AddComponent<HexChunk>();
+            //assign the size of the chunk
+            hexChunk.SetSize(chunkSize, chunkSize);
             //setup HexInfo array
-            chunkObj.GetComponent<HexChunk>().AllocateHexArray();
+            hexChunk.AllocateHexArray();
             //assign mountain texture to the chunk
-            chunkObj.GetComponent<HexChunk>().mountainTexture = this.mountainMap;
+            hexChunk.mountainTexture = this.mountainMap;
+            //pass down our mountainScaleY
+            hexChunk.maxHeight = mountainScaleY;
             //set the texture map for this chunk and add the mesh renderer
             chunkObj.AddComponent<MeshRenderer>().material.mainTexture = textureAtlas.terrainAtlas;
             //add the mesh filter

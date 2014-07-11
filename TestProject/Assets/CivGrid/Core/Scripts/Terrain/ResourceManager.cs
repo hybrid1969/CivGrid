@@ -71,53 +71,52 @@ namespace CivGrid
                 Destroy(hex.rObject);
             }
 
-            float y = (hex.localMesh.bounds.extents.y); if (y == 0) { y -= ((hex.worldPosition.y + hex.localMesh.bounds.extents.y) / Random.Range(4, 8)); } else { y = hex.worldPosition.y + hex.localMesh.bounds.extents.y + hex.currentResource.meshToSpawn.bounds.extents.y; }
-            for (int i = 0; i < r.spawnAmount; i++)
+            if (r.meshToSpawn != null)
             {
-                if (hex.currentResource.meshToSpawn == null && hex.currentResource.name != "None") { Debug.LogWarning("No Mesh was assigned to spawn for resource: " + hex.currentResource.name + ". Aborting spawning of graphics for this resource."); return; }
-
-                hex.localMesh.RecalculateBounds();
-
-                //position setting
-                float x = (hex.localMesh.bounds.center.x + Random.Range(-0.2f, 0.2f));
-                float z = (hex.localMesh.bounds.center.z + Random.Range(-0.2f, 0.2f));
-                hex.resourceLocations.Add(new Vector3(x, y, z));
-            }
-
-            int size = hex.resourceLocations.Count;
-
-            //number of resources to combine
-            if (size > 0)
-            {
-                //combine instances
-                CombineInstance[] combine = new CombineInstance[size];
-                Matrix4x4 matrix = new Matrix4x4();
-                matrix.SetTRS(Vector3.zero, Quaternion.identity, Vector3.one);
-
-                //skip first combine instance due to presetting
-                for (int k = 0; k < size; k++)
+                float y = (hex.localMesh.bounds.extents.y); if (y == 0) { y -= ((hex.worldPosition.y + hex.localMesh.bounds.extents.y) / Random.Range(4, 8)); } else { y = hex.worldPosition.y + hex.localMesh.bounds.extents.y + hex.currentResource.meshToSpawn.bounds.extents.y; }
+                for (int i = 0; i < r.spawnAmount; i++)
                 {
-                    combine[k].mesh = hex.currentResource.meshToSpawn;
-                    matrix.SetTRS(hex.resourceLocations[k], Quaternion.identity, Vector3.one);
-                    combine[k].transform = matrix;
+                    if (hex.currentResource.meshToSpawn == null && hex.currentResource.name != "None") { Debug.LogWarning("No Mesh was assigned to spawn for resource: " + hex.currentResource.name + ". Aborting spawning of graphics for this resource."); return; }
+
+                    hex.localMesh.RecalculateBounds();
+
+                    //position setting
+                    float x = (hex.localMesh.bounds.center.x + Random.Range(-0.2f, 0.2f));
+                    float z = (hex.localMesh.bounds.center.z + Random.Range(-0.2f, 0.2f));
+                    hex.resourceLocations.Add(new Vector3(x, y, z));
                 }
 
-                GameObject holder = new GameObject(r.name, typeof(MeshFilter), typeof(MeshRenderer));
+                int size = hex.resourceLocations.Count;
 
-                holder.transform.position = hex.worldPosition;
-                holder.transform.parent = hex.parentChunk.transform;
-
-                MeshFilter filter = holder.GetComponent<MeshFilter>();
-
-                holder.renderer.material.mainTexture = r.meshTexture;
-
-                filter.mesh = new Mesh();
-                filter.mesh.CombineMeshes(combine);
-
-                hex.rObject = holder;
-
-                if (r.replaceGroundTexture)
+                //number of resources to combine
+                if (size > 0)
                 {
+                    //combine instances
+                    CombineInstance[] combine = new CombineInstance[size];
+                    Matrix4x4 matrix = new Matrix4x4();
+                    matrix.SetTRS(Vector3.zero, Quaternion.identity, Vector3.one);
+
+                    //skip first combine instance due to presetting
+                    for (int k = 0; k < size; k++)
+                    {
+                        combine[k].mesh = hex.currentResource.meshToSpawn;
+                        matrix.SetTRS(hex.resourceLocations[k], Quaternion.identity, Vector3.one);
+                        combine[k].transform = matrix;
+                    }
+
+                    GameObject holder = new GameObject(r.name, typeof(MeshFilter), typeof(MeshRenderer));
+
+                    holder.transform.position = hex.worldPosition;
+                    holder.transform.parent = hex.parentChunk.transform;
+
+                    MeshFilter filter = holder.GetComponent<MeshFilter>();
+
+                    holder.renderer.material.mainTexture = r.meshTexture;
+
+                    filter.mesh = new Mesh();
+                    filter.mesh.CombineMeshes(combine);
+
+                    hex.rObject = holder;
 
                     //UV mapping
                     Rect rectArea;

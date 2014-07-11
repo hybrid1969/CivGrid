@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using CivGrid;
@@ -93,8 +94,6 @@ namespace CivGrid
 
                 writer.WriteStartElement("ResourceManager");
 
-                    writer.WriteElementString("resourceCount", resourceManager.resources.Count.ToString());
-
                     writer.WriteStartElement("Resources");
                         for (int i = 1; i < resourceManager.resources.Count; i++)
                         {
@@ -103,31 +102,25 @@ namespace CivGrid
                                 writer.WriteAttributeString("name", resourceManager.resources[i].name);
                                 writer.WriteAttributeString("rarity", resourceManager.resources[i].rarity.ToString());
                                 writer.WriteAttributeString("spawnAmount", resourceManager.resources[i].spawnAmount.ToString());
-                                writer.WriteAttributeString("meshToSpawn", (assetPrefix.ToString() + AssetDatabase.GetAssetPath(resourceManager.resources[i].meshToSpawn)));
-                                writer.WriteAttributeString("meshTexture", (assetPrefix.ToString() + AssetDatabase.GetAssetPath(resourceManager.resources[i].meshTexture)));
+                            Debug.Log(resourceManager.resources[i].meshToSpawn);
+                            Debug.Log(AssetDatabase.GetAssetPath(resourceManager.resources[i].meshToSpawn));
+                                writer.WriteAttributeString("meshToSpawn", (AssetDatabase.GetAssetPath(resourceManager.resources[i].meshToSpawn)));
+                                writer.WriteAttributeString("meshTexture", (AssetDatabase.GetAssetPath(resourceManager.resources[i].meshTexture)));
                                 writer.WriteAttributeString("replaceGroundTexture", XmlConvert.ToString(resourceManager.resources[i].replaceGroundTexture));
 
-                                writer.WriteStartElement("ResourceRule");
-                                    
-                                    writer.WriteStartElement("PossibleTiles");
-                                        for (int y = 0; y < resourceManager.resources[i].rule.possibleTiles.Length; y++)
-                                        {
-                                            writer.WriteStartElement("Tile");
-                                                writer.WriteElementString("tile", resourceManager.resources[i].rule.possibleTiles[y].ToString());
-                                            writer.WriteEndElement();
-                                        }
-                                    writer.WriteEndElement();
+                                writer.WriteAttributeString("numOfPossibleTiles", resourceManager.resources[i].rule.possibleTiles.Length.ToString());
 
-                                    writer.WriteStartElement("PossibleFeatures");
-                                        for (int y = 0; y < resourceManager.resources[i].rule.possibleFeatures.Length; y++)
-                                        {
-                                            writer.WriteStartElement("Feature");
-                                                writer.WriteElementString("feature", resourceManager.resources[i].rule.possibleFeatures[y].ToString());
-                                            writer.WriteEndElement();
-                                        }
-                                    writer.WriteEndElement();
+                                for (int y = 0; y < resourceManager.resources[i].rule.possibleTiles.Length; y++)
+                                {
+                                    writer.WriteAttributeString("possibleTile" + y, resourceManager.resources[i].rule.possibleTiles[y].ToString());
+                                }
 
-                                writer.WriteEndElement();
+                                writer.WriteAttributeString("numOfPossibleFeatures", resourceManager.resources[i].rule.possibleFeatures.Length.ToString());
+
+                                for (int y = 0; y < resourceManager.resources[i].rule.possibleFeatures.Length; y++)
+                                {
+                                    writer.WriteAttributeString("possibleFeature" + y, resourceManager.resources[i].rule.possibleFeatures[y].ToString());
+                                }
 
                             writer.WriteEndElement();
                         }
@@ -305,10 +298,27 @@ namespace CivGrid
                             case "NewResource":
                                 string loc1 = reader["meshToSpawn"];
                                 string loc2 = reader["meshTexture"];
-                                resourceManager.resources.Add(new Resource(reader["name"], (float)XmlConvert.ToDouble(reader["rarity"]), XmlConvert.ToInt32(reader["spawnAmount"]),
-                                    (Mesh)AssetDatabase.LoadAssetAtPath(((string)loc1.Clone()).Remove(0, loc1.IndexOf("Assets")), typeof(Mesh)),
-                                    (Texture2D)AssetDatabase.LoadAssetAtPath(((string)loc2.Clone()).Remove(0, loc2.IndexOf("Assets")), typeof(Texture2D)),
-                                    XmlConvert.ToBoolean(reader["replaceGroundTexture"]), new ResourceRule(null, null)));
+
+                                List<int> possibleTiles = new List<int>();
+                                List<Feature> possibleFeatures = new List<Feature>();
+
+                                for(int i = 0; i < XmlConvert.ToInt32(reader["numOfPossibleTiles"]); i++)
+                                {
+                                    possibleTiles.Add(XmlConvert.ToInt32(reader["possibleTile" + i]));
+                                }
+
+                                for (int i = 0; i < XmlConvert.ToInt32(reader["numOfPossibleFeatures"]); i++)
+                                {
+                                    possibleFeatures.Add((Feature)System.Enum.Parse(typeof(Feature), reader["possibleFeature" + i]));
+                                }
+
+                                resourceManager.resources.Add(new Resource(
+                                    reader["name"],
+                                    ((float)XmlConvert.ToDouble(reader["rarity"])),
+                                    XmlConvert.ToInt32(reader["spawnAmount"]),
+                                    ((Mesh)AssetDatabase.LoadAssetAtPath(loc1, typeof(Mesh))),
+                                    ((Texture2D)AssetDatabase.LoadAssetAtPath(loc2, typeof(Texture2D))),
+                                    XmlConvert.ToBoolean(reader["replaceGroundTexture"]), new ResourceRule(possibleTiles.ToArray(), possibleFeatures.ToArray())));
                                 break;
                             #endregion
                             default:

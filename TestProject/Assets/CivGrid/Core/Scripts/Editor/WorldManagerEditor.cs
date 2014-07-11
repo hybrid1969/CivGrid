@@ -19,6 +19,8 @@ namespace CivGrid.Editors
 
         public override void OnInspectorGUI()
         {
+            GUILayout.Label("World Settings", EditorStyles.boldLabel);
+
             worldManager.generateOnStart = EditorGUILayout.Toggle("Generate World On Startup", worldManager.generateOnStart);
             worldManager.useCivGridCamera = EditorGUILayout.Toggle("Use Default CivGrid Camera", worldManager.useCivGridCamera);
             worldManager.useWorldTypeValues = EditorGUILayout.Toggle("Use Preset World Values", worldManager.useWorldTypeValues);
@@ -31,6 +33,9 @@ namespace CivGrid.Editors
             {
                 worldManager.worldType = (WorldType)EditorGUILayout.EnumPopup("World Type", worldManager.worldType);
             }
+
+            GUILayout.Label("Size Settings", EditorStyles.boldLabel);
+
             worldManager.mapSize = EditorGUILayout.Vector2Field("Map Size", worldManager.mapSize);
             worldManager.chunkSize = EditorGUILayout.IntField("Chunk Size", worldManager.chunkSize);
 
@@ -40,6 +45,10 @@ namespace CivGrid.Editors
             }
 
             worldManager.hexRadiusSize = EditorGUILayout.FloatField("Hex Radius Size", worldManager.hexRadiusSize);
+
+            GUILayout.Label("Mountain Settings", EditorStyles.boldLabel);
+
+            worldManager.mountainScaleY = EditorGUILayout.FloatField("Mountain Scale Y", worldManager.mountainScaleY);
             worldManager.mountainMap = (Texture2D)EditorGUILayout.ObjectField("Base Mountain Heightmap", worldManager.mountainMap, typeof(Texture2D), false);
 
             //base.OnInspectorGUI();
