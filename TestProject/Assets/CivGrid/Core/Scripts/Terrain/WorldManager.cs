@@ -19,6 +19,7 @@ namespace CivGrid
         public bool useCivGridCamera;
 
         public bool generateOnStart;
+        private bool assignTypes;
         private bool doneGenerating;
 
         //Moving
@@ -85,23 +86,31 @@ namespace CivGrid
             civGridCamera = GameObject.FindObjectOfType<CivGridCamera>();
             if (generateOnStart == true)
             {
-                //LoadAndGenerateMap("C:/Users/Landon/Desktop/CivGridRepository/TestProject/terrainTest");
-                GenerateNewMap();
-                //System.Diagnostics.T
-                CivGridSaver.SaveTerrain("terrainTest", this);
+                LoadAndGenerateMap("terrainTest");
+                //GenerateNewMap(true);
+                //CivGridSaver.SaveTerrain("terrainTest", this);
             }
             else { civGridCamera.enabled = false; }
         }
 
-        public void GenerateNewMap()
+        public void GenerateNewMap(bool assignTypes)
         {
+            Destroy(GameObject.Find("ChunkHolder"));
+            this.assignTypes = assignTypes;
             StartGeneration();
         }
 
-        public void LoadAndGenerateMap(string savedMapLocation)
+        public void LoadAndGenerateMap(string name)
         {
+            assignTypes = false;
+            string savedMapLocation = Application.dataPath + "/../" +  name;
             CivGridSaver.LoadTerrain(savedMapLocation, this);
-            StartGeneration();
+            resourceManager.InitResourceTexturesOnHexs();
+        }
+
+        public void SaveMap(string name)
+        {
+            
         }
 
         private void StartGeneration()
@@ -109,17 +118,23 @@ namespace CivGrid
             resourceManager.SetUp();
             improvementManager.SetUp();
             tileManager.SetUp();
+
+
+            DetermineWorldType();
+            GetHexProperties();
+            GenerateMap();
+
             if (useCivGridCamera)
             {
                 civGridCamera.enabled = true;
                 if (civGridCamera == null) { Debug.LogError("Please add the 'CivGridCamera' to the mainCamera"); }
                 else { civGridCamera.SetupCameras(this); }
             }
-            DetermineWorldType();
-            GetHexProperties();
-            GenerateMap();
 
-            resourceManager.InitResourceTexturesOnHexs();
+            if (assignTypes == true)
+            {
+                resourceManager.InitResourceTexturesOnHexs();
+            }
 
             doneGenerating = true;
         }
@@ -129,7 +144,7 @@ namespace CivGrid
             noiseScale /= mapSize.magnitude;
         }
 
-        //sets the tileMap to the appripriet map
+        //sets the tileMap to the correct mapping settings
         void DetermineWorldType()
         {
             if (useWorldTypeValues)
@@ -261,6 +276,8 @@ namespace CivGrid
             hexChunk.mountainTexture = this.mountainMap;
             //pass down our mountainScaleY
             hexChunk.maxHeight = mountainScaleY;
+            //pass down if we should assign each hex its tile, feature, or resource
+            hexChunk.assignTypes = this.assignTypes;
             //set the texture map for this chunk and add the mesh renderer
             chunkObj.AddComponent<MeshRenderer>().material.mainTexture = textureAtlas.terrainAtlas;
             //add the mesh filter
@@ -323,7 +340,7 @@ namespace CivGrid
         /// <param name="x">The x cords of the tile</param>
         /// <param name="h">The h(height) cord of the tile</param>
         /// <returns>An int corresponding to the biome it should be within</returns>
-        public Tile PickHexType(int x, int h)
+        public Tile PickTileType(int x, int h)
         {
             //temp no influence from rainfall values
             float latitude = Mathf.Abs((mapSize.y / 2) - h) / (mapSize.y / 2);//1 == snow (top) 0 == eqautor
@@ -609,8 +626,8 @@ namespace CivGrid
 
         void OnGUI()
         {
-            GUI.Label(new Rect(20, 0, 100, 20), goToHex.ToString());
-            GUI.Label(new Rect(20, 30, 100, 20), distance.ToString("Distance: #."));
+            //GUI.Label(new Rect(20, 0, 100, 20), goToHex.ToString());
+            //GUI.Label(new Rect(20, 30, 100, 20), distance.ToString("Distance: #."));
         }
     }
 

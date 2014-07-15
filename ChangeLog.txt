@@ -80,3 +80,5 @@ Version 0.5.1f
 	+Added ability to determine when to start world generation
 	+Basic code cleanup
 	+New hierarchy layout
+	+Added Save/Load functionality 	WorldManager.LoadAndGenerateNewMap()) / 	WorldManager.SaveMap()
+	+Minor bug fixes

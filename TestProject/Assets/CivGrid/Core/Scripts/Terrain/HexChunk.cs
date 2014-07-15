@@ -16,6 +16,7 @@ namespace CivGrid
         //set by world master
         public int xSector;
         public int ySector;
+        public bool assignTypes;
         public WorldManager worldManager;
 
         private MeshFilter filter;
@@ -113,8 +114,11 @@ namespace CivGrid
             hex.worldPosition = new Vector3(hex.localPosition.x + (xSector * (chunkSize.x * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((ySector * (chunkSize.y * hexSize.z)) * (.75f)));
 
             ///Set Hex values
-            hex.terrainFeature = worldManager.PickFeatureType((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
-            hex.terrainType = worldManager.PickHexType((int)worldArrayPosition.x, (int)worldArrayPosition.y);
+            if (assignTypes)
+            {
+                hex.terrainFeature = worldManager.PickFeatureType((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
+                hex.terrainType = worldManager.PickTileType((int)worldArrayPosition.x, (int)worldArrayPosition.y);
+            }
             hex.hexExt = worldManager.hexExt;
             hex.hexCenter = worldManager.hexCenter;
             hex.resourceManager = worldManager.resourceManager;
@@ -146,7 +150,7 @@ namespace CivGrid
 
             ///Set Hex values
             hex.terrainFeature = worldManager.PickFeatureType((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
-            hex.terrainType = worldManager.PickHexType((int)worldArrayPosition.x, (int)worldArrayPosition.y);
+            hex.terrainType = worldManager.PickTileType((int)worldArrayPosition.x, (int)worldArrayPosition.y);
             hex.hexExt = worldManager.hexExt;
             hex.hexCenter = worldManager.hexCenter;
             hex.resourceManager = worldManager.resourceManager;
@@ -194,6 +198,14 @@ namespace CivGrid
             //begin making hexagons
             GenerateChunk();
 
+            if (assignTypes == true)
+            {
+                StartHex();
+            }
+        }
+
+        public void StartHex()
+        {
             //cycle through all hexagons
             for (int x = 0; x < chunkSize.x; x++)
             {

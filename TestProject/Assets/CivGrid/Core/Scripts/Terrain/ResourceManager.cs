@@ -63,6 +63,18 @@ namespace CivGrid
             Destroy(hex.rObject);
         }
 
+        public Resource TryGetResource(string name)
+        {
+            foreach(Resource r in resources)
+            {
+                if(r.name == name)
+                {
+                    return r;
+                }
+            }
+            return null;
+        }
+
         public void SpawnResource(HexInfo hex, Resource r, bool regenerateChunk)
         {
             hex.resourceLocations.Clear();
@@ -73,16 +85,25 @@ namespace CivGrid
 
             if (r.meshToSpawn != null)
             {
-                float y = (hex.localMesh.bounds.extents.y); if (y == 0) { y -= ((hex.worldPosition.y + hex.localMesh.bounds.extents.y) / Random.Range(4, 8)); } else { y = hex.worldPosition.y + hex.localMesh.bounds.extents.y + hex.currentResource.meshToSpawn.bounds.extents.y; }
+                float y;
+                if (hex.localMesh == null)
+                {
+                    y = (worldManager.hexExt.y); if (y == 0) { y -= ((hex.worldPosition.y + worldManager.hexExt.y) / Random.Range(4, 8)); } else { y = hex.worldPosition.y + worldManager.hexExt.y + hex.currentResource.meshToSpawn.bounds.extents.y; }
+                }
+                else
+                {
+                    y = (hex.localMesh.bounds.extents.y); if (y == 0) { y -= ((hex.worldPosition.y + hex.localMesh.bounds.extents.y) / Random.Range(4, 8)); } else { y = hex.worldPosition.y + hex.localMesh.bounds.extents.y + hex.currentResource.meshToSpawn.bounds.extents.y; }
+                }
+
                 for (int i = 0; i < r.spawnAmount; i++)
                 {
                     if (hex.currentResource.meshToSpawn == null && hex.currentResource.name != "None") { Debug.LogWarning("No Mesh was assigned to spawn for resource: " + hex.currentResource.name + ". Aborting spawning of graphics for this resource."); return; }
 
-                    hex.localMesh.RecalculateBounds();
+                    //hex.localMesh.RecalculateBounds();
 
                     //position setting
-                    float x = (hex.localMesh.bounds.center.x + Random.Range(-0.2f, 0.2f));
-                    float z = (hex.localMesh.bounds.center.z + Random.Range(-0.2f, 0.2f));
+                    float x = (worldManager.hexCenter.x + Random.Range(-0.2f, 0.2f));
+                    float z = (worldManager.hexCenter.z + Random.Range(-0.2f, 0.2f));
                     hex.resourceLocations.Add(new Vector3(x, y, z));
                 }
 

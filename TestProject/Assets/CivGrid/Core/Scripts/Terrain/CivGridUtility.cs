@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 using System;
 
 namespace CivGrid
@@ -12,21 +11,22 @@ namespace CivGrid
     /// </summary>
     public static class CivGridUtility
     {
+#if UNITY_EDITOR
         #region CivGrid Component Spawner
 
-        [MenuItem("CivGrid/Create CivGrid Camera", priority = 6)]
+        [UnityEditor.MenuItem("CivGrid/Create CivGrid Camera", priority = 6)]
         public static void CreateCivGridCamera()
         {
             new GameObject("CivGrid Camera", typeof(Camera), typeof(GUILayer), typeof(AudioListener), typeof(CivGridCamera));
         }
 
-        [MenuItem("CivGrid/Create CivGrid World Manager", priority = 5)]
+        [UnityEditor.MenuItem("CivGrid/Create CivGrid World Manager", priority = 5)]
         public static void CreateCivGridWorldManager()
         {
             new GameObject("CivGrid World Manager", typeof(TileManager), typeof(ResourceManager), typeof(ImprovementManager), typeof(WorldManager));
         }
-
-        #endregion
+		#endregion
+#endif
 
         /// <summary>
         /// Get the surronding pixels of the referenced pixel location
@@ -113,8 +113,9 @@ namespace CivGrid
 
     /// <summary>
     /// Extends arrays of TileItem, ResourceItem, and ImprovementItem to act similar to a dictionary
+    /// Extends strings to cast to enums
     /// </summary>
-    public static class DictionaryExtensionMethods
+    public static class ExtensionMethods
     {
 
         #region TryGetValue
@@ -362,6 +363,11 @@ namespace CivGrid
         }
 
         #endregion
+
+        public static T ConvertToEnum<T>(this string value)
+        {
+            return (T)Enum.Parse(typeof(T), value);
+        }
     }
 
 }

@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-#region namespace defines
 using CivGrid;
-#endregion
 
 namespace CivGrid
 {
@@ -74,8 +72,11 @@ namespace CivGrid
         {
             if (terrainFeature == Feature.Mountain) { Tile mountain = parentChunk.worldManager.tileManager.TryGetMountain(); if (mountain != null) {  terrainType = mountain; } }
             MeshSetup();
-            currentImprovement = improvementManager.searalizableImprovements[0];
-            resourceManager.CheckForResource(this, out currentResource);
+            if (parentChunk.assignTypes == true)
+            {
+                currentImprovement = improvementManager.searalizableImprovements[0];
+                resourceManager.CheckForResource(this, out currentResource);
+            }
             worldTextureAtlas = parentChunk.worldManager.textureAtlas;
         }
 
@@ -271,6 +272,7 @@ namespace CivGrid
         {
             Vector2[] rawUV = parentChunk.worldManager.flatHexagonSharedMesh.uv;
             Rect rectArea;
+
             parentChunk.worldManager.textureAtlas.tileLocations.TryGetValue(terrainType, out rectArea);
 
             UV = new Vector2[rawUV.Length];

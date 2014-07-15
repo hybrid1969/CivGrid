@@ -60,6 +60,7 @@
      <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\GameManager.cs" />
      <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\Melee.cs" />
      <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\Range.cs" />
+     <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\SaveManager.cs" />
      <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\Unit.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

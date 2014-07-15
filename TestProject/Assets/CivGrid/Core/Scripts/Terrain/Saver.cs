@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using CivGrid;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace CivGrid
 {
@@ -19,7 +21,9 @@ namespace CivGrid
             byte[] bytes = texture.EncodeToPNG();
             File.WriteAllBytes(Application.dataPath + "/../" + name + ".png", bytes);
             if (openTextureToView) { Application.OpenURL(Application.dataPath + "/../" + name + ".png"); }
+			#if UNITY_EDITOR
             AssetDatabase.Refresh();
+			#endif
         }
 
         public static void SaveTexture(Texture2D texture, string location, string name, bool openTextureToView)
@@ -27,14 +31,18 @@ namespace CivGrid
             byte[] bytes = texture.EncodeToPNG();
             File.WriteAllBytes(location + "/" + name + ".png", bytes);
             if (openTextureToView) { Application.OpenURL(location + "/" + name + ".png"); }
+            #if UNITY_EDITOR
             AssetDatabase.Refresh();
+			#endif
         }
 
         public static void SaveTexture(byte[] texture, string location, string name, bool openTextureToView)
         {
             File.WriteAllBytes(location + "/" + name + ".png", texture);
             if (openTextureToView) { Application.OpenURL(location + "/" + name + ".png"); }
+            #if UNITY_EDITOR
             AssetDatabase.Refresh();
+			#endif
         }
 
         public static void SaveTerrain(string name, WorldManager worldManager)
@@ -50,20 +58,24 @@ namespace CivGrid
                 #region WorldManager
                 writer.WriteStartElement("WorldManager");
 
-                writer.WriteElementString("useCivGridCamera", XmlConvert.ToString(worldManager.useCivGridCamera));
-                writer.WriteElementString("usePresetWorldValue", XmlConvert.ToString(worldManager.useWorldTypeValues));
-                writer.WriteElementString("worldType", ((int)worldManager.worldType).ToString());
-                writer.WriteElementString("mapSizeX", worldManager.mapSize.x.ToString());
-                writer.WriteElementString("mapSizeY", worldManager.mapSize.y.ToString());
-                writer.WriteElementString("chunkSize", worldManager.chunkSize.ToString());
-                writer.WriteElementString("hexRadiusSize", worldManager.hexRadiusSize.ToString());
-                writer.WriteElementString("mountainMapLocation", (assetPrefix.ToString()  + AssetDatabase.GetAssetPath(worldManager.mountainMap)));
+                writer.WriteAttributeString("useCivGridCamera", XmlConvert.ToString(worldManager.useCivGridCamera));
+                writer.WriteAttributeString("usePresetWorldValue", XmlConvert.ToString(worldManager.useWorldTypeValues));
+                writer.WriteAttributeString("worldType", ((int)worldManager.worldType).ToString());
+                writer.WriteAttributeString("mapSizeX", worldManager.mapSize.x.ToString());
+                writer.WriteAttributeString("mapSizeY", worldManager.mapSize.y.ToString());
+                writer.WriteAttributeString("chunkSize", worldManager.chunkSize.ToString());
+                writer.WriteAttributeString("hexRadiusSize", worldManager.hexRadiusSize.ToString());
+
+
+                CivGridSaver.SaveTexture(worldManager.mountainMap, "Base_Mountain_Map", false);
 
                 writer.WriteEndElement();
                 #endregion
 
+                #region VoidedManagers
+                /*
                 #region TileManager
-
+                
                 TileManager tileManager = worldManager.tileManager;
 
                 writer.WriteStartElement("TileManager");
@@ -102,8 +114,6 @@ namespace CivGrid
                                 writer.WriteAttributeString("name", resourceManager.resources[i].name);
                                 writer.WriteAttributeString("rarity", resourceManager.resources[i].rarity.ToString());
                                 writer.WriteAttributeString("spawnAmount", resourceManager.resources[i].spawnAmount.ToString());
-                            Debug.Log(resourceManager.resources[i].meshToSpawn);
-                            Debug.Log(AssetDatabase.GetAssetPath(resourceManager.resources[i].meshToSpawn));
                                 writer.WriteAttributeString("meshToSpawn", (AssetDatabase.GetAssetPath(resourceManager.resources[i].meshToSpawn)));
                                 writer.WriteAttributeString("meshTexture", (AssetDatabase.GetAssetPath(resourceManager.resources[i].meshTexture)));
                                 writer.WriteAttributeString("replaceGroundTexture", XmlConvert.ToString(resourceManager.resources[i].replaceGroundTexture));
@@ -177,50 +187,74 @@ namespace CivGrid
                 writer.WriteEndElement();
 
                 #endregion
+                 */
+
+                #endregion
+
+                #region Chunk
+                for (int x = 0; x < worldManager.hexChunks.GetLength(0); x++)
+                {
+
+                    for (int y = 0; y < worldManager.hexChunks.GetLength(1); y++)
+                    {
+                        HexChunk chunk = worldManager.hexChunks[x, y];
+
+                        writer.WriteStartElement("Chunk");
+
+                        writer.WriteAttributeString("xChunkLoc", XmlConvert.ToString(x));
+                        writer.WriteAttributeString("yChunkLoc", XmlConvert.ToString(y));
+
+                        for (int _x = 0; _x < chunk.hexArray.GetLength(0); _x++)
+                        {
+                            for (int _y = 0; _y < chunk.hexArray.GetLength(1); _y++)
+                            {
+                                HexInfo hex = chunk.hexArray[_x, _y];
+
+                                #region Hex
+
+                                writer.WriteStartElement("Hexagon");
+
+                                writer.WriteAttributeString("xHexLoc", XmlConvert.ToString(_x));
+
+                                writer.WriteAttributeString("yHexLoc", XmlConvert.ToString(_y));
+
+                                writer.WriteAttributeString("xParentChunk", XmlConvert.ToString(x));
+
+                                writer.WriteAttributeString("yParentChunk", XmlConvert.ToString(y));
+
+                                writer.WriteAttributeString("type", hex.terrainType.name);
+
+                                writer.WriteAttributeString("feature", ((int)hex.terrainFeature).ToString());
+
+                                writer.WriteAttributeString("resource", hex.currentResource.name);
+
+                                //writer.WriteAttributeString("ySpawnPos", hex.rObject.transform.position.y)
+
+                                writer.WriteAttributeString("improvement", hex.currentImprovement.name);
+
+                                writer.WriteEndElement();
+
+                                #endregion
+                            }
+                        }
+                        writer.WriteEndElement();
+                    }
+                }
+                #endregion
 
                 #region CivGridCamera
 
                 writer.WriteStartElement("CivGridCamera");
 
                 //camera settings
-                writer.WriteElementString("enableWrapping", XmlConvert.ToString(worldManager.civGridCamera.enableWrapping));
-                writer.WriteElementString("cameraHeight", worldManager.civGridCamera.cameraHeight.ToString());
-                writer.WriteElementString("cameraAngle", worldManager.civGridCamera.cameraAngle.ToString());
-                writer.WriteElementString("cameraSpeed", worldManager.civGridCamera.cameraSpeed.ToString());
+                writer.WriteAttributeString("enableWrapping", XmlConvert.ToString(worldManager.civGridCamera.enableWrapping));
+                writer.WriteAttributeString("cameraHeight", worldManager.civGridCamera.cameraHeight.ToString());
+                writer.WriteAttributeString("cameraAngle", worldManager.civGridCamera.cameraAngle.ToString());
+                writer.WriteAttributeString("cameraSpeed", worldManager.civGridCamera.cameraSpeed.ToString());
 
                 writer.WriteEndElement();
 
                 #endregion
-
-
-                foreach (HexChunk chunk in worldManager.hexChunks)
-                {
-                    #region Chunk
-
-                    writer.WriteStartElement("Chunk");
-
-                    foreach (HexInfo hex in chunk.hexArray)
-                    {
-                        #region Hex
-
-                        writer.WriteStartElement("Hexagon");
-
-                        writer.WriteElementString("Type", hex.terrainType.name);
-
-                        writer.WriteElementString("Feature", ((int)hex.terrainFeature).ToString());
-
-                        writer.WriteElementString("Resource", hex.currentResource.name);
-
-                        writer.WriteElementString("Improvement", hex.currentImprovement.name);
-
-                        writer.WriteEndElement();
-
-                        #endregion
-                    }
-                    writer.WriteEndElement();
-
-                    #endregion
-                }
 
                 writer.WriteEndElement();
                 writer.WriteEndDocument();
@@ -229,11 +263,8 @@ namespace CivGrid
 
         public static void LoadTerrain(string location, WorldManager worldManager)
         {
-            TileManager tileManager = worldManager.tileManager;
-            ResourceManager resourceManager = worldManager.resourceManager;
 
-            tileManager.tiles.Clear();
-            resourceManager.resources.Clear();
+            bool startedGen = false;
 
             using (XmlReader reader = XmlReader.Create(location + ".xml"))
             {
@@ -243,39 +274,42 @@ namespace CivGrid
                     {
                         switch (reader.Name)
                         {
-                            case "Root":
-                                Debug.Log("opening root");
-                                break;
-                            #region WorldManager
                             case "WorldManager":
-                                Debug.Log("opening WorldManager");
+                                worldManager.useCivGridCamera = XmlConvert.ToBoolean(reader["useCivGridCamera"]);
+                                worldManager.useWorldTypeValues = XmlConvert.ToBoolean(reader["usePresetWorldValue"]);
+                                worldManager.worldType = (WorldType)XmlConvert.ToInt32(reader["worldType"]);
+                                worldManager.mapSize = new Vector2(XmlConvert.ToInt32(reader["mapSizeX"]), XmlConvert.ToInt32(reader["mapSizeY"]));
+                                worldManager.chunkSize = XmlConvert.ToInt32(reader["chunkSize"]);
+                                worldManager.hexRadiusSize = (float)XmlConvert.ToDouble(reader["hexRadiusSize"]);
+                                worldManager.mountainMap = CivGridSaver.LoadTexture("Base_Mountain_Map");
                                 break;
-                            case "useCivGridCamera":
-                                worldManager.useCivGridCamera = XmlConvert.ToBoolean(reader.ReadString());
+                            case "CivGridCamera":
+
+                                worldManager.civGridCamera.enableWrapping = XmlConvert.ToBoolean(reader["enableWrapping"]);
+                                worldManager.civGridCamera.cameraHeight = (float)XmlConvert.ToDouble(reader["cameraHeight"]);
+                                worldManager.civGridCamera.cameraAngle = (float)XmlConvert.ToDouble(reader["cameraAngle"]);
+                                worldManager.civGridCamera.cameraSpeed = (float)XmlConvert.ToDouble(reader["cameraSpeed"]);
                                 break;
-                            case "usePresetWorldValue":
-                                worldManager.useWorldTypeValues = XmlConvert.ToBoolean(reader.ReadString());
+                            case "Chunk":
+                                if (startedGen == false)
+                                {
+                                    worldManager.GenerateNewMap(false);
+                                    startedGen = true;
+                                }
                                 break;
-                            case "worldType":
-                                worldManager.worldType = (WorldType)XmlConvert.ToInt32(reader.ReadString());
+                            case "Hexagon":
+                                HexInfo hex = worldManager.hexChunks[XmlConvert.ToInt32(reader["xParentChunk"]), XmlConvert.ToInt32(reader["yParentChunk"])].hexArray[XmlConvert.ToInt32(reader["xHexLoc"]), XmlConvert.ToInt32(reader["yHexLoc"])];
+                                
+                                hex.terrainType = worldManager.tileManager.TryGet(reader["type"]);
+                                hex.terrainFeature = (Feature)XmlConvert.ToInt32(reader["feature"]);
+                                hex.parentChunk = worldManager.hexChunks[XmlConvert.ToInt32(reader["xParentChunk"]), XmlConvert.ToInt32(reader["yParentChunk"])];
+                                
+                                hex.currentResource = worldManager.resourceManager.TryGetResource(reader["resource"]);
+                                
+                                hex.currentImprovement = worldManager.improvementManager.TryGetImprovement(reader["improvement"]);
                                 break;
-                            case "mapSizeX":
-                                worldManager.mapSize = new Vector2(XmlConvert.ToInt32(reader.ReadString()), worldManager.mapSize.y);
-                                break;
-                            case "mapSizeY":
-                                worldManager.mapSize = new Vector2(worldManager.mapSize.x, XmlConvert.ToInt32(reader.ReadString()));
-                                break;
-                            case "chunkSize":
-                                worldManager.chunkSize = XmlConvert.ToInt32(reader.ReadString());
-                                break;
-                            case "hexRadiusSize":
-                                worldManager.hexRadiusSize = (float)XmlConvert.ToDouble(reader.ReadString());
-                                break;
-                            case "mountainMapLocation":
-                                string loc = reader.ReadString();
-                                worldManager.mountainMap = (Texture2D)AssetDatabase.LoadAssetAtPath(((string)loc.Clone()).Remove(0, loc.IndexOf("Assets")), typeof(Texture2D));
-                                break;
-                            #endregion
+                            #region VoidedManagers
+                            /*
                             #region TileManager
                             case "TileManager":
                                 Debug.Log("opening tile manager");
@@ -321,20 +355,48 @@ namespace CivGrid
                                     XmlConvert.ToBoolean(reader["replaceGroundTexture"]), new ResourceRule(possibleTiles.ToArray(), possibleFeatures.ToArray())));
                                 break;
                             #endregion
+                                 */
+                            #endregion
                             default:
-                                //Debug.Log("unhandled exception");
+                                //Debug.Log("unhandled exception: " + reader.Name);
                                 break;
 
                         }
                     }
                 }
             }
+
+            foreach(HexChunk chunk in worldManager.hexChunks)
+            {
+                chunk.StartHex();
+                foreach(HexInfo hex in chunk.hexArray)
+                {
+                    if (hex.currentResource.name != "None")
+                    {
+                        worldManager.resourceManager.SpawnResource(hex, hex.currentResource, true);
+                    }
+                    if (hex.currentImprovement.name != "None")
+                    {
+                        worldManager.improvementManager.AddImprovement(hex.currentImprovement);
+                    }
+                }
+            }
         }
 
-        public static Texture2D LoadTexture(string location)
+        public static Texture2D LoadTexture(string location, string name)
         {
             byte[] bytes;
-            bytes = File.ReadAllBytes(location);
+            bytes = File.ReadAllBytes(location + "/../" + name + ".png");
+            Texture2D tex = new Texture2D(0, 0);
+
+            tex.LoadImage(bytes);
+            return tex;
+        }
+
+        public static Texture2D LoadTexture(string name)
+        {
+            byte[] bytes;
+            bytes = File.ReadAllBytes(Application.dataPath + "/../" + name + ".png");
             Texture2D tex = new Texture2D(0, 0);
 
             tex.LoadImage(bytes);

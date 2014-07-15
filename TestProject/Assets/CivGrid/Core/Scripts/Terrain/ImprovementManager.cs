@@ -48,6 +48,18 @@ namespace CivGrid
             UpdateImprovementNames();
         }
 
+        public Improvement TryGetImprovement(string name)
+        {
+            foreach(Improvement i in improvements)
+            {
+                if(i.name == name)
+                {
+                    return i;
+                }
+            }
+            return null;
+        }
+
         public void UpdateImprovementNames()
         {
             if (improvements != null && improvements.Count > 0)
