@@ -86,9 +86,9 @@ namespace CivGrid
             civGridCamera = GameObject.FindObjectOfType<CivGridCamera>();
             if (generateOnStart == true)
             {
-                LoadAndGenerateMap("terrainTest");
-                //GenerateNewMap(true);
-                //CivGridSaver.SaveTerrain("terrainTest", this);
+                //LoadAndGenerateMap("terrainTest");
+                GenerateNewMap(true);
+                CivGridSaver.SaveTerrain("terrainTest", this);
             }
             else { civGridCamera.enabled = false; }
         }
