@@ -46,11 +46,11 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Editor\CivGridEditor.cs" />
-     <Compile Include="Assets\Editor\ImprovementManagerEditor.cs" />
-     <Compile Include="Assets\Editor\ResourceManagerEditor.cs" />
-     <Compile Include="Assets\Editor\TIleManagerEditor.cs" />
-     <Compile Include="Assets\Editor\WorldManagerEditor.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Editor\CivGridEditor.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Editor\ImprovementManagerEditor.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Editor\ResourceManagerEditor.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Editor\TIleManagerEditor.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Editor\WorldManagerEditor.cs" />
  <Reference Include="UnityEditor.Graphs">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
  </Reference>

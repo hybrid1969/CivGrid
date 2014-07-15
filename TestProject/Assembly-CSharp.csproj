@@ -46,21 +46,22 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\CivGrid\[Scripts]\GameManager.cs" />
-     <Compile Include="Assets\CivGrid\[Scripts]\Melee.cs" />
-     <Compile Include="Assets\CivGrid\[Scripts]\Range.cs" />
-     <Compile Include="Assets\CivGrid\[Scripts]\Terrain\CivGridCamera.cs" />
-     <Compile Include="Assets\CivGrid\[Scripts]\Terrain\CivGridUtility.cs" />
-     <Compile Include="Assets\CivGrid\[Scripts]\Terrain\HexChunk.cs" />
-     <Compile Include="Assets\CivGrid\[Scripts]\Terrain\HexInfo.cs" />
-     <Compile Include="Assets\CivGrid\[Scripts]\Terrain\ImprovementManager.cs" />
-     <Compile Include="Assets\CivGrid\[Scripts]\Terrain\NoiseGenerator.cs" />
-     <Compile Include="Assets\CivGrid\[Scripts]\Terrain\ResourceManager.cs" />
-     <Compile Include="Assets\CivGrid\[Scripts]\Terrain\Saver.cs" />
-     <Compile Include="Assets\CivGrid\[Scripts]\Terrain\TexturePacker.cs" />
-     <Compile Include="Assets\CivGrid\[Scripts]\Terrain\TileManager.cs" />
-     <Compile Include="Assets\CivGrid\[Scripts]\Terrain\WorldManager.cs" />
-     <Compile Include="Assets\CivGrid\[Scripts]\Unit.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\CivGridCamera.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\CivGridUtility.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\HexChunk.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\HexInfo.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\ImprovementManager.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\NoiseGenerator.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\ResourceManager.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\Saver.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\TexturePacker.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\TileManager.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\WorldManager.cs" />
+     <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\GameManager.cs" />
+     <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\Melee.cs" />
+     <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\Range.cs" />
+     <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\SaveManager.cs" />
+     <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\Unit.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
