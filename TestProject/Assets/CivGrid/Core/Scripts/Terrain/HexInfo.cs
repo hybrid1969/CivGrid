@@ -20,7 +20,7 @@ namespace CivGrid
         public Tile terrainType;
         public Feature terrainFeature;
         public Vector3[] vertsx;
-        Vector2[] defaultFeatureUV;
+        Vector2[] baseFeatureUv;
 
         public HexChunk parentChunk;
 
@@ -31,6 +31,8 @@ namespace CivGrid
         //basic hexagon mesh making
         public Vector3[] vertices;
         public Vector2[] UV;
+        public Rect rectLocation;
+        public Rect defaultRectLocation;
         public int[] triangles;
 
         //resources
@@ -72,7 +74,7 @@ namespace CivGrid
         {
             if (terrainFeature == Feature.Mountain) { Tile mountain = parentChunk.worldManager.tileManager.TryGetMountain(); if (mountain != null) {  terrainType = mountain; } }
             MeshSetup();
-            if (parentChunk.assignTypes == true)
+            if (parentChunk.worldManager.generateNewValues == true)
             {
                 currentImprovement = improvementManager.searalizableImprovements[0];
                 resourceManager.CheckForResource(this, out currentResource);
@@ -86,15 +88,13 @@ namespace CivGrid
             {
                 if (terrainFeature == Feature.Flat)
                 {
-                    Rect rectArea;
-                    worldTextureAtlas.resourceLocations.TryGetValue(currentResource, out rectArea);
-                    AssignUV(rectArea);
+                    worldTextureAtlas.resourceLocations.TryGetValue(currentResource, out rectLocation);
+                    AssignUV(rectLocation);
                 }
                 else if (terrainFeature == Feature.Hill || terrainFeature == Feature.Mountain)
                 {
-                    Rect rectArea;
-                    worldTextureAtlas.resourceLocations.TryGetValue(currentResource, out rectArea);
-                    AssignPresetUV(localMesh, rectArea);
+                    worldTextureAtlas.resourceLocations.TryGetValue(currentResource, out rectLocation);
+                    AssignPresetUV(localMesh, rectLocation);
                 }
                 parentChunk.RegenerateMesh();
             }
@@ -106,15 +106,13 @@ namespace CivGrid
             {
                 if (terrainFeature == Feature.Flat)
                 {
-                    Rect rectArea;
-                    worldTextureAtlas.improvementLocations.TryGetValue(currentImprovement, out rectArea);
-                    AssignUV(rectArea);
+                    worldTextureAtlas.improvementLocations.TryGetValue(currentImprovement, out rectLocation);
+                    AssignUV(rectLocation);
                 }
                 else if (terrainFeature == Feature.Hill || terrainFeature == Feature.Mountain)
                 {
-                    Rect rectArea;
-                    worldTextureAtlas.improvementLocations.TryGetValue(currentImprovement, out rectArea);
-                    AssignPresetUV(localMesh, rectArea);
+                    worldTextureAtlas.improvementLocations.TryGetValue(currentImprovement, out rectLocation);
+                    AssignPresetUV(localMesh, rectLocation);
                 }
                 parentChunk.RegenerateMesh();
             }
@@ -130,7 +128,7 @@ namespace CivGrid
                 }
                 else if (terrainFeature == Feature.Hill || terrainFeature == Feature.Mountain)
                 {
-                    AssignPresetUVToDefaultTile(defaultFeatureUV);
+                    AssignPresetUVToDefaultTile(baseFeatureUv);
                 }
                 parentChunk.RegenerateMesh();
             }
@@ -159,14 +157,14 @@ namespace CivGrid
             #region Feature
             else if (terrainFeature == Feature.Mountain || terrainFeature == Feature.Hill)
             {
-                Texture2D localMountainTexture = new Texture2D(parentChunk.mountainTexture.width, parentChunk.mountainTexture.height);
+                Texture2D localMountainTexture = new Texture2D(parentChunk.worldManager.mountainMap.width, parentChunk.worldManager.mountainMap.height);
                 if (terrainFeature == Feature.Mountain)
                 {
-                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.mountainTexture, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.2f, 0.5f), Random.Range(0.3f, 0.6f), parentChunk.maxHeight, true);
+                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.2f, 0.5f), Random.Range(0.3f, 0.6f), parentChunk.worldManager.mountainScaleY, true);
                 }
                 else if (terrainFeature == Feature.Hill)
                 {
-                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.mountainTexture, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.75f, 1f), Random.Range(0.4f, 0.7f), parentChunk.maxHeight, true);
+                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.75f, 1f), Random.Range(0.4f, 0.7f), parentChunk.worldManager.mountainScaleY, true);
                 }
 
                 int width = Mathf.Min(localMountainTexture.width, 255);
@@ -179,7 +177,7 @@ namespace CivGrid
                 Vector4[] tangents = new Vector4[height * width];
 
                 Vector2 uvScale = new Vector2(1.0f / width, 1.0f / height);
-                Vector3 sizeScale = new Vector3(parentChunk.hexSize.x / (width * 0.9f), parentChunk.maxHeight, parentChunk.hexSize.z / (height * 0.9f));
+                Vector3 sizeScale = new Vector3(parentChunk.hexSize.x / (width * 0.9f), parentChunk.worldManager.mountainScaleY, parentChunk.hexSize.z / (height * 0.9f));
                 Vector2[] rawUV = new Vector2[height * width];
 
                 #region verts
@@ -200,7 +198,7 @@ namespace CivGrid
                         {
                             pixelHeight = localMountainTexture.GetPixel(x, y).grayscale;
                         }
-                        Vector3 vertex = new Vector3(x, pixelHeight - (parentChunk.maxHeight / 100), y);
+                        Vector3 vertex = new Vector3(x, pixelHeight - (parentChunk.worldManager.mountainScaleY / 100), y);
                         vertices[y * width + x] = Vector3.Scale(sizeScale, vertex);
                         rawUV[y * width + x] = Vector2.Scale(uvScale, new Vector2(vertex.x, vertex.z));
 
@@ -213,7 +211,7 @@ namespace CivGrid
                         tangents[y * width + x] = new Vector4(tan.x, tan.y, tan.z, -1.0f);
                     }
                 }
-                defaultFeatureUV = rawUV;
+                baseFeatureUv = rawUV;
                 #endregion
 
                 // Assign them to the mesh
@@ -271,17 +269,22 @@ namespace CivGrid
         private void AssignUVToDefaultTile()
         {
             Vector2[] rawUV = parentChunk.worldManager.flatHexagonSharedMesh.uv;
-            Rect rectArea;
 
-            parentChunk.worldManager.textureAtlas.tileLocations.TryGetValue(terrainType, out rectArea);
+            if (parentChunk.worldManager.generateNewValues == true)
+            {
+                if (defaultRectLocation == new Rect())
+                {
+                    parentChunk.worldManager.textureAtlas.tileLocations.TryGetValue(terrainType, out rectLocation);
+                    defaultRectLocation = rectLocation;
+                }
+                else { rectLocation = defaultRectLocation; }
+            }
 
             UV = new Vector2[rawUV.Length];
 
             for (int i = 0; i < rawUV.Length; i++)
             {
-                UV[i] = new Vector2(rawUV[i].x * rectArea.width + rectArea.x, rawUV[i].y * rectArea.height + rectArea.y);
-
-                //UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
+                UV[i] = new Vector2(rawUV[i].x * rectLocation.width + rectLocation.x, rawUV[i].y * rectLocation.height + rectLocation.y);
             }
 
             localMesh.uv = UV;
@@ -308,19 +311,23 @@ namespace CivGrid
         /// Assign the UV maps for a hexagon with a feature(mountain, hill, etc)
         /// </summary>
         /// <param name="rawUV">UV map locations for (0,0) sector of texture atlas</param>
-        /// <param name="sectorPercentage">Percent each sector in the atlas takes up in one direction (1/numberOfSectorsInOneDirection)</param>
         private void AssignPresetUVToDefaultTile(Vector2[] rawUV)
         {
-            Rect rectArea;
-            parentChunk.worldManager.textureAtlas.tileLocations.TryGetValue(terrainType, out rectArea);
+            if (parentChunk.worldManager.generateNewValues == true)
+            {
+                if (defaultRectLocation == new Rect())
+                {
+                    parentChunk.worldManager.textureAtlas.tileLocations.TryGetValue(terrainType, out rectLocation);
+                    defaultRectLocation = rectLocation;
+                }
+                else { rectLocation = defaultRectLocation; }
+            }
 
             UV = new Vector2[localMesh.vertexCount];
 
             for (int i = 0; i < localMesh.vertexCount; i++)
             {
-                UV[i] = new Vector2(rawUV[i].x * rectArea.width + rectArea.x, rawUV[i].y  * rectArea.height + rectArea.y);
-
-                //UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
+                UV[i] = new Vector2(rawUV[i].x * rectLocation.width + rectLocation.x, rawUV[i].y * rectLocation.height + rectLocation.y);
             }
 
             localMesh.uv = UV;
@@ -333,8 +340,6 @@ namespace CivGrid
             for (int i = 0; i < mesh.vertexCount; i++)
             {
                 UV[i] = new Vector2(mesh.uv[i].x * rectArea.width + rectArea.x, mesh.uv[i].y * rectArea.height + rectArea.y);
-
-                //UV[i] = new Vector2(Mathf.Clamp(UV[i].x, 0.1f, 0.9f), Mathf.Clamp(UV[i].y, 0.1f, 0.9f));
             }
 
             localMesh.uv = UV;

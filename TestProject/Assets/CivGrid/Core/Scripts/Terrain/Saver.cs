@@ -222,13 +222,17 @@ namespace CivGrid
 
                                 writer.WriteAttributeString("yParentChunk", XmlConvert.ToString(y));
 
+                                ///Texture Rect Location
+                                writer.WriteAttributeString("rLeft", XmlConvert.ToString(hex.rectLocation.xMin));
+                                writer.WriteAttributeString("rTop", XmlConvert.ToString(hex.rectLocation.yMin));
+                                writer.WriteAttributeString("rWidth", XmlConvert.ToString(hex.rectLocation.width));
+                                writer.WriteAttributeString("rHeight", XmlConvert.ToString(hex.rectLocation.height));
+
                                 writer.WriteAttributeString("type", hex.terrainType.name);
 
                                 writer.WriteAttributeString("feature", ((int)hex.terrainFeature).ToString());
 
                                 writer.WriteAttributeString("resource", hex.currentResource.name);
-
-                                //writer.WriteAttributeString("ySpawnPos", hex.rObject.transform.position.y)
 
                                 writer.WriteAttributeString("improvement", hex.currentImprovement.name);
 
@@ -303,6 +307,9 @@ namespace CivGrid
                                 hex.terrainType = worldManager.tileManager.TryGet(reader["type"]);
                                 hex.terrainFeature = (Feature)XmlConvert.ToInt32(reader["feature"]);
                                 hex.parentChunk = worldManager.hexChunks[XmlConvert.ToInt32(reader["xParentChunk"]), XmlConvert.ToInt32(reader["yParentChunk"])];
+
+                                //rectLocation
+                                hex.rectLocation = new Rect((float)XmlConvert.ToDouble(reader["rLeft"]), (float)XmlConvert.ToDouble(reader["rTop"]), (float)XmlConvert.ToDouble(reader["rWidth"]), (float)XmlConvert.ToDouble(reader["rHeight"]));
                                 
                                 hex.currentResource = worldManager.resourceManager.TryGetResource(reader["resource"]);
                                 
