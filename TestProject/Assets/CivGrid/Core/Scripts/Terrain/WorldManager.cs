@@ -19,7 +19,7 @@ namespace CivGrid
         public bool useCivGridCamera;
 
         public bool generateOnStart;
-        private bool assignTypes;
+        public bool generateNewValues;
         private bool doneGenerating;
 
         //Moving
@@ -95,14 +95,24 @@ namespace CivGrid
 
         public void GenerateNewMap(bool assignTypes)
         {
+            this.generateNewValues = assignTypes;
+            StartGeneration(true);
+        }
+
+        public void RegenerateNewWorld()
+        {
             Destroy(GameObject.Find("ChunkHolder"));
-            this.assignTypes = assignTypes;
-            StartGeneration();
+            if (useCivGridCamera)
+            {
+                civGridCamera.enabled = false;
+                Destroy(GameObject.Find("Cam2"));
+            }
+            StartGeneration(false);
         }
 
         public void LoadAndGenerateMap(string name)
         {
-            assignTypes = false;
+            generateNewValues = false;
             string savedMapLocation = Application.dataPath + "/../" +  name;
             CivGridSaver.LoadTerrain(savedMapLocation, this);
             resourceManager.InitResourceTexturesOnHexs();
@@ -110,14 +120,17 @@ namespace CivGrid
 
         public void SaveMap(string name)
         {
-            
+            CivGridSaver.SaveTerrain(name, this);
         }
 
-        private void StartGeneration()
+        private void StartGeneration(bool setUpManagers)
         {
-            resourceManager.SetUp();
-            improvementManager.SetUp();
-            tileManager.SetUp();
+            if (setUpManagers)
+            {
+                resourceManager.SetUp();
+                improvementManager.SetUp();
+                tileManager.SetUp();
+            }
 
 
             DetermineWorldType();
@@ -128,10 +141,10 @@ namespace CivGrid
             {
                 civGridCamera.enabled = true;
                 if (civGridCamera == null) { Debug.LogError("Please add the 'CivGridCamera' to the mainCamera"); }
-                else { civGridCamera.SetupCameras(this); }
+                else { civGridCamera.SetupCameras(); }
             }
 
-            if (assignTypes == true)
+            if (generateNewValues == true)
             {
                 resourceManager.InitResourceTexturesOnHexs();
             }
@@ -144,7 +157,9 @@ namespace CivGrid
             noiseScale /= mapSize.magnitude;
         }
 
-        //sets the tileMap to the correct mapping settings
+        /// <summary>
+        /// Sets the tileMap to the correct mapping settings
+        /// </summary>
         void DetermineWorldType()
         {
             if (useWorldTypeValues)
@@ -272,12 +287,6 @@ namespace CivGrid
             hexChunk.SetSize(chunkSize, chunkSize);
             //setup HexInfo array
             hexChunk.AllocateHexArray();
-            //assign mountain texture to the chunk
-            hexChunk.mountainTexture = this.mountainMap;
-            //pass down our mountainScaleY
-            hexChunk.maxHeight = mountainScaleY;
-            //pass down if we should assign each hex its tile, feature, or resource
-            hexChunk.assignTypes = this.assignTypes;
             //set the texture map for this chunk and add the mesh renderer
             chunkObj.AddComponent<MeshRenderer>().material.mainTexture = textureAtlas.terrainAtlas;
             //add the mesh filter
@@ -288,7 +297,6 @@ namespace CivGrid
             //return the script on the new chunk 
             return chunkObj.GetComponent<HexChunk>();
         }
-
 
         /// <summary>
         /// Generate Chunks to make the map
@@ -437,14 +445,15 @@ namespace CivGrid
                 if (chunkHit.collider != null)
                 {
                     mouseWorldPosition = chunkHit.point;
-                    HexInfo hex = GetHexFromWorldPosition(mouseWorldPosition, chunkHexIsLocatedIn);
                     if (Input.GetMouseButtonDown(0))
                     {
+                        HexInfo hex = GetHexFromWorldPosition(mouseWorldPosition, chunkHexIsLocatedIn);
                         ImprovementManager.TestedAddImprovementToTile(hex, 0);
                         return;
                     }
                     if (Input.GetMouseButtonDown(1))
                     {
+                        HexInfo hex = GetHexFromWorldPosition(mouseWorldPosition, chunkHexIsLocatedIn);
                         ImprovementManager.RemoveImprovementFromTile(hex);
                         return;
                     }
@@ -459,14 +468,15 @@ namespace CivGrid
                     if (chunkHit.collider != null)
                     {
                         mouseWorldPosition = chunkHit.point;
-                        HexInfo hex = GetHexFromWorldPosition(mouseWorldPosition, chunkHexIsLocatedIn);
                         if (Input.GetMouseButtonDown(0))
                         {
+                            HexInfo hex = GetHexFromWorldPosition(mouseWorldPosition, chunkHexIsLocatedIn);
                             ImprovementManager.TestedAddImprovementToTile(hex, 0);
                             return;
                         }
                         if (Input.GetMouseButtonDown(1))
                         {
+                            HexInfo hex = GetHexFromWorldPosition(mouseWorldPosition, chunkHexIsLocatedIn);
                             ImprovementManager.RemoveImprovementFromTile(hex);
                             return;
                         }

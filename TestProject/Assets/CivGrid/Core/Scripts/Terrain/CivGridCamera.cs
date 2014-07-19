@@ -4,52 +4,65 @@ using CivGrid;
 
 namespace CivGrid
 {
-
+    /// <summary>
+    /// Operates a camera, or cameras if wrapping is enabled, to function similar to a locked real time game.
+    /// </summary>
     public class CivGridCamera : MonoBehaviour
     {
-        //Camera Settings
+        //Base camera Settings
         public bool enableWrapping;
-        [HideInInspector]
         public Camera cam1;
+        private Transform cam1T;
         public float cameraHeight = 3f;
         public float cameraAngle = 65f;
         public float cameraSpeed = 2f;
 
+        //Base wrapping settings
         private Vector2 camOffset;
-        [HideInInspector]
         public Camera cam2;
-        private Transform cam1T;
         private Transform cam2T;
         private bool cam1Lead;
 
+        //Mouse data
         private Vector3 moveVector;
         private Vector3 pos;
 
+        //cache the WorldManager
         private WorldManager worldManager;
 
-
-        public void SetupCameras(WorldManager manager)
+        /// <summary>
+        /// Sets up the cameras to position themselves correctly depending on the user settings.
+        /// Spawns the second follow camera if wrapping is enableds.
+        /// </summary>
+        public void SetupCameras()
         {
-            cam1 = this.gameObject.GetComponent<Camera>();
-            this.worldManager = manager;
+            //cache the lead camera and world manager
+            cam1 = gameObject.GetComponent<Camera>();
+            worldManager = GameObject.FindObjectOfType<WorldManager>();
 
+            //set the lead camera to the origin
             cam1.transform.position = new Vector3(0, 0, 0);
-            //setup wrapping camera
+
+            //setup wrapping camera if needed
             if (enableWrapping == true)
             {
+                //spawn the follow camera and setup it's camera setting to match the lead camera
                 cam2 = new GameObject("Cam2").gameObject.AddComponent<Camera>();
                 cam2.gameObject.AddComponent<GUILayer>();
                 cam2.fieldOfView = cam1.fieldOfView;
                 cam2.clearFlags = CameraClearFlags.Depth;
                 cam2.depth = cam1.depth + 1;
 
+                //calculate the offset between the two cameras to make a wrapping world
                 camOffset = new Vector2((this.worldManager.mapSize.x * this.worldManager.hexSize.x), 0);
             }
 
+            //cache the transform on the lead camera and assign its position and rotation
             cam1T = cam1.transform;
             cam1T.localEulerAngles = new Vector3(cameraAngle, cam1T.localEulerAngles.y, cam1T.localEulerAngles.z);
-            cam1T.position = new Vector3(camOffset.x * .5f, cameraHeight, (manager.hexExt.y * manager.mapSize.y) * .5f);
+            cam1T.position = new Vector3(camOffset.x * .5f, cameraHeight, (worldManager.hexExt.y * worldManager.mapSize.y) * .5f);
 
+            //set the follow camera to the lead cameras values until they are correctly calculated in the update methods
             if (enableWrapping == true)
             {
                 cam2T = cam2.transform;
@@ -58,62 +71,84 @@ namespace CivGrid
             }
         }
 
+        /// <summary>
+        /// Checks if the camera is recieving zoom input.
+        /// Calls the correct update method on the camera depending if the camera has wrapping enabled.
+        /// </summary>
         void Update()
         {
+            //check for input
             CheckInput();
             if (enableWrapping)
             {
+                //call wrapping update method
                 UpdateCameraW();
             }
             else
             {
+                //call regular update method
                 UpdateCamera();
             }
         }
 
+        /// <summary>
+        /// Assigns moveVector in the vetical axis depending on zoom input.
+        /// </summary>
         void CheckInput()
         {
+            //zoom in/out depending on input or not at all
             if (Input.GetKey(KeyCode.Plus) || Input.GetKey(KeyCode.KeypadPlus)) { moveVector.y = -1; }
             else if (Input.GetKey(KeyCode.Minus) || Input.GetKey(KeyCode.KeypadMinus)) { moveVector.y = 1; }
             else { moveVector.y = 0; }
         }
 
+        /// <summary>
+        /// Movement update for a camera system with wrapping disabled.
+        /// Assigns the direction in which the camera needs to move and then translates it.
+        /// Directions are described in screen space.
+        /// </summary>
         void UpdateCamera()
         {
             try
             {
+                //gets the mouse position in viewport cords
                 Vector3 pos = cam1.ScreenToViewportPoint(worldManager.mousePos);
 
-
-                //x vals
-                if (pos.x >= 1)
+                //mouse is in the far right of the screen
+                if (pos.x >= 0.8f)
                 {
-                    pos.x = 1;
+                    //move right
                     moveVector.x = 1;
                 }
-                else if (pos.x <= 0)
+                //mouse is in the far left of the screen
+                else if (pos.x <= 0.2f)
                 {
-                    pos.x = 0;
+                    //move left
                     moveVector.x = -1;
                 }
+                //mouse is in the middle of the screen in the horizontal axis
                 else
                 {
+                    //dont move in the horizontal axis
                     moveVector.x = 0;
                 }
 
-                //y vals
-                if (pos.y >= 1)
+                //mouse is in the far top of the screen
+                if (pos.y >= 0.8f)
                 {
-                    pos.y = 1;
+                    //move up
                     moveVector.z = 1;
                 }
-                else if (pos.y <= 0)
+                //mouse is in the far bottom of the screen
+                else if (pos.y <= 0.2f)
                 {
-                    pos.y = 0;
+                    //move down
                     moveVector.z = -1;
                 }
+                //mouse is in the middle of the screen in the vertical axis
                 else
                 {
+                    //dont move in the vertical axis
                     moveVector.z = 0;
                 }
             }
@@ -122,29 +157,112 @@ namespace CivGrid
                 Debug.LogError("Please Remove the CivGridCamera Script if you do not wish to use it; otherwise enable it in the WorldManager" + "/n" + e);
             }
 
+            //move the camera in the assigned direction by the camera speed each second
             cam1T.Translate(moveVector * (cameraSpeed * Time.deltaTime), Space.World);
         }
 
+        /// <summary>
+        /// Movement update for a camera system with wrapping enabled.
+        /// Assigns the direction in which the camera needs to move and then translates it.
+        /// Directions are described in screen space.
+        /// </summary>
+        void UpdateCameraW()
+        {
+            try
+            {
+                //gets the mouse position in viewport cords
+                pos = cam1.ScreenToViewportPoint(worldManager.mousePos);
+
+                //mouse is in the far right of the screen
+                if (pos.x >= 0.8)
+                {
+                    //move right
+                    MoveRightW();
+                }
+                //mouse is in the far left of the screen
+                else if (pos.x <= 0.2)
+                {
+                    //move left
+                    MoveLeftW();
+                }
+                //mouse is in the middle of the screen in the horizontal axis
+                else
+                {
+                    //dont move in the horizontal axis
+                    moveVector.x = 0;
+                }
+
+                //mouse is in the far top of the screen
+                if (pos.y >= 0.8)
+                {
+                    //move up
+                    moveVector.z = 1;
+                }
+                //mouse is in the far bottom of the screen
+                else if (pos.y <= 0.2)
+                {
+                    //move down
+                    moveVector.z = -1;
+                }
+                //mouse is in the middle of the screen in the vertical axis
+                else
+                {
+                    //dont move in the vertical axis
+                    moveVector.z = 0;
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("Please Remove the CivGridCamera Script if you do not wish to use it; otherwise enable it in the WorldManager" + "/n" + e);
+            }
+
+            //move the camera in the assigned direction by the camera speed each second
+            cam1T.Translate(moveVector * (cameraSpeed * Time.deltaTime), Space.World);
+            //move the follow camera
+            cam2T.position = new Vector3(cam2T.position.x, cam1T.position.y, cam1T.position.z);
+        }
+
+        /// <summary>
+        /// Moves the camera system to the right when wrapping is enabled.
+        /// Assigns the horizontal direction in which the camera needs to move.
+        /// Wraps the cameras around the map when moving.
+        /// Directions are described in screen space.
+        /// </summary>
         private void MoveRightW()
         {
-            pos.x = 1;
+            //move right
             moveVector.x = 1;
+            
+            //if camera1 is to the right of camera2
             if (cam1T.position.x > cam2T.position.x)
             {
+                //camera1 is the lead camera
                 cam1Lead = true;
             }
-            else { cam1Lead = false; }
+            //camera2 is to the right of camera1
+            else
+            {
+                //camera2 is now the lead camera
+                cam1Lead = false;
+            }
 
+
+            //camera1 is so far off the map to the right that it is going to reach the wrapping map edge soon
             if (cam1T.position.x >= (worldManager.mapSize.x * worldManager.hexExt.x) * 2.98f)
             {
+                //loop it's position back over to beginning and camera2 is now lead
                 cam1T.position = new Vector3(cam2T.position.x - camOffset.x, cam1T.position.y, cam1T.position.z);
                 cam1Lead = false;
             }
+            //camera2 is so far off the map to the right that it is going to reach the wrapping map edge soon
             if (cam2T.position.x >= (worldManager.mapSize.x * worldManager.hexExt.x) * 2.98f)
             {
+                //loop it's position back over to the beginning and camera1 is now lead
                 cam2T.position = new Vector3(cam1T.position.x - camOffset.x, cam2T.position.y, cam2T.position.z);
                 cam1Lead = true;
             }
+
+            //displace the follow camera by the camera offset
             if (cam1Lead)
             {
                 cam2T.position = new Vector3(cam1T.position.x - camOffset.x + 0.1f, cam2T.position.y, cam2T.position.z);
@@ -155,28 +273,46 @@ namespace CivGrid
             }
         }
 
+        /// <summary>
+        /// Moves the camera system to the left when wrapping is enabled.
+        /// Assigns the horizontal direction in which the camera needs to move.
+        /// Wraps the cameras around the map when moving.
+        /// Directions are described in screen space.
+        /// </summary>
         private void MoveLeftW()
         {
-            pos.x = 0;
+            //move left
             moveVector.x = -1;
-            if (cam1T.position.x > cam2T.position.x)
+
+            //if camera1 is to the left of camera2
+            if (cam1T.position.x < cam2T.position.x)
             {
-                cam1Lead = false;
-            }
-            else
-            {
+                //camera1 is the lead camera
                 cam1Lead = true;
             }
+            //camera2 is to the left of camera1
+            else
+            {
+                //camera2 is now the lead camera
+                cam1Lead = false;
+            }
+
+            //camera1 is so far off the map to the left that it is going to reach the wrapping map edge soon
             if (cam1T.position.x <= -((worldManager.mapSize.x * worldManager.hexExt.x) * .98))
             {
+                //loop it's position back over to beginning and camera2 is now lead
                 cam1T.position = new Vector3(cam2T.position.x + camOffset.x, cam1T.position.y, cam1T.position.z);
                 cam1Lead = false;
             }
+            //camera2 is so far off the map to the left that it is going to reach the wrapping map edge soon
             if (cam2T.position.x <= -((worldManager.mapSize.x * worldManager.hexExt.x) * .98))
             {
+                //loop it's position back over to beginning and camera1 is now lead
                 cam2T.position = new Vector3(cam1T.position.x + camOffset.x, cam2T.position.y, cam2T.position.z);
                 cam1Lead = true;
             }
+
+            //displace the follow camera by the camera offset
             if (cam1Lead)
             {
                 cam2T.position = new Vector3(cam1T.position.x + camOffset.x - 0.1f, cam2T.position.y, cam2T.position.z);
@@ -185,40 +321,6 @@ namespace CivGrid
             {
                 cam2T.position = new Vector3(cam1T.position.x - camOffset.x, cam2T.position.y, cam2T.position.z);
             }
-        }
-
-        void UpdateCameraW()
-        {
-            pos = cam1.ScreenToViewportPoint(worldManager.mousePos);
-            if (pos.x >= 0.8)
-            {
-                MoveRightW();
-            }
-            else if (pos.x <= 0.2)
-            {
-                MoveLeftW();
-            }
-            else
-            {
-                moveVector.x = 0;
-            }
-
-            if (pos.y >= 0.8)
-            {
-                pos.y = 1;
-                moveVector.z = 1;
-            }
-            else if (pos.y <= 0.2)
-            {
-                pos.y = 0;
-                moveVector.z = -1;
-            }
-            else
-            {
-                moveVector.z = 0;
-            }
-            cam1T.Translate(moveVector * (cameraSpeed * Time.deltaTime), Space.World);
-            cam2T.position = new Vector3(cam2T.position.x, cam1T.position.y, cam1T.position.z);
         }
     }
 }

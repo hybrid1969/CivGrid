@@ -82,3 +82,9 @@ Version 0.5.1f
 	+New hierarchy layout
 	+Added Save/Load functionality 	WorldManager.LoadAndGenerateNewMap()) / 	WorldManager.SaveMap()
 	+Minor bug fixes
+Version 0.5.2f
+	+Saves which texture was used to make the map more 	consistant when tiles have a texture pool.
+	+Tiles that have multiple possible textures now always 	return to their first picked defualt tile instead of 	selecting a new, possibily different, tile.
+Version 0.5.3f
+	+Fixes movement with wrapping enabled on a camera
+	+Tiles with features now work as desribed in 0.5.2f

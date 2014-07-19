@@ -16,15 +16,10 @@ namespace CivGrid
         //set by world master
         public int xSector;
         public int ySector;
-        public bool assignTypes;
         public WorldManager worldManager;
 
         private MeshFilter filter;
         private new BoxCollider collider;
-
-        //temp
-        public Texture2D mountainTexture;
-        public float maxHeight;
 
         /// <summary>
         /// Sets the amount of hexagons in the chunk
@@ -113,12 +108,14 @@ namespace CivGrid
             //set world position of hex; this is the hex cord position local to the world
             hex.worldPosition = new Vector3(hex.localPosition.x + (xSector * (chunkSize.x * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((ySector * (chunkSize.y * hexSize.z)) * (.75f)));
 
-            ///Set Hex values
-            if (assignTypes)
+            //not loading world
+            if (worldManager.generateNewValues)
             {
+                //pick out the correct feature and tile
                 hex.terrainFeature = worldManager.PickFeatureType((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
                 hex.terrainType = worldManager.PickTileType((int)worldArrayPosition.x, (int)worldArrayPosition.y);
             }
+            //pass down base value
             hex.hexExt = worldManager.hexExt;
             hex.hexCenter = worldManager.hexCenter;
             hex.resourceManager = worldManager.resourceManager;
@@ -198,7 +195,7 @@ namespace CivGrid
             //begin making hexagons
             GenerateChunk();
 
-            if (assignTypes == true)
+            if (worldManager.generateNewValues == true)
             {
                 StartHex();
             }
