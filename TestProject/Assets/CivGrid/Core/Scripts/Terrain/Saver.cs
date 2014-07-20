@@ -223,10 +223,10 @@ namespace CivGrid
                                 writer.WriteAttributeString("yParentChunk", XmlConvert.ToString(y));
 
                                 ///Texture Rect Location
-                                writer.WriteAttributeString("rLeft", XmlConvert.ToString(hex.rectLocation.xMin));
-                                writer.WriteAttributeString("rTop", XmlConvert.ToString(hex.rectLocation.yMin));
-                                writer.WriteAttributeString("rWidth", XmlConvert.ToString(hex.rectLocation.width));
-                                writer.WriteAttributeString("rHeight", XmlConvert.ToString(hex.rectLocation.height));
+                                writer.WriteAttributeString("rLeft", XmlConvert.ToString(hex.currentRectLocation.xMin));
+                                writer.WriteAttributeString("rTop", XmlConvert.ToString(hex.currentRectLocation.yMin));
+                                writer.WriteAttributeString("rWidth", XmlConvert.ToString(hex.currentRectLocation.width));
+                                writer.WriteAttributeString("rHeight", XmlConvert.ToString(hex.currentRectLocation.height));
 
                                 writer.WriteAttributeString("type", hex.terrainType.name);
 
@@ -309,7 +309,7 @@ namespace CivGrid
                                 hex.parentChunk = worldManager.hexChunks[XmlConvert.ToInt32(reader["xParentChunk"]), XmlConvert.ToInt32(reader["yParentChunk"])];
 
                                 //rectLocation
-                                hex.rectLocation = new Rect((float)XmlConvert.ToDouble(reader["rLeft"]), (float)XmlConvert.ToDouble(reader["rTop"]), (float)XmlConvert.ToDouble(reader["rWidth"]), (float)XmlConvert.ToDouble(reader["rHeight"]));
+                                hex.currentRectLocation = new Rect((float)XmlConvert.ToDouble(reader["rLeft"]), (float)XmlConvert.ToDouble(reader["rTop"]), (float)XmlConvert.ToDouble(reader["rWidth"]), (float)XmlConvert.ToDouble(reader["rHeight"]));
                                 
                                 hex.currentResource = worldManager.resourceManager.TryGetResource(reader["resource"]);
                                 

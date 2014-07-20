@@ -125,7 +125,7 @@ namespace CivGrid
                         combine[k].transform = matrix;
                     }
 
-                    GameObject holder = new GameObject(r.name, typeof(MeshFilter), typeof(MeshRenderer));
+                    GameObject holder = new GameObject(r.name + " at " + hex.AxialGridPosition, typeof(MeshFilter), typeof(MeshRenderer));
 
                     holder.transform.position = hex.worldPosition;
                     holder.transform.parent = hex.parentChunk.transform;
@@ -263,7 +263,6 @@ namespace CivGrid
     {
         public string name;
         public ResourceRule rule;
-        bool possible;
         public float rarity;
         public int spawnAmount;
 

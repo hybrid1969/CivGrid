@@ -423,7 +423,7 @@ namespace CivGrid.Editors
             {
                 this.title = "Edit Improvement";
 
-                Improvement improvement = improvementManager.searalizableImprovements[improvementIndexToEdit];
+                Improvement improvement = improvementManager.improvements[improvementIndexToEdit];
                 GUILayout.Label("Edit Improvement: " + improvement.name);
 
                 GUILayout.BeginVertical();
@@ -438,12 +438,12 @@ namespace CivGrid.Editors
 
                 if (doneAddingImprovements == false)
                 {
-                    foreach (int t in improvementManager.searalizableImprovements[improvementIndexToEdit].rule.possibleTiles)
+                    foreach (int t in improvementManager.improvements[improvementIndexToEdit].rule.possibleTiles)
                     {
                         iPossibleTiles.Add(t);
                     }
 
-                    foreach (Feature f in improvementManager.searalizableImprovements[improvementIndexToEdit].rule.possibleFeatures)
+                    foreach (Feature f in improvementManager.improvements[improvementIndexToEdit].rule.possibleFeatures)
                     {
                         iPossibleFeatures.Add(f);
                     }
@@ -504,7 +504,7 @@ namespace CivGrid.Editors
                 if (GUILayout.Button("Close"))
                 {
                     EditImprovement(improvement.name, improvement.meshToSpawn, improvement.meshTexture, improvement.replaceGroundTexture, improvementIndexToEdit);
-                    improvementManager.searalizableImprovements.RemoveAt(improvementIndexToEdit+1);
+                    improvementManager.improvements.RemoveAt(improvementIndexToEdit+1);
                     EditorUtility.UnloadUnusedAssets();
                     Resources.UnloadUnusedAssets();
                     this.Close();
@@ -807,7 +807,7 @@ namespace CivGrid.Editors
                         tempTileType[x, y] = 0;
                         tempImprovementType[x,y] = 0;
                     }
-                    else if (catagory[x, y] == TypeofEditorTile.Improvement && (improvementManager.searalizableImprovements != null && improvementManager.searalizableImprovements.Count > 0))
+                    else if (catagory[x, y] == TypeofEditorTile.Improvement && (improvementManager.improvements != null && improvementManager.improvements.Count > 0))
                     {
                         tempImprovementType[x, y] = (int)EditorGUILayout.Popup("Improvement Type:", tempImprovementType[x, y], improvementManager.improvementNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
                         tempTileType[x,y] = 0;
@@ -908,7 +908,7 @@ namespace CivGrid.Editors
                     }
                     else
                     {
-                        improvementLocations.Add(improvementManager.searalizableImprovements[tempImprovementType[x, y]], rectAreas[x * lengthOfArraysY + y]);
+                        improvementLocations.Add(improvementManager.improvements[tempImprovementType[x, y]], rectAreas[x * lengthOfArraysY + y]);
                     }
                 }
             }

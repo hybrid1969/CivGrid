@@ -20,10 +20,10 @@ namespace CivGrid.Editors
         {
             ImprovementManager improvementManager = (ImprovementManager)target;
             tileManager = improvementManager.GetComponent<TileManager>();
-            if (improvementManager.searalizableImprovements != null)
+            if (improvementManager.improvements != null)
             {
-                foldoutOpen = new bool[improvementManager.searalizableImprovements.Count];
-                extraInfoFoldout = new bool[improvementManager.searalizableImprovements.Count];
+                foldoutOpen = new bool[improvementManager.improvements.Count];
+                extraInfoFoldout = new bool[improvementManager.improvements.Count];
             }
         }
 
@@ -40,8 +40,8 @@ namespace CivGrid.Editors
             if (improvementManager == null) { improvementManager = (ImprovementManager)target; }
             if (worldManager == null) { worldManager = improvementManager.GetComponent<WorldManager>(); }
             if (tileManager == null) { tileManager = improvementManager.GetComponent<TileManager>(); }
-            if (improvementManager.searalizableImprovements != null && (foldoutOpen == null || foldoutOpen.Length != improvementManager.searalizableImprovements.Count)) { foldoutOpen = new bool[improvementManager.searalizableImprovements.Count]; }
-            if (improvementManager.searalizableImprovements != null && (extraInfoFoldout == null || extraInfoFoldout.Length != improvementManager.searalizableImprovements.Count)) { extraInfoFoldout = new bool[improvementManager.searalizableImprovements.Count]; }
+            if (improvementManager.improvements != null && (foldoutOpen == null || foldoutOpen.Length != improvementManager.improvements.Count)) { foldoutOpen = new bool[improvementManager.improvements.Count]; }
+            if (improvementManager.improvements != null && (extraInfoFoldout == null || extraInfoFoldout.Length != improvementManager.improvements.Count)) { extraInfoFoldout = new bool[improvementManager.improvements.Count]; }
 
             if (GUILayout.Button("Add New Improvement"))
             {
@@ -51,11 +51,11 @@ namespace CivGrid.Editors
                 window.improvementIndexToEdit = 0;
             }
 
-            if (improvementManager.searalizableImprovements != null && improvementManager.searalizableImprovements.Count > 0)
+            if (improvementManager.improvements != null && improvementManager.improvements.Count > 0)
             {
-                for (int i = 0; i < improvementManager.searalizableImprovements.Count; i++)
+                for (int i = 0; i < improvementManager.improvements.Count; i++)
                 {
-                    Improvement improvement = improvementManager.searalizableImprovements[i];
+                    Improvement improvement = improvementManager.improvements[i];
 
                     EditorGUILayout.BeginHorizontal();
 

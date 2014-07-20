@@ -436,52 +436,13 @@ namespace CivGrid
         void MouseInput()
         {
 
-            Ray ray1 = civGridCamera.cam1.ScreenPointToRay(mousePos);
-            Vector3 mouseWorldPosition = new Vector3();
-
-            if (Physics.Raycast(ray1, out chunkHit, 100f))
+            if (Input.GetMouseButtonDown(0))
             {
-                HexChunk chunkHexIsLocatedIn = chunkHit.collider.gameObject.GetComponent<HexChunk>();
-                if (chunkHit.collider != null)
-                {
-                    mouseWorldPosition = chunkHit.point;
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        HexInfo hex = GetHexFromWorldPosition(mouseWorldPosition, chunkHexIsLocatedIn);
-                        ImprovementManager.TestedAddImprovementToTile(hex, 0);
-                        return;
-                    }
-                    if (Input.GetMouseButtonDown(1))
-                    {
-                        HexInfo hex = GetHexFromWorldPosition(mouseWorldPosition, chunkHexIsLocatedIn);
-                        ImprovementManager.RemoveImprovementFromTile(hex);
-                        return;
-                    }
-                }
+                improvementManager.TestedAddImprovementToTile(GetHexFromMouse(), 0);
             }
-            if (civGridCamera.enableWrapping == true)
+            if (Input.GetMouseButtonDown(1))
             {
-                var ray2 = civGridCamera.cam2.ScreenPointToRay(mousePos);
-                if (Physics.Raycast(ray2, out chunkHit, 100f))
-                {
-                    HexChunk chunkHexIsLocatedIn = chunkHit.collider.gameObject.GetComponent<HexChunk>();
-                    if (chunkHit.collider != null)
-                    {
-                        mouseWorldPosition = chunkHit.point;
-                        if (Input.GetMouseButtonDown(0))
-                        {
-                            HexInfo hex = GetHexFromWorldPosition(mouseWorldPosition, chunkHexIsLocatedIn);
-                            ImprovementManager.TestedAddImprovementToTile(hex, 0);
-                            return;
-                        }
-                        if (Input.GetMouseButtonDown(1))
-                        {
-                            HexInfo hex = GetHexFromWorldPosition(mouseWorldPosition, chunkHexIsLocatedIn);
-                            ImprovementManager.RemoveImprovementFromTile(hex);
-                            return;
-                        }
-                    }
-                }
+                improvementManager.RemoveImprovementFromTile(GetHexFromMouse());
             }
         }
 
@@ -555,6 +516,33 @@ namespace CivGrid
                     if (hex.AxialGridPosition == position) { return hex; }
                 }
             }
+            return null;
+        }
+
+        public HexInfo GetHexFromMouse()
+        {
+            Ray ray1 = civGridCamera.cam1.ScreenPointToRay(mousePos);
+            if (Physics.Raycast(ray1, out chunkHit, 100f))
+            {
+                HexChunk chunkHexIsLocatedIn = chunkHit.collider.gameObject.GetComponent<HexChunk>();
+                if (chunkHit.collider != null)
+                {
+                    return GetHexFromWorldPosition(chunkHit.point, chunkHexIsLocatedIn);
+                }
+            }
+            if (civGridCamera.enableWrapping == true)
+            {
+                Ray ray2 = civGridCamera.cam2.ScreenPointToRay(mousePos);
+                if (Physics.Raycast(ray2, out chunkHit, 100f))
+                {
+                    HexChunk chunkHexIsLocatedIn = chunkHit.collider.gameObject.GetComponent<HexChunk>();
+                    if (chunkHit.collider != null)
+                    {
+                        return GetHexFromWorldPosition(chunkHit.point, chunkHexIsLocatedIn);
+                    }
+                }
+            }
+
             return null;
         }
 
