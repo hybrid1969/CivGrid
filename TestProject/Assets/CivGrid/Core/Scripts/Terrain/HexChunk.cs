@@ -5,6 +5,11 @@ using CivGrid;
 
 namespace CivGrid
 {
+    /// <summary>
+    /// Contains all hexagons within this chunk.
+    /// Positions and setups up each hexagon within this chunk.
+    /// Handles combining them upon one mesh.
+    /// </summary>
     public class HexChunk : MonoBehaviour
     {
 

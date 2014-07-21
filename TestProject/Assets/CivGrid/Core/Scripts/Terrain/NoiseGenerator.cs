@@ -21,21 +21,24 @@ namespace CivGrid
         /// <returns> TileMap in Texture2D format </returns>
         public static Texture2D PerlinNoise(int xSize, int ySize, float noiseScale)
         {
+            //texture to return
             Texture2D tex = new Texture2D(xSize, ySize);
 
-
-            for (int x = 0; x < xSize - 1; x++)
+            //loop through all pixels
+            for (int x = 0; x < xSize; x++)
             {
-                for (int y = 0; y < ySize - 1; y++)
+                for (int y = 0; y < ySize; y++)
                 {
-                    float randomValue = Random.Range(0, 3); //Random.value
-                    float pixelValue = Mathf.PerlinNoise(x * noiseScale + randomValue, y * noiseScale + randomValue) * 1.3f; //1.3f is testing
+                    //calculate a modified version of perlin noise and assign its value to the pixel
+                    float randomValue = Random.Range(0, 3);
+                    float pixelValue = Mathf.PerlinNoise(x * noiseScale + randomValue, y * noiseScale + randomValue) * 1.3f;
 
                     pixelValue = Mathf.RoundToInt(pixelValue);
                     tex.SetPixel(x, y, new Color(pixelValue, pixelValue, pixelValue, 1));
                 }
             }
 
+            //return completed perlin noise texture
             return tex;
         }
 
@@ -49,11 +52,15 @@ namespace CivGrid
         /// <returns> A TileMap in Texture2D format </returns>
         public static Texture2D SmoothPerlinNoise(int xSize, int ySize, float noiseScale)
         {
+            //texture to return
             Texture2D tex = new Texture2D(xSize, ySize);
+
+            //loop through all the pixels
             for (int x = 0; x < xSize; x++)
             {
                 for (int y = 0; y < ySize; y++)
                 {
+                    //calculate a smooth modified version of perlin noise and assign the value to the pixel
                     float randomValue = Random.value;
                     float pixelValue = Mathf.PerlinNoise(x * noiseScale + randomValue, y * noiseScale + randomValue);
 
@@ -65,8 +72,10 @@ namespace CivGrid
                 }
             }
 
+            //smooth the land vs water
             CleanWater(tex, noiseScale);
 
+            //return perlin noise texture
             return tex;
         }
 
@@ -77,10 +86,12 @@ namespace CivGrid
         /// <param name="noiseScale">Noise scale you used to generate the texture</param>
         private static void CleanWater(Texture2D texture, float noiseScale)
         {
+            //loop through all pixels in the texture
             for (int x = 0; x < texture.width; x++)
             {
                 for (int y = 0; y < texture.height; y++)
                 {
+                    //get the pixels around this pixel
                     float[] surrondingTiles = CivGridUtility.GetSurrondingPixels(texture, x, y);
 
                     //WATER
@@ -97,6 +108,7 @@ namespace CivGrid
                             }
                         }
 
+                        //not enough water around; set to land
                         if (surrondingWater < 3)
                         {
                             //generate noise for the pixel we are setting to land
@@ -126,6 +138,7 @@ namespace CivGrid
                             }
                         }
 
+                        //not enough land around; set to water
                         if (surrondingLand < 3)
                         {
                             texture.SetPixel(x, y, new Color(0f, 0f, 0f));
@@ -142,21 +155,25 @@ namespace CivGrid
         /// <returns>The rounded float</returns>
         public static float StabalizeFloat(float f)
         {
+            //round to water
             if (f < 0.5f)
             {
                 f = 0;
                 return f;
             }
+            //round to land
             else if (f >= 0.5 && f <= 1)
             {
                 f = 0.5f;
                 return f;
             }
+            //round to hill
             else if (f > 1f && f < 1.15f)
             {
                 f = 0.8f;
                 return f;
             }
+            //round to mountain
             else if (f >= 1.15f) { f = 1f; }
             else { Debug.LogError("Rounding failed inverting to 0"); f = 0; }
 
@@ -176,25 +193,34 @@ namespace CivGrid
         /// <returns></returns>
         public static Texture2D RandomOverlay(Texture2D texture, float position, float noiseScale, float noiseSize, float finalSize, float maxHeight, bool ignoreBlack)
         {
+            //shifts the source over
             position *= Random.Range(0.2f, 5f);
 
+            //creates the return texture
             Texture2D returnTexture = new Texture2D(texture.width, texture.height);
+
+            //loop through all pixels in the source texture
             for (int x = 0; x < texture.width; x++)
             {
                 for (int y = 0; y < texture.height; y++)
                 {
+                    //get the pixel from the source texture
                     float pixelColor = texture.GetPixel(x, y).grayscale;
+
                     float noiseValue;
 
+                    //overlay noise upon the pixel
                     if (ignoreBlack == false || pixelColor > 0.05f)
                     {
                         noiseValue = Mathf.PerlinNoise(x * noiseScale + position, y * noiseScale + position) * noiseSize;
                     }
+                    //no overlay noise
                     else
                     {
                         noiseValue = 0;
                     }
 
+                    //add the base pixel and the noise value to make a combined pixel color
                     float finalValue = pixelColor + noiseValue;
                     finalValue = Mathf.Clamp(finalValue, 0, maxHeight);
                     finalValue *= finalSize;
@@ -204,6 +230,7 @@ namespace CivGrid
                 }
             }
 
+            //return the source texture with noise overlay
             return returnTexture;
         }
     }

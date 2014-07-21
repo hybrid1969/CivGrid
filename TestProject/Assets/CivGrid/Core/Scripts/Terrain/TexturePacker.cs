@@ -4,15 +4,27 @@ using CivGrid;
 
 namespace CivGrid
 {
+    /// <summary>
+    /// Packs textures into atlases.
+    /// </summary>
     public static class TexturePacker
     {
-        public static Texture2D AtlasTextures(Texture2D[] textures, out Rect[] rectAreas)
+        /// <summary>
+        /// Creates a single texture atlas from the provided source textures.
+        /// </summary>
+        /// <param name="textures">Textures to combine into one</param>
+        /// <param name="rectAreas">Rect locations of each texture</param>
+        /// <returns>The created atlased texture</returns>
+        public static Texture2D AtlasTextures(Texture2D[] textures, int textureSize, out Rect[] rectAreas)
         {
-            Texture2D packedTexture = new Texture2D(2048, 2048);
+            //creates return texture atlas
+            Texture2D packedTexture = new Texture2D(textureSize, textureSize);
 
-            rectAreas = packedTexture.PackTextures(textures, 0, 2048);
+            //packs all source textures into one
+            rectAreas = packedTexture.PackTextures(textures, 0, textureSize);
             packedTexture.Apply();
 
+            //returns texture atlas
             return packedTexture;
         }
     }

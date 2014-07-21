@@ -889,7 +889,7 @@ namespace CivGrid.Editors
         {
 
             Rect[] rectAreas;
-            Texture2D returnTexture = TexturePacker.AtlasTextures(CivGridUtility.ToSingleArray<Texture2D>(textures), out rectAreas);
+            Texture2D returnTexture = TexturePacker.AtlasTextures(CivGridUtility.ToSingleArray<Texture2D>(textures), 2048, out rectAreas);
 
             int lengthOfArraysX = catagory.GetLength(0); 
             int lengthOfArraysY = catagory.GetLength(1); 

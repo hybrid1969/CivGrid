@@ -6,10 +6,17 @@ using CivGrid;
 namespace CivGrid
 {
 
+    /// <summary>
+    /// Contains all possible resources.
+    /// Handles the addition and removal of these resources upon hexagons.
+    /// </summary>
     public class ResourceManager : MonoBehaviour
     {
+        //resources
         public List<Resource> resources;
         public string[] resourceNames;
+
+
         public WorldManager worldManager;
 
         Vector2[] uv;

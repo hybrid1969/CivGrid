@@ -5,7 +5,11 @@ using CivGrid;
 
 namespace CivGrid
 {
-
+    /// <summary>
+    /// Contains all hexagon data and methods.
+    /// Generates it's localMesh and uploads this to the chunk.
+    /// Generates it's UV data depending on constraints.
+    /// </summary>
     [System.Serializable]
     public class HexInfo
     {

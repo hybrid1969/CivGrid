@@ -5,7 +5,10 @@ using CivGrid;
 
 namespace CivGrid
 {
-
+    /// <summary>
+    /// Contains all possible improvements.
+    /// Handles the addition and removal of these improvements upon hexagons.
+    /// </summary>
     public class ImprovementManager : MonoBehaviour
     {
         //improvements
@@ -315,7 +318,7 @@ namespace CivGrid
     }
 
     /// <summary>
-    /// Improvement class that contains all values for it
+    /// Improvement class that contains all values for the base improvement
     /// </summary>
     [System.Serializable]
     public class Improvement
@@ -340,6 +343,9 @@ namespace CivGrid
         public Improvement() { }
     }
 
+    /// <summary>
+    /// Contains all possible tiles and features for the improvement to spawn on
+    /// </summary>
     [System.Serializable]
     public class ImprovementRule
     {
