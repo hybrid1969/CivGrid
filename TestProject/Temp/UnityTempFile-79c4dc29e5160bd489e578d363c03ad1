@@ -42,6 +42,7 @@ Assets/CivGrid/Core/Scripts/Terrain/CivGridCamera.cs
 Assets/CivGrid/Core/Scripts/Terrain/CivGridUtility.cs
 Assets/CivGrid/Core/Scripts/Terrain/HexChunk.cs
 Assets/CivGrid/Core/Scripts/Terrain/HexInfo.cs
+Assets/CivGrid/Core/Scripts/Terrain/HexRule.cs
 Assets/CivGrid/Core/Scripts/Terrain/ImprovementManager.cs
 Assets/CivGrid/Core/Scripts/Terrain/NoiseGenerator.cs
 Assets/CivGrid/Core/Scripts/Terrain/ResourceManager.cs

@@ -264,7 +264,7 @@ namespace CivGrid.Editors
                 }
             }
 
-            resourceManager.AddResource(new Resource(name, rariety, spawnAmount, mesh, texture, replaceGroundTexture, new ResourceRule(finalTiles, finalFeatures.ToArray())));
+            resourceManager.AddResource(new Resource(name, rariety, spawnAmount, mesh, texture, replaceGroundTexture, new HexRule(finalTiles, finalFeatures.ToArray())));
         }
 
         void EditResource(string name, float rariety, int spawnAmount, Mesh mesh, Texture2D texture, bool replaceGroundTexture, int index)
@@ -306,7 +306,7 @@ namespace CivGrid.Editors
                 }
             }
 
-            resourceManager.AddResourceAt(new Resource(name, rariety, spawnAmount, mesh, texture, replaceGroundTexture, new ResourceRule(finalTiles, finalFeatures.ToArray())), index);
+            resourceManager.AddResourceAtIndex(new Resource(name, rariety, spawnAmount, mesh, texture, replaceGroundTexture, new HexRule(finalTiles, finalFeatures.ToArray())), index);
         }
     }
 
@@ -553,7 +553,7 @@ namespace CivGrid.Editors
                 }
             }
 
-            improvementManager.AddImprovement(new Improvement(name, mesh, texture, replaceGroundTexture, new ImprovementRule(finalTiles, finalFeatures.ToArray())));
+            improvementManager.AddImprovement(new Improvement(name, mesh, texture, replaceGroundTexture, new HexRule(finalTiles, finalFeatures.ToArray())));
         }
 
         void EditImprovement(string name, Mesh mesh, Texture2D texture, bool replaceGroundTexture, int index)
@@ -595,7 +595,7 @@ namespace CivGrid.Editors
                 }
             }
 
-            improvementManager.AddImprovementAtIndex(new Improvement(name, mesh, texture, replaceGroundTexture, new ImprovementRule(finalTiles, finalFeatures.ToArray())), index);
+            improvementManager.AddImprovementAtIndex(new Improvement(name, mesh, texture, replaceGroundTexture, new HexRule(finalTiles, finalFeatures.ToArray())), index);
         }
     }
 

@@ -115,7 +115,7 @@ namespace CivGrid
             generateNewValues = false;
             string savedMapLocation = Application.dataPath + "/../" +  name;
             CivGridSaver.LoadTerrain(savedMapLocation, this);
-            resourceManager.InitResourceTexturesOnHexs();
+            resourceManager.InitiateResourceTexturesOnHexs();
         }
 
         public void SaveMap(string name)
@@ -146,7 +146,7 @@ namespace CivGrid
 
             if (generateNewValues == true)
             {
-                resourceManager.InitResourceTexturesOnHexs();
+                resourceManager.InitiateResourceTexturesOnHexs();
             }
 
             doneGenerating = true;

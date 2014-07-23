@@ -16,82 +16,176 @@ namespace CivGrid
         public List<Resource> resources;
         public string[] resourceNames;
 
-
+        //cached managers
         public WorldManager worldManager;
+        public TileManager tileManager;
 
-        Vector2[] uv;
-
+        /// <summary>
+        /// Sets up the resource manager.
+        /// Caches all needed values.
+        /// </summary>
         public void SetUp()
         {
+            //insert default "None" resource into the resource array
+            resources.Insert(0, new Resource("None", 0, 0, null, null, false, null));
+
+            //cache managers
+            tileManager = GetComponent<TileManager>();
             worldManager = GetComponent<WorldManager>();
 
-            resources.Insert(0, new Resource("None", 0, 0, null, null, false, null));
-            resources[0].meshToSpawn = null;
-            resources[0].spawnAmount = 0;
-
+            //instatiate the improvement name array
             if (resourceNames == null)
             {
                 UpdateResourceNames();
             }
         }
 
-        public void UpdateResourceNames()
+        /// <summary>
+        /// Called on start-up to make sure all hexs with resources are changed to use their resource texture.
+        /// </summary>
+        public void InitiateResourceTexturesOnHexs()
         {
-            if (resources != null && resources.Count > 0)
+            //loop through all hexs
+            foreach (HexChunk chunk in worldManager.hexChunks)
             {
-                resourceNames = new string[resources.Count];
-                for (int i = 0; i < resources.Count; i++)
+                foreach (HexInfo hex in chunk.hexArray)
                 {
-                    resourceNames[i] = resources[i].name;
+                    //has a resource?
+                    if (hex.currentResource.name != "None")
+                    {
+                        //change texture to resource
+                        hex.ChangeTextureToResource();
+                    }
                 }
             }
         }
 
+        /// <summary>
+        /// Adds a resource to the resource array.
+        /// </summary>
+        /// <param name="r">Resource to add</param>
         public void AddResource(Resource r)
         {
             resources.Add(r);
             UpdateResourceNames();
         }
 
-        public void AddResourceAt(Resource r, int index)
+        /// <summary>
+        /// Adds a resource to the resource array at the provided index.
+        /// </summary>
+        /// <param name="r">Resource to add</param>
+        /// <param name="index">Index in which to add the resource</param>
+        public void AddResourceAtIndex(Resource r, int index)
         {
             resources.Insert(index, r);
             UpdateResourceNames();
         }
 
+        /// <summary>
+        /// Removes a resource from the resource array.
+        /// </summary>
+        /// <param name="r">Resource to remove</param>
         public void DeleteResource(Resource r)
         {
             resources.Remove(r);
             UpdateResourceNames();
         }
 
-        public void HideResourceMesh(HexInfo hex)
-        {
-            Destroy(hex.rObject);
-        }
-
+        /// <summary>
+        /// Attempts to return a resource from a provided name.
+        /// </summary>
+        /// <param name="name">The name of the resource to look for</param>
+        /// <returns>The improvement with the name; null if not found</returns>
         public Resource TryGetResource(string name)
         {
+            //cycle through all resources
             foreach(Resource r in resources)
             {
+                //if the resource shares the name; return it
                 if(r.name == name)
                 {
                     return r;
                 }
             }
+            //not found; return null
             return null;
         }
 
+        /// <summary>
+        /// Creates an array of the resource names.
+        /// </summary>
+        public void UpdateResourceNames()
+        {
+            //only update if there are resources
+            if (resources != null && resources.Count > 0)
+            {
+                //instatiate resource names array
+                resourceNames = new string[resources.Count];
+                for (int i = 0; i < resources.Count; i++)
+                {
+                    //assign each name into the array
+                    resourceNames[i] = resources[i].name;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks if a resource should be spawned on a hexagon
+        /// </summary>
+        /// <param name="hex">The hexagon to check</param>
+        /// <param name="returnResource">The resource that is spawned on the hexagon</param>
+        public void CheckForResource(HexInfo hex, out Resource returnResource)
+        {
+
+            //loop through all resources
+            for (int i = 0; i < resources.Count; i++)
+            {
+                //get each resource and check if we can spawn them
+                Resource r = resources[i];
+                if (r.rule != null)
+                {
+                    //runs through the tests and if any return false, we can not spawn this resource; check the next
+                    if (RuleTest.Test(hex, r.rule, tileManager))
+                    {
+                        //we can spawn it, but should we?
+                        int number = (int)Random.Range(0, r.rarity);
+                        if (number == 0)
+                        {
+                            //spawn resource
+                            returnResource = r;
+                            SpawnResource(hex, returnResource, false);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            //no resource spawned; return "None"
+            returnResource = resources[0];
+        }
+
+        /// <summary>
+        /// Spawns the provided resource on the tile.
+        /// Optional to regenerate the chunk.
+        /// </summary>
+        /// <param name="hex">Hex to spawn the resource on</param>
+        /// <param name="r">Resource to spawn</param>
+        /// <param name="regenerateChunk">If the parent chunk should be regenerated</param>
         public void SpawnResource(HexInfo hex, Resource r, bool regenerateChunk)
         {
+            //reset resource locations
             hex.resourceLocations.Clear();
+            
+            //destroy previous resource objects
             if (hex.rObject != null)
             {
                 Destroy(hex.rObject);
             }
 
+            //if the resource has a mesh to spawn
             if (r.meshToSpawn != null)
             {
+                //calculate y position to spawn the resources
                 float y;
                 if (hex.localMesh == null)
                 {
@@ -102,18 +196,16 @@ namespace CivGrid
                     y = (hex.localMesh.bounds.extents.y); if (y == 0) { y -= ((hex.worldPosition.y + hex.localMesh.bounds.extents.y) / Random.Range(4, 8)); } else { y = hex.worldPosition.y + hex.localMesh.bounds.extents.y + hex.currentResource.meshToSpawn.bounds.extents.y; }
                 }
 
+                //spawn a resource for each spawn amount
                 for (int i = 0; i < r.spawnAmount; i++)
                 {
-                    if (hex.currentResource.meshToSpawn == null && hex.currentResource.name != "None") { Debug.LogWarning("No Mesh was assigned to spawn for resource: " + hex.currentResource.name + ". Aborting spawning of graphics for this resource."); return; }
-
-                    //hex.localMesh.RecalculateBounds();
-
                     //position setting
                     float x = (worldManager.hexCenter.x + Random.Range(-0.2f, 0.2f));
                     float z = (worldManager.hexCenter.z + Random.Range(-0.2f, 0.2f));
                     hex.resourceLocations.Add(new Vector3(x, y, z));
                 }
 
+                //number of resources
                 int size = hex.resourceLocations.Count;
 
                 //number of resources to combine
@@ -132,152 +224,71 @@ namespace CivGrid
                         combine[k].transform = matrix;
                     }
 
+                    //create gameobject to hold the resource meshes 
                     GameObject holder = new GameObject(r.name + " at " + hex.AxialGridPosition, typeof(MeshFilter), typeof(MeshRenderer));
 
+                    //set the gameobject position to the hex position
                     holder.transform.position = hex.worldPosition;
                     holder.transform.parent = hex.parentChunk.transform;
 
-                    MeshFilter filter = holder.GetComponent<MeshFilter>();
-
+                    //set the resource mesh texture
                     holder.renderer.material.mainTexture = r.meshTexture;
 
+                    //assign the combined mesh to the resource holder gameobject
+                    MeshFilter filter = holder.GetComponent<MeshFilter>();
                     filter.mesh = new Mesh();
                     filter.mesh.CombineMeshes(combine);
 
+                    //set the hex's resource object to the resource holder
                     hex.rObject = holder;
 
                     //UV mapping
                     Rect rectArea;
                     worldManager.textureAtlas.resourceLocations.TryGetValue(r, out rectArea);
+
+                    //temp UV data
+                    Vector2[] uv;
                     uv = new Vector2[filter.mesh.vertexCount];
 
+                    //calculate the combined UV data
                     for (int i = 0; i < filter.mesh.vertexCount; i++)
                     {
                         uv[i] = new Vector2(filter.mesh.uv[i].x * rectArea.width + rectArea.x, filter.mesh.uv[i].y * rectArea.height + rectArea.y);
-
-                        uv[i] = new Vector2(Mathf.Clamp(uv[i].x, 0.1f, 0.9f), Mathf.Clamp(uv[i].y, 0.1f, 0.9f));
                     }
 
+                    //assign the resource holder's UV data
                     filter.mesh.uv = uv;
                 }
             }
 
+            //if needed; regenerate the chunk and it's UV data
             if (regenerateChunk)
             {
                 hex.ChangeTextureToResource();
                 hex.parentChunk.RegenerateMesh();
             }
         }
-
-        public void InitResourceTexturesOnHexs()
-        {
-            foreach (HexChunk chunk in worldManager.hexChunks)
-            {
-                foreach (HexInfo hex in chunk.hexArray)
-                {
-                    if (hex.currentResource.name != "None")
-                    {
-                        hex.ChangeTextureToResource();
-                    }
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// Checks if a resource should be spawned on a hexagon
-        /// </summary>
-        /// <param name="hex">The hexagon to check</param>
-        /// <param name="returnResource">The resource that is spawned on the hexagon</param>
-        public void CheckForResource(HexInfo hex, out Resource returnResource)
-        {
-            //if (resources == null) { SetUp(); }
-            bool possible = false;
-
-            for(int i = 0; i < resources.Count; i++)
-            {
-                Resource r = resources[i];
-                if (r.rule != null)
-                {
-                    if (Test(hex, r.rule))
-                    {
-                        int number = (int)Random.Range(0, r.rarity);
-                        if (number == 0)
-                        {
-                            returnResource = r;
-                            SpawnResource(hex, returnResource, false);
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        possible = false;
-                        continue;
-                    }
-                } 
-                else
-                {
-                    if ((int)Random.Range(0, r.rarity) == 0 && possible)
-                    {
-                        returnResource = r;
-                        SpawnResource(hex, returnResource, false);
-                        return;
-                    }
-                }    
-            }
-
-            returnResource = resources[0];
-        }
-
-        private static bool Test(HexInfo hex, ResourceRule rule)
-        {
-            bool returnVal;
-            TileManager tM = hex.parentChunk.worldManager.tileManager;
-
-            for(int i =0; i < rule.possibleTiles.Length; i++)
-            {
-                returnVal = TestRule(hex, tM.tiles[rule.possibleTiles[i]]);
-                if (returnVal == true) break;
-                if(i == (rule.possibleTiles.Length-1)) { return false;}
-            }
-            for (int i = 0; i < rule.possibleFeatures.Length; i++)
-            {
-                returnVal = TestRule(hex, rule.possibleFeatures[i]);
-                if(returnVal == true) return true;
-                if (i == (rule.possibleFeatures.Length - 1)) { return false; }
-            }
-            return false;
-        }
-
-        private static bool TestRule(HexInfo hex, Tile tile)
-        {
-            if (hex.terrainType == tile) { return true; } else { return false; }
-        }
-
-        private static bool TestRule(HexInfo hex, Feature feature)
-        {
-            if (hex.terrainFeature == feature) { return true; } else { return false; }
-        }
-
     }
 
 
     /// <summary>
-    /// Resource
+    /// Resource class that contains all the values for the base resource
     /// </summary>
     [System.Serializable]
     public class Resource
     {
+        //improvement values
         public string name;
-        public ResourceRule rule;
+        public HexRule rule;
         public float rarity;
         public int spawnAmount;
 
+        //object values
         public Mesh meshToSpawn;
         public Texture2D meshTexture;
         public bool replaceGroundTexture;
 
-        public Resource(string name, float rarity, int spawnAmount, Mesh mesh, Texture2D resourceMeshTexture, bool replaceGroundTexture, ResourceRule rule)
+        public Resource(string name, float rarity, int spawnAmount, Mesh mesh, Texture2D resourceMeshTexture, bool replaceGroundTexture, HexRule rule)
         {
             this.name = name;
             this.rarity = rarity;
@@ -285,19 +296,6 @@ namespace CivGrid
             this.meshTexture = resourceMeshTexture;
             this.replaceGroundTexture = replaceGroundTexture;
             this.rule = rule;
-        }
-    }
-
-    [System.Serializable]
-    public class ResourceRule
-    {
-        public int[] possibleTiles;
-        public Feature[] possibleFeatures;
-
-        public ResourceRule(int[] possibleTiles, Feature[] possibleFeatures)
-        {
-            this.possibleTiles = possibleTiles;
-            this.possibleFeatures = possibleFeatures;
         }
     }
 }
