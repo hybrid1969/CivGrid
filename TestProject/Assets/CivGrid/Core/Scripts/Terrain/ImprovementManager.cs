@@ -15,6 +15,9 @@ namespace CivGrid
         public List<Improvement> improvements;
         public string[] improvementNames;
 
+        //internal array for speed
+        private Improvement[] internalImprovements; 
+
         //cached managers
         public ResourceManager resourceManager;
         public TileManager tileManager;
@@ -27,6 +30,9 @@ namespace CivGrid
         {
             //insert default "None" improvement into the improvement array
             improvements.Insert(0, new Improvement("None", null, null, false, null));
+
+            //set internal array
+            internalImprovements = improvements.ToArray();
 
             //cache managers
             resourceManager = GetComponent<ResourceManager>();
@@ -82,6 +88,7 @@ namespace CivGrid
         public void AddImprovement(Improvement i)
         {
             improvements.Add(i);
+            internalImprovements = improvements.ToArray();
             UpdateImprovementNames();
         }
 
@@ -93,6 +100,7 @@ namespace CivGrid
         public void AddImprovementAtIndex(Improvement i, int index)
         {
             improvements.Insert(index, i);
+            internalImprovements = improvements.ToArray();
             UpdateImprovementNames();
         }
 
@@ -103,6 +111,7 @@ namespace CivGrid
         public void DeleteImprovement(Improvement i)
         {
             improvements.Remove(i);
+            internalImprovements = improvements.ToArray();
             UpdateImprovementNames();
         }
 
@@ -110,11 +119,11 @@ namespace CivGrid
         /// Attempts to return an improvement from a provided name.
         /// </summary>
         /// <param name="name">The name of the improvement to look for</param>
-        /// <returns>The improvement with the name; null if not found</returns>
+        /// <returns>The improvement with the name provided; null if not found</returns>
         public Improvement TryGetImprovement(string name)
         {
             //cycle through all improvements
-            foreach(Improvement i in improvements)
+            foreach(Improvement i in internalImprovements)
             {
                 //if the improvement shares the name; return it
                 if(i.name == name)
@@ -132,14 +141,16 @@ namespace CivGrid
         public void UpdateImprovementNames()
         {
             //only update if there are improvements
-            if(improvements != null && improvements.Count > 0)
+            if (internalImprovements != null && internalImprovements.Length > 0)
             {
                 //instatiate improvement names array
-                improvementNames = new string[improvements.Count];
-                for (int i = 0; i < improvements.Count; i++)
+                improvementNames = new string[internalImprovements.Length];
+
+                //loop through all improvements
+                for (int i = 0; i < internalImprovements.Length; i++)
                 {
                     //assign each name into the array
-                    improvementNames[i] = improvements[i].name;
+                    improvementNames[i] = internalImprovements[i].name;
                 }
             }
         }

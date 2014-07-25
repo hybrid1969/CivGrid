@@ -16,6 +16,9 @@ namespace CivGrid
         public List<Resource> resources;
         public string[] resourceNames;
 
+        //internal array for speed
+        private Resource[] internalResources;
+
         //cached managers
         public WorldManager worldManager;
         public TileManager tileManager;
@@ -28,6 +31,9 @@ namespace CivGrid
         {
             //insert default "None" resource into the resource array
             resources.Insert(0, new Resource("None", 0, 0, null, null, false, null));
+
+            //set internal array
+            internalResources = resources.ToArray();
 
             //cache managers
             tileManager = GetComponent<TileManager>();
@@ -67,6 +73,7 @@ namespace CivGrid
         public void AddResource(Resource r)
         {
             resources.Add(r);
+            internalResources = resources.ToArray();
             UpdateResourceNames();
         }
 
@@ -78,6 +85,7 @@ namespace CivGrid
         public void AddResourceAtIndex(Resource r, int index)
         {
             resources.Insert(index, r);
+            internalResources = resources.ToArray();
             UpdateResourceNames();
         }
 
@@ -88,6 +96,7 @@ namespace CivGrid
         public void DeleteResource(Resource r)
         {
             resources.Remove(r);
+            internalResources = resources.ToArray();
             UpdateResourceNames();
         }
 
@@ -95,11 +104,11 @@ namespace CivGrid
         /// Attempts to return a resource from a provided name.
         /// </summary>
         /// <param name="name">The name of the resource to look for</param>
-        /// <returns>The improvement with the name; null if not found</returns>
+        /// <returns>The improvement with the name provided; null if not found</returns>
         public Resource TryGetResource(string name)
         {
             //cycle through all resources
-            foreach(Resource r in resources)
+            foreach(Resource r in internalResources)
             {
                 //if the resource shares the name; return it
                 if(r.name == name)
@@ -117,14 +126,16 @@ namespace CivGrid
         public void UpdateResourceNames()
         {
             //only update if there are resources
-            if (resources != null && resources.Count > 0)
+            if (internalResources != null && internalResources.Length > 0)
             {
                 //instatiate resource names array
-                resourceNames = new string[resources.Count];
-                for (int i = 0; i < resources.Count; i++)
+                resourceNames = new string[internalResources.Length];
+
+                //loop through all resources
+                for (int i = 0; i < internalResources.Length; i++)
                 {
                     //assign each name into the array
-                    resourceNames[i] = resources[i].name;
+                    resourceNames[i] = internalResources[i].name;
                 }
             }
         }
@@ -138,10 +149,10 @@ namespace CivGrid
         {
 
             //loop through all resources
-            for (int i = 0; i < resources.Count; i++)
+            for (int i = 0; i < internalResources.Length; i++)
             {
                 //get each resource and check if we can spawn them
-                Resource r = resources[i];
+                Resource r = internalResources[i];
                 if (r.rule != null)
                 {
                     //runs through the tests and if any return false, we can not spawn this resource; check the next
@@ -161,7 +172,7 @@ namespace CivGrid
             }
 
             //no resource spawned; return "None"
-            returnResource = resources[0];
+            returnResource = internalResources[0];
         }
 
         /// <summary>

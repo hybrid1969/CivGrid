@@ -88,7 +88,7 @@ namespace CivGrid
             {
                 //LoadAndGenerateMap("terrainTest");
                 GenerateNewMap(true);
-                CivGridSaver.SaveTerrain("terrainTest", this);
+                CivGridSaver.SaveTerrain("terrainTest");
             }
             else { civGridCamera.enabled = false; }
         }
@@ -114,13 +114,13 @@ namespace CivGrid
         {
             generateNewValues = false;
             string savedMapLocation = Application.dataPath + "/../" +  name;
-            CivGridSaver.LoadTerrain(savedMapLocation, this);
+            CivGridSaver.LoadTerrain(savedMapLocation);
             resourceManager.InitiateResourceTexturesOnHexs();
         }
 
         public void SaveMap(string name)
         {
-            CivGridSaver.SaveTerrain(name, this);
+            CivGridSaver.SaveTerrain(name);
         }
 
         private void StartGeneration(bool setUpManagers)

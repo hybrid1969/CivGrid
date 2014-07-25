@@ -5,83 +5,97 @@ using CivGrid;
 
 namespace CivGrid
 {
+    /// <summary>
+    /// Contains all possible tiles.
+    /// </summary>
     public class TileManager : MonoBehaviour
     {
+        //tiles
         public List<Tile> tiles;
-        private Tile[] internalTiles;
         public string[] tileNames;
 
+        //internal array for speed
+        private Tile[] internalTiles;
+
+        /// <summary>
+        /// Sets up the tile manager.
+        /// Caches all needed values.
+        /// </summary>
         public void SetUp()
         {
             internalTiles = tiles.ToArray();
             UpdateTileNames();
         }
 
-
+        /// <summary>
+        /// Creates an array of tile names.
+        /// </summary>
         public void UpdateTileNames()
         {
-            if (tiles != null && tiles.Count > 0)
+            //only update if there are tiles
+            if (internalTiles != null && internalTiles.Length > 0)
             {
-                tileNames = new string[tiles.Count];
-                for (int i = 0; i < tiles.Count; i++)
+                //instantiate tile names array
+                tileNames = new string[internalTiles.Length];
+
+                //loop through all tiles
+                for (int i = 0; i < internalTiles.Length; i++)
                 {
-                    tileNames[i] = tiles[i].name;
+                    //asign each name into the array
+                    tileNames[i] = internalTiles[i].name;
                 }
             }
         }
 
+        /// <summary>
+        /// Adds a tile to the tile array.
+        /// </summary>
+        /// <param name="t">Tile to add</param>
         public void AddTile(Tile t)
         {
             tiles.Add(t);
+            internalTiles = tiles.ToArray();
             UpdateTileNames();
         }
 
+        /// <summary>
+        /// Removes a tile from the tile array.
+        /// </summary>
+        /// <param name="t">Improvement to remove</param>
         public void DeleteTile(Tile t)
         {
             tiles.Remove(t);
+            internalTiles = tiles.ToArray();
             UpdateTileNames();
         }
 
-        public Tile TryGet(string name)
+        /// <summary>
+        /// Attempts to return a tile from a provided name.
+        /// </summary>
+        /// <param name="name">The name of the tile to look for</param>
+        /// <returns>The tile with the name provided; null if not found</returns>
+        public Tile TryGetTile(string name)
         {
+            //cycle through all tiles
             foreach (Tile t in internalTiles)
             {
+                //if the improvement shares the name; return it
                 if (name == t.name)
                 {
                     return t;
                 }
             }
+            //not found; return null
             return null;
         }
 
-        public Tile TryGet(int index)
-        {
-            return internalTiles[index];
-        }
-
-        public Tile EditorTryGet(int index)
-        {
-            if ((internalTiles == null || internalTiles.Length == 0) && (tiles != null && tiles.Count > 0))
-            {
-                return tiles[index];
-            }
-            else if (internalTiles != null && internalTiles.Length > 0) { return internalTiles[index]; }
-            else
-            {
-                return new Tile("Tile Index: " + index, 0, 0);
-            }
-        }
-
+        /// <summary>
+        /// Wrapper method of TryGetTile() to find a tile marked as an ocean.
+        /// </summary>
+        /// <returns>The tile found as ocean; null if not found</returns>
         public Tile TryGetOcean()
         {
-            foreach (Tile t in internalTiles)
-            {
-                if (t.name == "Ocean" && t.isOcean)
-                {
-                    return t;
-                }
-            }
-            //only is we didnt find ocean
+            //loop through all tiles and find one marked as the ocean tile
             foreach (Tile t in internalTiles)
             {
                 if (t.isOcean)
@@ -89,11 +103,17 @@ namespace CivGrid
                     return t;
                 }
             }
+            //not found
             return null;
         }
 
+        /// <summary>
+        /// Wrapper method of TryGetTile() to find a tile marked as a mountain.
+        /// </summary>
+        /// <returns>The tile found as mountain; null if not found</returns>
         public Tile TryGetMountain()
         {
+            //loop through all tiles and find one marked as the mountain tile
             foreach (Tile t in internalTiles)
             {
                 if (t.isMountain)
@@ -101,11 +121,17 @@ namespace CivGrid
                     return t;
                 }
             }
+            //not found
             return null;
         }
 
+        /// <summary>
+        /// Wrapper method of TryGetTile() to find a tile marked as a shore.
+        /// </summary>
+        /// <returns></returns>
         public Tile TryGetShore()
         {
+            //loop through all tiles and find one marked as a shore tile
             foreach (Tile t in internalTiles)
             {
                 if (t.isShore)
@@ -113,31 +139,45 @@ namespace CivGrid
                     return t;
                 }
             }
+            //not found
             return null;
         }
 
+        /// <summary>
+        /// Finds a tile for a provided lattitude.
+        /// </summary>
+        /// <param name="lat"></param>
+        /// <returns></returns>
         public Tile GetTileFromLattitude(float lat)
         {
+            //loop through all tiles
             for (int i = 0; i < internalTiles.Length; i++)
             {
-                if ((tiles[i].isMountain == false && tiles[i].isOcean == false && tiles[i].isShore == false))
+                //if its not a special tile
+                if ((internalTiles[i].isMountain == false && internalTiles[i].isOcean == false && internalTiles[i].isShore == false))
                 {
-                    if (lat < tiles[i].bottomLat) { continue; }
-                    if (lat > tiles[i].topLat) { continue; }
+                    //if it doesnt not fit within the lattitude clamp continue to the next tile, otherwise return this tile
+                    if (lat < internalTiles[i].bottomLat) { continue; }
+                    if (lat > internalTiles[i].topLat) { continue; }
                     else
                     {
-                        return tiles[i];
+                        return internalTiles[i];
                     }
                 }
             }
+            //tile not found
             Debug.LogError("Couldn't find tile for this lattitude: " + lat);
             return null;
         }
     }
 
+    /// <summary>
+    /// Tile class that contains all values for the base tile
+    /// </summary>
     [System.Serializable]
     public class Tile
     {
+        //tiles values
         public string name = "None";
         public float bottomLat;
         public float topLat;

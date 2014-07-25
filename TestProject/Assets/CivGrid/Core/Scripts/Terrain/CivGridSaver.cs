@@ -16,6 +16,12 @@ namespace CivGrid
     /// </summary>
     public static class CivGridSaver
     {
+        /// <summary>
+        /// Saves the provided Texture2D to a the file name in the application path.
+        /// </summary>
+        /// <param name="texture">Texture to save to file</param>
+        /// <param name="name">Name of the file</param>
+        /// <param name="openTextureToView">If the texture is opened in a window to view after saving</param>
         public static void SaveTexture(Texture2D texture, string name, bool openTextureToView)
         {
             byte[] bytes = texture.EncodeToPNG();
@@ -26,6 +32,13 @@ namespace CivGrid
 			#endif
         }
 
+        /// <summary>
+        /// Saves the provided Texture2D to a file name in the provided location.
+        /// </summary>
+        /// <param name="texture">Texture to save to file</param>
+        /// <param name="location">Location to save the file</param>
+        /// <param name="name">Name of the file</param>
+        /// <param name="openTextureToView">If the texture is opened in a window to view after saving</param>
         public static void SaveTexture(Texture2D texture, string location, string name, bool openTextureToView)
         {
             byte[] bytes = texture.EncodeToPNG();
@@ -36,6 +49,13 @@ namespace CivGrid
 			#endif
         }
 
+        /// <summary>
+        /// Saves the provided texture provided as a byte[] to a file name in the provided location.
+        /// </summary>
+        /// <param name="texture">Texture to save to file</param>
+        /// <param name="location">Location to save the file</param>
+        /// <param name="name">Name of the file</param>
+        /// <param name="openTextureToView"></param>
         public static void SaveTexture(byte[] texture, string location, string name, bool openTextureToView)
         {
             File.WriteAllBytes(location + "/" + name + ".png", texture);
@@ -45,8 +65,21 @@ namespace CivGrid
 			#endif
         }
 
-        public static void SaveTerrain(string name, WorldManager worldManager)
+        /// <summary>
+        /// Saves the current terrain to a file.
+        /// </summary>
+        /// <param name="name">Name of the file</param>
+        /// <param name="worldManager">The scenes world manager</param>
+        public static void SaveTerrain(string name)
         {
+            WorldManager worldManager = GameObject.FindObjectOfType<WorldManager>();
+
+            if(worldManager == null)
+            {
+                Debug.LogError("WorldManager not found while attempting to save the game. \n Game save failed. ");
+                return;
+            }
+
             System.Text.StringBuilder assetPrefix = new System.Text.StringBuilder(Application.dataPath);
             assetPrefix.Remove((assetPrefix.Length - 6), 6);
 
@@ -265,8 +298,20 @@ namespace CivGrid
             }
         }
 
-        public static void LoadTerrain(string location, WorldManager worldManager)
+        /// <summary>
+        /// Loads a terrain into the scene from a file.
+        /// </summary>
+        /// <param name="location">File to load</param>
+        public static void LoadTerrain(string location)
         {
+
+            WorldManager worldManager = GameObject.FindObjectOfType<WorldManager>();
+
+            if (worldManager == null)
+            {
+                Debug.LogError("WorldManager not found while attempting to load the game. \n Game load failed. ");
+                return;
+            }
 
             bool startedGen = false;
 
@@ -304,7 +349,7 @@ namespace CivGrid
                             case "Hexagon":
                                 HexInfo hex = worldManager.hexChunks[XmlConvert.ToInt32(reader["xParentChunk"]), XmlConvert.ToInt32(reader["yParentChunk"])].hexArray[XmlConvert.ToInt32(reader["xHexLoc"]), XmlConvert.ToInt32(reader["yHexLoc"])];
                                 
-                                hex.terrainType = worldManager.tileManager.TryGet(reader["type"]);
+                                hex.terrainType = worldManager.tileManager.TryGetTile(reader["type"]);
                                 hex.terrainFeature = (Feature)XmlConvert.ToInt32(reader["feature"]);
                                 hex.parentChunk = worldManager.hexChunks[XmlConvert.ToInt32(reader["xParentChunk"]), XmlConvert.ToInt32(reader["yParentChunk"])];
 
@@ -390,6 +435,12 @@ namespace CivGrid
             }
         }
 
+        /// <summary>
+        /// Load a texture into memory from a file.
+        /// </summary>
+        /// <param name="location">Location of the file</param>
+        /// <param name="name">Name of the file</param>
+        /// <returns>The texture loaded from the location</returns>
         public static Texture2D LoadTexture(string location, string name)
         {
             byte[] bytes;
@@ -400,6 +451,11 @@ namespace CivGrid
             return tex;
         }
 
+        /// <summary>
+        /// Load a texture into memory from a file.
+        /// </summary>
+        /// <param name="name">Name of the file</param>
+        /// <returns>The texture loaded from the file name</returns>
         public static Texture2D LoadTexture(string name)
         {
             byte[] bytes;

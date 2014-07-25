@@ -95,7 +95,7 @@ namespace CivGrid.Editors
                             foreach (int t in improvement.rule.possibleTiles)
                             {
                                 EditorGUI.indentLevel++;
-                                EditorGUILayout.SelectableLabel(tileManager.EditorTryGet(t).name, GUILayout.ExpandHeight(false), GUILayout.MaxHeight(18));
+                                EditorGUILayout.SelectableLabel(tileManager.tiles[t].name, GUILayout.ExpandHeight(false), GUILayout.MaxHeight(18));
                                 EditorGUI.indentLevel--;
                             }
 

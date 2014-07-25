@@ -32,7 +32,7 @@ public class SaveManager : MonoBehaviour {
 
             if (GUI.Button(new Rect((Screen.width/2) - 50f, (Screen.height/2) + 75f, 100f,50f), "Save Game"))
             {
-                CivGridSaver.SaveTerrain(saveName, worldManager);
+                CivGridSaver.SaveTerrain(saveName);
                 if (savedGames.Contains(saveName) == false)
                 {
                     savedGames.Add(saveName);

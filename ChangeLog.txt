@@ -88,3 +88,7 @@ Version 0.5.2f
 Version 0.5.3f
 	+Fixes movement with wrapping enabled on a camera
 	+Tiles with features now work as desribed in 0.5.2f
+Version 0.5.5
+	+Complete code commentation
+	+Resource/Improvement/Tile generation speed up
+	+Resource and Improvement manager cleaned up once again
