@@ -46,8 +46,9 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\ArraySizing.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\CivGridCamera.cs" />
-     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\CivGridSaver.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\CivGridFileUtility.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\CivGridUtility.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\HexChunk.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\HexInfo.cs" />

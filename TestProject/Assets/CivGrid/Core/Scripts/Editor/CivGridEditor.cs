@@ -913,7 +913,7 @@ namespace CivGrid.Editors
                 }
             }
 
-            CivGridSaver.SaveTexture(returnTexture, loc, "TerrainAtlas", false);
+            CivGridFileUtility.SaveTexture(returnTexture, loc, "TerrainAtlas", false);
             worldManager.textureAtlas.terrainAtlas = (Texture2D)AssetDatabase.LoadAssetAtPath(editedLoc + "/TerrainAtlas.png", typeof(Texture2D));
             worldManager.textureAtlas.tileLocations = (TileItem[])tileLocations.ToArray().Clone();
             worldManager.textureAtlas.resourceLocations = (ResourceItem[])resourceLocations.ToArray().Clone();

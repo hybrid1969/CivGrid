@@ -1,17 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 using CivGrid;
+using CivGrid.SampleResources;
 
-
-/// <Unit Summary>
-/// This is the base script for ALL units in the game, combat and speical abilities is handled in the child class (Melee, Range Attack, Build, etc)
-/// This handles movement, health, death, selection, and basic statistics.
-/// It is not recamended to add to this class instead use this as a base class and extend methods from it(see Melee for more information on how to do this)
-/// </End>
-
-namespace CivGrid
+namespace CivGrid.SampleResources
 {
 
+    /// <summary>
+    /// This is the base script for ALL units in the game, combat and speical abilities is handled in the child class (Melee, Range Attack, Build, etc)
+    /// This handles movement, health, death, selection, and basic statistics.
+    /// It is not recamended to add to this class instead use this as a base class and extend methods from it(see Melee for more information on how to do this)
+    /// </summary>
     public abstract class Unit : MonoBehaviour
     {
 

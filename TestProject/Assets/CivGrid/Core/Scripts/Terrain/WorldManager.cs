@@ -6,21 +6,75 @@ using CivGrid;
 
 namespace CivGrid
 {
+    /// <summary>
+    /// Enum for the feature on a tile.<br />
+    /// <br />
+    /// Contains three basic types of features. See remarks for descriptions of each.
+    /// </summary>
+    /// <remarks>
+    /// <list type="definition">
+    /// <item>
+    /// <term>Flat</term>
+    /// <description>A completly flat hexagon with no change in the vertical axis.</description>
+    /// </item>
+    /// <item>
+    /// <term>Hill</term>
+    /// <description>A hill with vertical noise.</description>
+    /// </item>
+    /// <item>
+    /// <term>Mountain</term>
+    /// <description>A large pointed mountain with vertical noise.</description>
+    /// </item>
+    /// </list>
+    /// </remarks>
     public enum Feature { Flat = 0, Hill = 1, Mountain = 3 }
 
-    public enum WorldType { Diced, Continents }
+    /// <summary>
+    /// Preset world generator values that create numerous world types.<br />
+    /// <br />
+    /// Contains six basic types of worlds. See remarks for description of each.<br />
+    /// </summary>
+    /// <remarks>
+    /// Description for each world type.
+    /// <list type="definition">
+    /// <item>
+    /// <term>Diced</term>
+    /// <description>A very random map with many very small noisy island. No large landmasses, with a high ratio of water.</description>
+    /// </item>
+    /// <item>
+    /// <term>Continents</term>
+    /// <description>A world like ours. A few large land masses with numerous smaller islands. Fair amount of both water and land.</description>
+    /// </item>
+    /// <item>
+    /// <term>Pangaea</term>
+    /// <description>An extremely large landmass with a few smaller islands offshore. A large amount of land.</description>
+    /// </item>
+    /// <item>
+    /// <term>Strings</term>
+    /// <description>Long snakey islands throughout. No large landmasses, with a high ratio of water.</description>
+    /// </item>
+    /// <item>
+    /// <term>Small Islands</term>
+    /// <description>Many small islands. Islands are larger and more regular than with Diced. No large landmasses, with a high ratio of water.</description>
+    /// </item>
+    /// <item>
+    /// <term>Large Islands</term>
+    /// <description>A fair amount of medium sized landmasses. Medium landmasses, with a somewhat high ratio of water.</description>
+    /// </item>
+    /// </list>
+    /// </remarks>
+    public enum WorldType { Diced, Continents, Pangaea, Strings, SmallIslands, LargeIslands }
 
+    /// <summary>
+    /// This script runs the entire CivGrid system. <br />
+    /// <br />
+    /// Holds all chunks, and in turn each hexagon, in memory and runs all the operations throughout them when needed. Contains the methods to generate worlds, load worlds, and save worlds.
+    /// While some generation methods are exposed for use, it is best to not try and use the lower level methods.
+    /// </summary>
     [RequireComponent(typeof(TileManager), typeof(ResourceManager), typeof(ImprovementManager))]
     public class WorldManager : MonoBehaviour
     {
         #region fields
-
-        public CivGridCamera civGridCamera;
-        public bool useCivGridCamera;
-
-        public bool generateOnStart;
-        public bool generateNewValues;
-        private bool doneGenerating;
 
         //Moving
         public Vector3 currentHex;
@@ -36,29 +90,32 @@ namespace CivGrid
         private Vector3 moveVector;
         private RaycastHit chunkHit;
         private GameObject selectedHex;
-        [HideInInspector]
         public Vector2 mousePos;
         private GameObject chunkHolder;
         public HexChunk[,] hexChunks;
         private int xSectors;
         private int zSectors;
-        [HideInInspector]
         public Mesh flatHexagonSharedMesh;
-
-        public bool useWorldTypeValues;
+        private bool doneGenerating;
+        public CivGridCamera civGridCamera;
+        //public Color borderColor;
 
         //World Values
         private Texture2D tileMap;
         public float noiseScale;
-
         [SerializeField]
         public TextureAtlas textureAtlas;
-
-        //World Settings
         public WorldType worldType;
         public Vector2 mapSize;
         public int chunkSize;
         public float hexRadiusSize;
+
+        //world setup
+        public bool useCivGridCamera;
+        public bool generateOnStart;
+        public bool generateNewValues;
+        public bool useWorldTypeValues;
+        //public bool showBorder;
 
         //Hill and mountains
         [SerializeField]
@@ -67,11 +124,8 @@ namespace CivGrid
 
 
         //managers
-        [HideInInspector]
         public ResourceManager resourceManager;
-        [HideInInspector]
         public ImprovementManager improvementManager;
-        [HideInInspector]
         public TileManager tileManager;
         #endregion
 
@@ -88,7 +142,7 @@ namespace CivGrid
             {
                 //LoadAndGenerateMap("terrainTest");
                 GenerateNewMap(true);
-                CivGridSaver.SaveTerrain("terrainTest");
+                CivGridFileUtility.SaveTerrain("terrainTest");
             }
             else { civGridCamera.enabled = false; }
         }
@@ -114,13 +168,13 @@ namespace CivGrid
         {
             generateNewValues = false;
             string savedMapLocation = Application.dataPath + "/../" +  name;
-            CivGridSaver.LoadTerrain(savedMapLocation);
+            CivGridFileUtility.LoadTerrain(savedMapLocation);
             resourceManager.InitiateResourceTexturesOnHexs();
         }
 
         public void SaveMap(string name)
         {
-            CivGridSaver.SaveTerrain(name);
+            CivGridFileUtility.SaveTerrain(name);
         }
 
         private void StartGeneration(bool setUpManagers)
@@ -160,18 +214,24 @@ namespace CivGrid
         /// <summary>
         /// Sets the tileMap to the correct mapping settings
         /// </summary>
-        void DetermineWorldType()
+        private void DetermineWorldType()
         {
+            int smoothingCutoff = 0;
             if (useWorldTypeValues)
             {
-                if (worldType == WorldType.Continents) { noiseScale = 5f; }
-                else if (worldType == WorldType.Diced) { noiseScale = 10f; }
+                if (worldType == WorldType.Continents) { noiseScale = 5f; smoothingCutoff = 3; }
+                else if (worldType == WorldType.Pangaea) { noiseScale = 3f; smoothingCutoff = 2; }
+                else if (worldType == WorldType.Strings) { noiseScale = 25f; smoothingCutoff = 3; }
+                else if (worldType == WorldType.Diced) { noiseScale = 25f; smoothingCutoff = 7; }
+                else if (worldType == WorldType.LargeIslands) { noiseScale = 25f; smoothingCutoff = 5; }
+                else if (worldType == WorldType.SmallIslands) { noiseScale = 25f; smoothingCutoff = 6; }
             }
 
             SetNoiseScaleToTrueValue();
             if (noiseScale == 0) { Debug.LogException(new UnityException("Noise scale is zero, this produces artifacts.")); }
-            noiseScale = UnityEngine.Random.Range(noiseScale / 1.35f, noiseScale * 1.35f);
-            tileMap = NoiseGenerator.SmoothPerlinNoise((int)mapSize.x, (int)mapSize.y, noiseScale);
+            noiseScale = UnityEngine.Random.Range(noiseScale / 1.05f, noiseScale * 1.05f);
+
+            tileMap = NoiseGenerator.SmoothPerlinNoise((int)mapSize.x, (int)mapSize.y, noiseScale, smoothingCutoff);
         }
 
         /// <summary>
@@ -521,7 +581,7 @@ namespace CivGrid
 
         public HexInfo GetHexFromMouse()
         {
-            Ray ray1 = civGridCamera.cam1.ScreenPointToRay(mousePos);
+            Ray ray1 = civGridCamera.GetCamera(0).ScreenPointToRay(mousePos);
             if (Physics.Raycast(ray1, out chunkHit, 100f))
             {
                 HexChunk chunkHexIsLocatedIn = chunkHit.collider.gameObject.GetComponent<HexChunk>();
@@ -532,7 +592,7 @@ namespace CivGrid
             }
             if (civGridCamera.enableWrapping == true)
             {
-                Ray ray2 = civGridCamera.cam2.ScreenPointToRay(mousePos);
+                Ray ray2 = civGridCamera.GetCamera(1).ScreenPointToRay(mousePos);
                 if (Physics.Raycast(ray2, out chunkHit, 100f))
                 {
                     HexChunk chunkHexIsLocatedIn = chunkHit.collider.gameObject.GetComponent<HexChunk>();

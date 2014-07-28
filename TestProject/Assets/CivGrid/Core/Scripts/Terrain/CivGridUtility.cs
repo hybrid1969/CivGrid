@@ -1,6 +1,4 @@
-﻿using CivGrid;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
 
@@ -29,12 +27,39 @@ namespace CivGrid
 #endif
 
         /// <summary>
-        /// Get the surronding pixels of the referenced pixel location
+        /// Get the surronding pixels of the referenced pixel location.
         /// </summary>
         /// <param name="tex">Texture where the pixel is located</param>
         /// <param name="x">"X" cords of the pixel</param>
         /// <param name="y">"Y" cords of the pixel</param>
         /// <returns>The eight surronding pixels</returns>
+        /// <example>
+        /// The following code retrieves the pixels surrounding the given pixel.
+        /// <code>
+        /// class GetPixels : MonoBehaviour
+        /// {
+        ///    public Texture2D texture;
+        ///    public Vector2 pixelLocation;
+        ///
+        ///    float[] surroundingPixels;
+        ///
+        ///    void Start()
+        ///    {
+        ///       surroundingPixels = CivGridUtility.GetSurrondingPixels(texture, (int)pixelLocation.x, (int)pixelLocation.y);
+        ///
+        ///        for (int i = 0; i &lt; surroundingPixels.Length; i++)
+        ///        {
+        ///            Debug.Log("Pixel " + i + ": " + surroundingPixels[i]);
+        ///        }
+        ///    }
+        /// }
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// This method only returns the <b>r</b> channel of the pixel. It does not return the full Color struct. This method is
+        /// written for internal use, and a more general method that returns a Color struct can easily be constructed by viewing
+        /// the source for this method.
+        /// </remarks>
         public static float[] GetSurrondingPixels(Texture2D tex, int x, int y)
         {
             //array of the surronding pixel values
@@ -55,11 +80,29 @@ namespace CivGrid
         }
 
 
+
         /// <summary>
         /// Converts a two-dimensional array into a single array
         /// </summary>
         /// <param name="doubleArray">The two-dimensional array of type T to convert into a single array</param>
         /// <param name="singleArray">The converted array</param>
+        /// <typeparam name="T">The type of the arrays</typeparam>
+        /// <example>
+        /// <code>
+        /// class ArraySizing : MonoBehaviour
+        /// {
+        ///    float[,] randomValues2D = new float[,] { { 0, 1 }, { 2, 3 }, { 4, 5 } };
+        ///   float[] randomValues1D;
+        ///
+        ///    void Start()
+        ///    {
+        ///        CivGridUtility.ToSingleArray&lt;float&gt;(randomValues2D, out randomValues1D);
+        ///    }
+        ///    //Output:
+        ///    //randomValues1D = { 0, 1, 2, 3, 4, 5 };
+        /// }
+        /// </code>
+        /// </example>
         public static void ToSingleArray<T>(T[,] doubleArray, out T[] singleArray)
         {
             //list to copy the values from the two-dimensional array into
@@ -80,7 +123,24 @@ namespace CivGrid
         /// Converts a two-dimensional array into a single array
         /// </summary>
         /// <param name="doubleArray">The two-dimensional array of CombineInstance to convert into a single array</param>
+        /// <typeparam name="T">The type of the array</typeparam>
         /// <returns>The converted array</returns>
+        /// <example>
+        /// <code>
+        /// class ArraySizing : MonoBehaviour
+        /// {
+        ///   float[,] randomValues2D = new float[,] { { 0, 1 }, { 2, 3 }, { 4, 5 } };
+        ///   float[] randomValues1D;
+        ///
+        ///    void Start()
+        ///    {
+        ///        randomValues1D = CivGridUtility.ToSingleArray&lt;float&gt;(randomValues2D);
+        ///    }
+        ///    //Output:
+        ///    //randomValues1D = { 0, 1, 2, 3, 4, 5 };
+        /// }
+        /// </code>
+        /// </example>
         public static T[] ToSingleArray<T>(T[,] doubleArray)
         {
             //list to copy the values from the two-dimensional array into
@@ -103,7 +163,28 @@ namespace CivGrid
         /// <param name="original">The orginal 2D array to resize</param>
         /// <param name="rows">The number of rows that should be in the new array</param>
         /// <param name="cols">The number of columns that should be in the new array</param>
-        /// <returns></returns>
+        /// <returns>A new resized array holding all of the original values</returns>
+        /// <example>
+        /// The following code take a two-dimensional array and enlargens it to hold more, while keeping
+        /// the orignal values intact.
+        /// <code>
+        /// class ArraySizing : MonoBehaviour
+        /// {
+        ///   float[,] randomValues2D = new float[3,2] { { 0, 1 }, { 2, 3 }, { 4, 5 } };
+        ///
+        ///    void Start()
+        ///    {
+        ///        Debug.Log("Array Size Before: " + randomValues2D.Length);
+        ///        randomValues2D = CivGridUtility.Resize2DArray&lt;float&gt;(randomValues2D, 5, 2);
+        ///        Debug.Log("Array Size After: " + randomValues2D.Length);
+        ///    }
+        ///    //Output:
+        ///    //randomValues2D = { { 0, 1 }, { 2, 3 }, { 4, 5 }, { 0, 0 }, { 0, 0 } };
+        ///    //Array Size Before: 6
+        ///    //Array Size After: 10
+        /// }
+        /// </code>
+        /// </example>
         public static T[,] Resize2DArray<T>(T[,] original, int rows, int cols)
         {
             //create the new array at the new size
@@ -139,6 +220,7 @@ namespace CivGrid
         /// <summary>
         /// Attempts to return the texture atlas location of this Improvement from the array based on a key.
         /// </summary>
+        /// <param name="list">The array to get the value from</param>
         /// <param name="key">The key to search for a match within the array</param>
         /// <param name="location">A out reference of the Rect location of this Tile within the texture atlas</param>
         /// <returns>If the key was found in the array</returns>
@@ -184,6 +266,7 @@ namespace CivGrid
         /// <summary>
         /// Attempts to return the texture atlas location of this Improvement from the array based on a key.
         /// </summary>
+        /// <param name="list">The array to get the value from</param>
         /// <param name="key">The key to search for a match within the array</param>
         /// <param name="location">A out reference of the Rect location of this Resource within the texture atlas</param>
         /// <returns>If the key was found in the array</returns>
@@ -229,6 +312,7 @@ namespace CivGrid
         /// <summary>
         /// Attempts to return the texture atlas location of this Improvement from the array based on a key.
         /// </summary>
+        /// <param name="list">The array to get the value from</param>
         /// <param name="key">The key to search for a match within the array</param>
         /// <param name="location">A out reference of the Rect location of this Improvement within the texture atlas</param>
         /// <returns>If the key was found in the array</returns>
@@ -278,6 +362,7 @@ namespace CivGrid
         /// <summary>
         /// Checks if a key exists in the list.
         /// </summary>
+        /// <param name="list">The list to check if the key exists within</param>
         /// <param name="key">The key to look for within this array</param>
         /// <returns>If the key was found</returns>
         public static bool ContainsKey(this List<TileItem> list, Tile key)
@@ -297,6 +382,7 @@ namespace CivGrid
         /// <summary>
         /// Checks if a key exists in the array.
         /// </summary>
+        /// <param name="list">The list to check if the key exists within</param>
         /// <param name="key">The key to look for within this array</param>
         /// <returns>If the key was found</returns>
         public static bool ContainsKey(this TileItem[] list, Tile key)
@@ -315,6 +401,7 @@ namespace CivGrid
         /// <summary>
         /// Checks if a key exists in the array.
         /// </summary>
+        /// <param name="list">The list to check if the key exists within</param>
         /// <param name="key">The key to look for within this array</param>
         /// <returns>If the key was found</returns>
         public static bool ContainsKey(this List<ResourceItem> list, Resource key)
@@ -333,6 +420,7 @@ namespace CivGrid
         /// <summary>
         /// Checks if a key exists in the array.
         /// </summary>
+        /// <param name="list">The list to check if the key exists within</param>
         /// <param name="key">The key to look for within this array</param>
         /// <returns>If the key was found</returns>
         public static bool ContainsKey(this ResourceItem[] list, Resource key)
@@ -351,6 +439,7 @@ namespace CivGrid
         /// <summary>
         /// Checks if a key exists in the array.
         /// </summary>
+        /// <param name="list">The list to check if the key exists within</param>
         /// <param name="key">The key to look for within this array</param>
         /// <returns>If the key was found</returns>
         public static bool ContainsKey(this List<ImprovementItem> list, Improvement key)
@@ -369,6 +458,7 @@ namespace CivGrid
         /// <summary>
         /// Checks if a key exists in the array.
         /// </summary>
+        /// <param name="list">The list to check if the key exists within</param>
         /// <param name="key">The key to look for within this array</param>
         /// <returns>If the key was found</returns>
         public static bool ContainsKey(this ImprovementItem[] list, Improvement key)
@@ -391,6 +481,7 @@ namespace CivGrid
         /// <summary>
         /// Adds a new entry of a key and matching value to this array.
         /// </summary>
+        /// <param name="list">List to add the tile to</param>
         /// <param name="tileToAdd">Tile to add as the key</param>
         /// <param name="rectToAdd">Rect to add as the value</param>
         public static void Add(this List<TileItem> list, Tile tileToAdd, Rect rectToAdd)
@@ -401,7 +492,8 @@ namespace CivGrid
         /// <summary>
         /// Adds a new entry of a key and matching value to this array.
         /// </summary>
-        /// <param name="tileToAdd">Tile to add as the key</param>
+        /// <param name="list">List to add the resource to</param>
+        /// <param name="resourceToAdd">Resource to add as the key</param>
         /// <param name="rectToAdd">Rect to add as the value</param>
         public static void Add(this List<ResourceItem> list, Resource resourceToAdd, Rect rectToAdd)
         {
@@ -411,7 +503,8 @@ namespace CivGrid
         /// <summary>
         /// Adds a new entry of a key and matching value to this array.
         /// </summary>
-        /// <param name="tileToAdd">Tile to add as the key</param>
+        /// <param name="list">List to add the improvement to</param>
+        /// <param name="improvementToAdd">Improvement to add as the key</param>
         /// <param name="rectToAdd">Rect to add as the value</param>s
         public static void Add(this List<ImprovementItem> list, Improvement improvementToAdd, Rect rectToAdd)
         {

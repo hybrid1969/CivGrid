@@ -46,11 +46,12 @@ namespace CivGrid
         /// <summary>
         /// An inverted version of perlin noise with ocean smoothing
         /// </summary>
-        /// <param name="xSize">Amount of tiles in the x-axis of the map </param>
-        /// <param name="ySize">Amount of tiles in the y-axis of the map </param>
-        /// <param name="noiseScale">Scale of the noise </param>
-        /// <returns> A TileMap in Texture2D format </returns>
-        public static Texture2D SmoothPerlinNoise(int xSize, int ySize, float noiseScale)
+        /// <param name="xSize">Amount of tiles in the x-axis of the map</param>
+        /// <param name="ySize">Amount of tiles in the y-axis of the map</param>
+        /// <param name="noiseScale">Scale of the noise</param>
+        /// <param name="smoothingCutoff">Amount of tiles needed to remain water/ground</param>
+        /// <returns>A TileMap in Texture2D format</returns>
+        public static Texture2D SmoothPerlinNoise(int xSize, int ySize, float noiseScale, int smoothingCutoff)
         {
             //texture to return
             Texture2D tex = new Texture2D(xSize, ySize);
@@ -73,7 +74,7 @@ namespace CivGrid
             }
 
             //smooth the land vs water
-            CleanWater(tex, noiseScale);
+            CleanWater(tex, noiseScale, smoothingCutoff);
 
             //return perlin noise texture
             return tex;
@@ -84,7 +85,7 @@ namespace CivGrid
         /// </summary>
         /// <param name="texture">Texture to smooth</param>
         /// <param name="noiseScale">Noise scale you used to generate the texture</param>
-        private static void CleanWater(Texture2D texture, float noiseScale)
+        private static void CleanWater(Texture2D texture, float noiseScale, int smoothingCutoff)
         {
             //loop through all pixels in the texture
             for (int x = 0; x < texture.width; x++)
@@ -109,7 +110,7 @@ namespace CivGrid
                         }
 
                         //not enough water around; set to land
-                        if (surrondingWater < 3)
+                        if (surrondingWater < smoothingCutoff)
                         {
                             //generate noise for the pixel we are setting to land
                             float randomValue = Random.value;
@@ -139,7 +140,7 @@ namespace CivGrid
                         }
 
                         //not enough land around; set to water
-                        if (surrondingLand < 3)
+                        if (surrondingLand < smoothingCutoff)
                         {
                             texture.SetPixel(x, y, new Color(0f, 0f, 0f));
                         }

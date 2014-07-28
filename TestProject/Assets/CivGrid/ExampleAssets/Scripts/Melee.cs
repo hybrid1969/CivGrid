@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using CivGrid;
+using CivGrid.SampleResources;
 
-namespace CivGrid
+namespace CivGrid.SampleResources
 {
 
     public class Melee : Unit

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using CivGrid;
+using CivGrid.SampleResources;
 
 namespace CivGrid
 {
@@ -72,15 +73,35 @@ namespace CivGrid
             set { gridPosition = value; }
         }
 
-
-
         /// <summary>
         /// This is the setup called from HexChunk when it's ready for us to generate our meshes.
         /// </summary>
+        /// <example>
+        /// The following code will start hex operations on a new hex provided that the hexagon has a valid parent chunk and world manager.
+        /// <code>
+        /// class HexTest : MonoBehaviour
+        /// {
+        ///     HexInfo hex;
+        ///     
+        ///     void Start()
+        ///     {
+        ///         hex = new HexInfo();
+        ///         
+        ///         hex.Start();
+        ///     }
+        /// }
+        /// 
+        /// //Output:
+        /// //Generates a new hexagon and a mesh.
+        /// </code>
+        /// </example>
         public void Start()
         {
             //set tile type to the mountain tile if the feature is a mountain and the type exists
             if (terrainFeature == Feature.Mountain) { Tile mountain = parentChunk.worldManager.tileManager.TryGetMountain(); if (mountain != null) {  terrainType = mountain; } }
+
+            //get the texture atlas from world manager
+            worldTextureAtlas = parentChunk.worldManager.textureAtlas;
 
             //generate local mesh
             MeshSetup();
@@ -92,9 +113,6 @@ namespace CivGrid
                 currentImprovement = improvementManager.improvements[0];
                 resourceManager.CheckForResource(this, out currentResource);
             }
-
-            //get the texture atlas from world manager
-            worldTextureAtlas = parentChunk.worldManager.textureAtlas;
         }
 
         /// <summary>
@@ -208,12 +226,12 @@ namespace CivGrid
                 if (terrainFeature == Feature.Mountain)
                 {
                     //large overlay
-                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.2f, 0.5f), Random.Range(0.3f, 0.6f), parentChunk.worldManager.mountainScaleY, true);
+                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.2f, 0.5f), Random.Range(0.3f, 0.6f), 2, true);
                 }
                 else if (terrainFeature == Feature.Hill)
                 {
                     //small overlay
-                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.75f, 1f), Random.Range(0.4f, 0.7f), parentChunk.worldManager.mountainScaleY, true);
+                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.75f, 1f), Random.Range(0.4f, 0.7f), 2, true);
                 }
 
                 //feature values
