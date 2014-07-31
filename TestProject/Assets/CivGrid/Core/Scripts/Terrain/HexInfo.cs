@@ -60,7 +60,13 @@ namespace CivGrid
         public ImprovementManager improvementManager;
         public GameObject iObject;
 
-        //get axial grid position
+        /// <summary>
+        /// The coordinates of the hexagon in axial grid format.
+        /// </summary>
+        /// <remarks>
+        /// This is simply a lighter version of the cube format, made possible by the fact, x + y + z = 0.
+        /// With this equation we can include only the (x,y) cordinates and assume
+        /// </remarks>
         public Vector2 AxialGridPosition
         {
             get { return new Vector2(CubeGridPosition.x, CubeGridPosition.y); }
@@ -90,9 +96,6 @@ namespace CivGrid
         ///         hex.Start();
         ///     }
         /// }
-        /// 
-        /// //Output:
-        /// //Generates a new hexagon and a mesh.
         /// </code>
         /// </example>
         public void Start()
@@ -113,6 +116,48 @@ namespace CivGrid
                 currentImprovement = improvementManager.improvements[0];
                 resourceManager.CheckForResource(this, out currentResource);
             }
+        }
+
+        /// <summary>
+        /// Applies any changes on this hex to it's parent chunk.
+        /// </summary>
+        /// <remarks>
+        /// This method must be called to apply any changes to a hexagon's <see cref="HexInfo.localMesh"/>. Without calling
+        /// this method the changes won't be seen in the chunk mesh.
+        /// </remarks>
+        /// <example>
+        /// The following code changes the very middle hexagon in the map to show its resource texture.
+        /// <code>
+        /// using System;
+        /// using UnityEngine;
+        /// using CivGrid;
+        ///
+        /// class ExampleClass : MonoBehaviour
+        /// {
+        ///    WorldManager worldManager;
+        ///
+        ///    public void Start()
+        ///    {
+        ///        //cache and find the world manager
+        ///        worldManager = GameObject.FindObjectOfType<WorldManager>();
+        ///
+        ///        //gets the very middle hexagon in the map
+        ///        HexChunk chunk = worldManager.hexChunks[worldManager.hexChunks.GetLength(0) / 2, worldManager.hexChunks.GetLength(1) / 2];
+        ///        HexInfo hex = chunk.hexArray[chunk.hexArray.GetLength(0) / 2, chunk.hexArray.GetLength(1) / 2];
+        ///
+        ///        //change the hexes texture to the resource version
+        ///        hex.ChangeTextureToResource();
+        ///
+        ///        //update the chunk mesh to apply the changes
+        ///        hex.ApplyChanges();
+        ///    }
+        /// }
+
+        /// </code>
+        /// </example>
+        public void ApplyChanges()
+        {
+            parentChunk.RegenerateMesh();
         }
 
         /// <summary>

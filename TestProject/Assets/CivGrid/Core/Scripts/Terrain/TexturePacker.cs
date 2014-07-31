@@ -36,9 +36,6 @@ namespace CivGrid
         ///         
         ///         atlasedTexture = TexturePacker.AtlasTextures(texturesToCombine, 2048, out rectLocations);
         ///     }
-        ///     //Output:
-        ///     //atlasedTexture will contain a texture atlas of the two textures.
-        ///     //rectLocations will contain their locations in the atlas.
         /// }
         /// </code>
         /// </example>

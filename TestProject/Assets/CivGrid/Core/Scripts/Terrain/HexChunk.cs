@@ -12,22 +12,38 @@ namespace CivGrid
     /// </summary>
     public class HexChunk : MonoBehaviour
     {
-
+        /// <summary>
+        /// The array of hexagons in this chunk.
+        /// Each hexagon is represented by the class <see cref="HexInfo"/>, which holds all
+        /// data concerning the hexagon.
+        /// </summary>
         [SerializeField]
         public HexInfo[,] hexArray;
+        /// <summary>
+        /// The size of the chunk described as, width and height in the number of hexagons included within
+        /// the chunk.
+        /// </summary>
+        /// <remarks>Setting this number too large will cause difficulties as the chunk mesh can reach the
+        /// vertex limits of unity. This will cause an internal error from unity.</remarks>
         public Vector2 chunkSize;
-        public Vector3 hexSize;
 
-        //set by world master
-        public int xSector;
-        public int ySector;
-        public WorldManager worldManager;
+
+        //set by world manager
+        /// <summary>
+        /// The location of the chunk in (x,y) coordinates.
+        /// </summary>
+        public Vector2 chunkLocation;
+        /// <summary>
+        /// The dimensions and size of the hexagon in this world.
+        /// </summary>
+        public Vector3 hexSize;
+        internal WorldManager worldManager;
 
         private MeshFilter filter;
         private new BoxCollider collider;
 
         /// <summary>
-        /// Sets the amount of hexagons in the chunk
+        /// Sets the amount of hexagons in the chunk.
         /// </summary>
         /// <param name="x">Amount of hexagons in "x" axis</param>
         /// <param name="y">Amount of hexagons in "y" axis</param>
@@ -37,23 +53,27 @@ namespace CivGrid
         }
 
         /// <summary>
-        /// Cleans up the material on this object after it is destroyed
+        /// Cleans up the material on this object after it is destroyed.
         /// </summary>
-        public void OnDestroy()
+        void OnDestroy()
         {
             Destroy(renderer.material);
         }
 
         /// <summary>
-        /// Allocates the hex array of this chunk
+        /// Allocates the hex array of this chunk.
         /// </summary>
+        /// <remarks>
+        /// This method uses <see cref="chunkSize"/> to determine the allocation amount. This value must
+        /// be set before invoking this method.
+        /// </remarks>
         public void AllocateHexArray()
         {
             hexArray = new HexInfo[(int)chunkSize.x, (int)chunkSize.y];
         }
 
         /// <summary>
-        /// Generates all hexagons in this chunk in their location
+        /// Generates all hexagons in this chunk in their proper positioning.
         /// </summary>
         public void GenerateChunk()
         {
@@ -104,14 +124,14 @@ namespace CivGrid
             hex = hexArray[x, y];
 
             //set world array position
-            worldArrayPosition.x = x + (chunkSize.x * xSector);
-            worldArrayPosition.y = y + (chunkSize.y * ySector);
+            worldArrayPosition.x = x + (chunkSize.x * chunkLocation.x);
+            worldArrayPosition.y = y + (chunkSize.y * chunkLocation.y);
 
             hex.CubeGridPosition = new Vector3(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f), worldArrayPosition.y, -(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f) + worldArrayPosition.y));
             //set local position of hex; this is the hex cord position local to the chunk
             hex.localPosition = new Vector3(x * ((worldManager.hexExt.x * 2)), 0, (y * worldManager.hexExt.z) * 1.5f);
             //set world position of hex; this is the hex cord position local to the world
-            hex.worldPosition = new Vector3(hex.localPosition.x + (xSector * (chunkSize.x * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((ySector * (chunkSize.y * hexSize.z)) * (.75f)));
+            hex.worldPosition = new Vector3(hex.localPosition.x + (chunkLocation.x * (chunkSize.x * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((chunkLocation.y * (chunkSize.y * hexSize.z)) * (.75f)));
 
             //not loading world
             if (worldManager.generateNewValues)
@@ -141,14 +161,14 @@ namespace CivGrid
             hex = hexArray[x, y];
 
             //set world array position
-            worldArrayPosition.x = x + (chunkSize.x * xSector);
-            worldArrayPosition.y = y + (chunkSize.y * ySector);
+            worldArrayPosition.x = x + (chunkSize.x * chunkLocation.x);
+            worldArrayPosition.y = y + (chunkSize.y * chunkLocation.y);
 
             hex.CubeGridPosition = new Vector3(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f), worldArrayPosition.y, -(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f) + worldArrayPosition.y));
             //set local position of hex; this is the hex cord position local to the chunk
             hex.localPosition = new Vector3((x * (worldManager.hexExt.x * 2) + worldManager.hexExt.x), 0, (y * worldManager.hexExt.z) * 1.5f);
             //set world position of hex; this is the hex cord position local to the world
-            hex.worldPosition = new Vector3(hex.localPosition.x + (xSector * (chunkSize.x * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((ySector * (chunkSize.y * hexSize.z)) * (.75f)));
+            hex.worldPosition = new Vector3(hex.localPosition.x + (chunkLocation.x * (chunkSize.x * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((chunkLocation.y * (chunkSize.y * hexSize.z)) * (.75f)));
 
             ///Set Hex values
             hex.terrainFeature = worldManager.PickFeatureType((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
@@ -169,7 +189,7 @@ namespace CivGrid
         private bool DetermineWorldEdge(HexInfo hex, int x, int y)
         {
             //check if hex is in a chunk on the horizontal sides
-            if (xSector == 0 || xSector == ((worldManager.mapSize.x / worldManager.chunkSize) - 1))
+            if (chunkLocation.x == 0 || chunkLocation.x == ((worldManager.mapSize.x / worldManager.chunkSize) - 1))
             {
                 //checks if hex is on the horizontal edge of a horizontal edge chunk
                 if (x == (chunkSize.x - 1) || x == 0)
@@ -179,7 +199,7 @@ namespace CivGrid
             }
 
             //check if hex is in a chunk on the vertical sides
-            if (ySector == 0 || ySector == ((worldManager.mapSize.y / worldManager.chunkSize) - 1))
+            if (chunkLocation.y == 0 || chunkLocation.y == ((worldManager.mapSize.y / worldManager.chunkSize) - 1))
             {
                 //checks if hex is on the vettical edge of a vertical edge chunk
                 if (y == (chunkSize.y - 1) || y == 0)
@@ -195,7 +215,7 @@ namespace CivGrid
         /// <summary>
         /// Starts chunk operations of spawning the hexagons and then chunking them
         /// </summary>
-        public void Begin()
+        internal void Begin()
         {
             //begin making hexagons
             GenerateChunk();
@@ -206,7 +226,10 @@ namespace CivGrid
             }
         }
 
-        public void StartHex()
+        /// <summary>
+        /// Starts hex operations.
+        /// </summary>
+        internal void StartHex()
         {
             //cycle through all hexagons
             for (int x = 0; x < chunkSize.x; x++)
@@ -234,9 +257,16 @@ namespace CivGrid
         }
 
         /// <summary>
-        /// Adds a collider if there is none; resizes to meshes' size
+        /// Adds a collider if there is none; resizes to chunks size if there is one.
         /// </summary>
-        void MakeCollider()
+        /// <remarks>
+        /// This method generates a new collider for the chunk if it does not already include a collider.
+        /// If one is present it will resize it.
+        /// 
+        /// Therefore any <b>BoxCollider</b> on a <b>GameObject</b> that has a <see cref="HexChunk"/> script
+        /// will use the present <b>BoxCollider</b> and resize it.
+        /// </remarks>
+        public void GenerateHexCollider()
         {
             //if we dont have a collider, add one
             if (collider == null)
@@ -249,9 +279,13 @@ namespace CivGrid
         }
 
         /// <summary>
-        /// Combines all localMeshes' in hexs of this chunk into one mesh
+        /// Combines all localMeshes' in the hexes of this chunk into one mesh.
         /// </summary>
-        public void RegenerateMesh()
+        /// <remarks>
+        /// This method must be called to apply any changes to a hexagon's <see cref="HexInfo.localMesh"/>. Without calling
+        /// this method the changes won't be seen in the chunk mesh.
+        /// </remarks>
+        internal void RegenerateMesh()
         {
             //make a two-dimensional array to remain constant with our hexArray
             CombineInstance[,] combine = new CombineInstance[(int)chunkSize.x, (int)chunkSize.y];
@@ -288,7 +322,7 @@ namespace CivGrid
             //recalculate the normals of the new mesh to play nicely with lighting
             filter.mesh.RecalculateNormals();
             //generate/set the collider dimensions for this chunk
-            MakeCollider();
+            GenerateHexCollider();
         }
     }
 }

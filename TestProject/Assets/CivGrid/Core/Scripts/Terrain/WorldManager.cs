@@ -27,7 +27,21 @@ namespace CivGrid
     /// </item>
     /// </list>
     /// </remarks>
-    public enum Feature { Flat = 0, Hill = 1, Mountain = 3 }
+    public enum Feature 
+    { 
+        /// <summary>
+        /// A completly flat hexagon with no change in the vertical axis.
+        /// </summary>
+        Flat = 0, 
+        /// <summary>
+        /// A hill with vertical noise.
+        /// </summary>
+        Hill = 1, 
+        /// <summary>
+        /// A large pointed mountain with vertical noise.
+        /// </summary>
+        Mountain = 3 
+    }
 
     /// <summary>
     /// Preset world generator values that create numerous world types.<br />
@@ -63,7 +77,33 @@ namespace CivGrid
     /// </item>
     /// </list>
     /// </remarks>
-    public enum WorldType { Diced, Continents, Pangaea, Strings, SmallIslands, LargeIslands }
+    public enum WorldType 
+    { 
+        /// <summary>
+        /// A very random map with many very small noisy island. No large landmasses, with a high ratio of water.
+        /// </summary>
+        Diced, 
+        /// <summary>
+        /// A world like ours. A few large land masses with numerous smaller islands. Fair amount of both water and land.
+        /// </summary>
+        Continents, 
+        /// <summary>
+        /// An extremely large landmass with a few smaller islands offshore. A large amount of land.
+        /// </summary>
+        Pangaea, 
+        /// <summary>
+        /// Long snakey islands throughout. No large landmasses, with a high ratio of water.
+        /// </summary>
+        Strings, 
+        /// <summary>
+        /// Many small islands. Islands are larger and more regular than with Diced. No large landmasses, with a high ratio of water.
+        /// </summary>
+        SmallIslands, 
+        /// <summary>
+        /// A fair amount of medium sized landmasses. Medium landmasses, with a somewhat high ratio of water.
+        /// </summary>
+        LargeIslands 
+    }
 
     /// <summary>
     /// This script runs the entire CivGrid system. <br />
@@ -384,10 +424,8 @@ namespace CivGrid
                     hexChunks[x, z].hexSize = hexSize;
                     //set the number of hexagons for the chunk to generate
                     hexChunks[x, z].SetSize(chunkSize, chunkSize);
-                    //the width interval of the chunk
-                    hexChunks[x, z].xSector = x;
-                    //set the height interval of the chunk
-                    hexChunks[x, z].ySector = z;
+                    //the sector location of the chunk
+                    hexChunks[x, z].chunkLocation = new Vector2(x,z);
                     //assign the world manager(this)
                     hexChunks[x, z].worldManager = this;
                 }
@@ -612,15 +650,15 @@ namespace CivGrid
             if (DetermineWorldEdge(chunk) == false)
             {
                 chunkArray = new HexChunk[9];
-                chunkArray[0] = hexChunks[chunk.xSector + 1, chunk.ySector];
-                chunkArray[1] = hexChunks[chunk.xSector + 1, chunk.ySector + 1];
-                chunkArray[2] = hexChunks[chunk.xSector, chunk.ySector + 1];
-                chunkArray[3] = hexChunks[chunk.xSector - 1, chunk.ySector + 1];
-                chunkArray[4] = hexChunks[chunk.xSector - 1, chunk.ySector];
-                chunkArray[5] = hexChunks[chunk.xSector - 1, chunk.ySector - 1];
-                chunkArray[6] = hexChunks[chunk.xSector, chunk.ySector - 1];
-                chunkArray[7] = hexChunks[chunk.xSector + 1, chunk.ySector - 1];
-                chunkArray[8] = hexChunks[chunk.xSector, chunk.ySector];
+                chunkArray[0] = hexChunks[(int)chunk.chunkLocation.x + 1, (int)chunk.chunkLocation.y];
+                chunkArray[1] = hexChunks[(int)chunk.chunkLocation.x + 1, (int)chunk.chunkLocation.y + 1];
+                chunkArray[2] = hexChunks[(int)chunk.chunkLocation.x, (int)chunk.chunkLocation.y + 1];
+                chunkArray[3] = hexChunks[(int)chunk.chunkLocation.x - 1, (int)chunk.chunkLocation.y + 1];
+                chunkArray[4] = hexChunks[(int)chunk.chunkLocation.x - 1, (int)chunk.chunkLocation.y];
+                chunkArray[5] = hexChunks[(int)chunk.chunkLocation.x - 1, (int)chunk.chunkLocation.y - 1];
+                chunkArray[6] = hexChunks[(int)chunk.chunkLocation.x, (int)chunk.chunkLocation.y - 1];
+                chunkArray[7] = hexChunks[(int)chunk.chunkLocation.x + 1, (int)chunk.chunkLocation.y - 1];
+                chunkArray[8] = hexChunks[(int)chunk.chunkLocation.x, (int)chunk.chunkLocation.y];
                 return chunkArray;
             }
             else
@@ -631,12 +669,12 @@ namespace CivGrid
 
         private bool DetermineWorldEdge(HexChunk chunk)
         {
-            if (chunk.xSector == 0 || chunk.xSector == ((mapSize.x / chunkSize) - 1))
+            if (chunk.chunkLocation.x == 0 || chunk.chunkLocation.x == ((mapSize.x / chunkSize) - 1))
             {
                 return true;
             }
 
-            if (chunk.ySector == 0 || chunk.ySector == ((mapSize.y / chunkSize) - 1))
+            if (chunk.chunkLocation.y == 0 || chunk.chunkLocation.y == ((mapSize.y / chunkSize) - 1))
             {
                 return true;
             }

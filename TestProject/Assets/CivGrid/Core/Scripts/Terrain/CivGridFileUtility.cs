@@ -126,7 +126,7 @@ namespace CivGrid
         /// <example>
         /// The following code saves the terrain to a file called <b>terrainSave</b>.
         /// <code>
-        /// /// class SaveTerrain : MonoBehaviour
+        /// class SaveTerrain : MonoBehaviour
         /// {
         ///    void Start()
         ///    {
