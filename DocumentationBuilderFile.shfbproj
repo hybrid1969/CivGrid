@@ -24,46 +24,46 @@
     </DocumentationSources>
     <ApiFilter>
       <Filter entryType="Namespace" fullName="CivGrid" isExposed="True">
-  <Filter entryType="Class" fullName="CivGrid.CivGridCamera" filterName="CivGridCamera" isExposed="True">
-    <Filter entryType="Field" fullName="CivGrid.CivGridCamera.cam1" filterName="cam1" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.CivGridCamera.cam2" filterName="cam2" isExposed="False" />
-  </Filter>
-  <Filter entryType="Class" fullName="CivGrid.HexChunk" filterName="HexChunk" isExposed="True">
-    <Filter entryType="Field" fullName="CivGrid.HexChunk.worldManager" filterName="worldManager" isExposed="False" />
-  </Filter>
-  <Filter entryType="Class" fullName="CivGrid.HexInfo" filterName="HexInfo" isExposed="True">
-    <Filter entryType="Field" fullName="CivGrid.HexInfo.currentUnit" filterName="currentUnit" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.HexInfo.hexCenter" filterName="hexCenter" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.HexInfo.hexExt" filterName="hexExt" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.HexInfo.improvementManager" filterName="improvementManager" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.HexInfo.isSelected" filterName="isSelected" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.HexInfo.resourceManager" filterName="resourceManager" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.HexInfo.vertsx" filterName="vertsx" isExposed="False" />
-  </Filter>
-  <Filter entryType="Class" fullName="CivGrid.ImprovementManager" filterName="ImprovementManager" isExposed="True">
-    <Filter entryType="Field" fullName="CivGrid.ImprovementManager.resourceManager" filterName="resourceManager" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.ImprovementManager.tileManager" filterName="tileManager" isExposed="False" />
-  </Filter>
-  <Filter entryType="Class" fullName="CivGrid.ResourceManager" filterName="ResourceManager" isExposed="True">
-    <Filter entryType="Field" fullName="CivGrid.ResourceManager.tileManager" filterName="tileManager" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.ResourceManager.worldManager" filterName="worldManager" isExposed="False" />
-  </Filter>
-  <Filter entryType="Class" fullName="CivGrid.WorldManager" filterName="WorldManager" isExposed="True">
-    <Filter entryType="Field" fullName="CivGrid.WorldManager.civGridCamera" filterName="civGridCamera" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.WorldManager.currentHex" filterName="currentHex" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.WorldManager.distance" filterName="distance" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.WorldManager.flatHexagonSharedMesh" filterName="flatHexagonSharedMesh" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.WorldManager.generateNewValues" filterName="generateNewValues" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.WorldManager.goToHex" filterName="goToHex" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.WorldManager.hexCenter" filterName="hexCenter" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.WorldManager.hexChunks" filterName="hexChunks" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.WorldManager.hexExt" filterName="hexExt" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.WorldManager.hexSize" filterName="hexSize" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.WorldManager.improvementManager" filterName="improvementManager" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.WorldManager.resourceManager" filterName="resourceManager" isExposed="False" />
-    <Filter entryType="Field" fullName="CivGrid.WorldManager.tileManager" filterName="tileManager" isExposed="False" />
-  </Filter>
-</Filter>
+        <Filter entryType="Class" fullName="CivGrid.CivGridCamera" filterName="CivGridCamera" isExposed="True">
+          <Filter entryType="Field" fullName="CivGrid.CivGridCamera.cam1" filterName="cam1" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.CivGridCamera.cam2" filterName="cam2" isExposed="False" />
+        </Filter>
+        <Filter entryType="Class" fullName="CivGrid.HexChunk" filterName="HexChunk" isExposed="True">
+          <Filter entryType="Field" fullName="CivGrid.HexChunk.worldManager" filterName="worldManager" isExposed="False" />
+        </Filter>
+        <Filter entryType="Class" fullName="CivGrid.HexInfo" filterName="HexInfo" isExposed="True">
+          <Filter entryType="Field" fullName="CivGrid.HexInfo.currentUnit" filterName="currentUnit" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.HexInfo.hexCenter" filterName="hexCenter" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.HexInfo.hexExt" filterName="hexExt" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.HexInfo.improvementManager" filterName="improvementManager" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.HexInfo.isSelected" filterName="isSelected" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.HexInfo.resourceManager" filterName="resourceManager" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.HexInfo.vertsx" filterName="vertsx" isExposed="False" />
+        </Filter>
+        <Filter entryType="Class" fullName="CivGrid.ImprovementManager" filterName="ImprovementManager" isExposed="True">
+          <Filter entryType="Field" fullName="CivGrid.ImprovementManager.resourceManager" filterName="resourceManager" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.ImprovementManager.tileManager" filterName="tileManager" isExposed="False" />
+        </Filter>
+        <Filter entryType="Class" fullName="CivGrid.ResourceManager" filterName="ResourceManager" isExposed="True">
+          <Filter entryType="Field" fullName="CivGrid.ResourceManager.tileManager" filterName="tileManager" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.ResourceManager.worldManager" filterName="worldManager" isExposed="False" />
+        </Filter>
+        <Filter entryType="Class" fullName="CivGrid.WorldManager" filterName="WorldManager" isExposed="True">
+          <Filter entryType="Field" fullName="CivGrid.WorldManager.civGridCamera" filterName="civGridCamera" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.WorldManager.currentHex" filterName="currentHex" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.WorldManager.distance" filterName="distance" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.WorldManager.flatHexagonSharedMesh" filterName="flatHexagonSharedMesh" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.WorldManager.generateNewValues" filterName="generateNewValues" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.WorldManager.goToHex" filterName="goToHex" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.WorldManager.hexCenter" filterName="hexCenter" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.WorldManager.hexChunks" filterName="hexChunks" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.WorldManager.hexExt" filterName="hexExt" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.WorldManager.hexSize" filterName="hexSize" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.WorldManager.improvementManager" filterName="improvementManager" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.WorldManager.resourceManager" filterName="resourceManager" isExposed="False" />
+          <Filter entryType="Field" fullName="CivGrid.WorldManager.tileManager" filterName="tileManager" isExposed="False" />
+        </Filter>
+      </Filter>
     </ApiFilter>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
     <HelpFileFormat>Website</HelpFileFormat>
@@ -101,6 +101,11 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Win32' ">
   </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="UnityEngine">
+      <HintPath>TestProject\Temp\bin\Release\UnityEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <!-- Import the SHFB build targets -->
   <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
 </Project>

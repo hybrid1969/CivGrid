@@ -23,7 +23,20 @@ namespace CivGrid.SampleResources
         {
             GameManager.worldEvent += EventManager;
             GameManager.nextTurn += NextTurn;
+            WorldManager.onHexClick += OnHexClick;
             worldManager = GameObject.FindObjectOfType<WorldManager>();
+        }
+
+        void OnHexClick(HexInfo hex, int mouseButton)
+        {
+            if(mouseButton == 0)
+            {
+                worldManager.improvementManager.TestedAddImprovementToTile(hex, 0);
+            }
+            if(mouseButton == 1)
+            {
+                worldManager.improvementManager.RemoveImprovementFromTile(hex);
+            }
         }
 
         void OnDisable()

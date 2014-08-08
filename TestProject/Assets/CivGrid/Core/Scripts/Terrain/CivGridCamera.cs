@@ -146,7 +146,7 @@ namespace CivGrid
             try
             {
                 //gets the mouse position in viewport cords
-                Vector3 pos = cam1.ScreenToViewportPoint(worldManager.mousePos);
+                pos = cam1.ScreenToViewportPoint(worldManager.mousePos);
 
                 //mouse is in the far right of the screen
                 if (pos.x >= 0.8f)

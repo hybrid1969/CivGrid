@@ -11,16 +11,24 @@ namespace CivGrid
     /// </summary>
     public class ImprovementManager : MonoBehaviour
     {
-        //improvements
+        /// <summary>
+        /// Possible improvements to spawn.
+        /// </summary>
         public List<Improvement> improvements;
+        /// <summary>
+        /// Names of the possible improvements to spawn.
+        /// </summary>
+        /// <remarks>
+        /// The index is the same for the respective improvement.
+        /// </remarks>
         public string[] improvementNames;
 
         //internal array for speed
         private Improvement[] internalImprovements; 
 
         //cached managers
-        public ResourceManager resourceManager;
-        public TileManager tileManager;
+        internal ResourceManager resourceManager;
+        internal TileManager tileManager;
 
         /// <summary>
         /// Sets up the improvement manager.
@@ -85,6 +93,12 @@ namespace CivGrid
         /// Adds an improvement to the improvement array.
         /// </summary>
         /// <param name="i">Improvement to add</param>
+        /// <remarks>
+        /// This method is safe to use after world generation. However, the improvement must be present on
+        /// a world load to be safe./n 
+        /// For example if you add an improvment and the user adds it a tile. Saves the game. And then loads it,
+        /// you must re-add the same improvement at the same index before world generation for it to safely load.
+        /// </remarks>
         public void AddImprovement(Improvement i)
         {
             improvements.Add(i);
@@ -97,6 +111,12 @@ namespace CivGrid
         /// </summary>
         /// <param name="i">Improvement to add</param>
         /// <param name="index">Index in which to add the improvement</param>
+        /// <remarks>
+        /// This method is safe to use after world generation. However, the improvement must be present on
+        /// a world load to be safe./n 
+        /// For example if you add an improvment and the user adds it a tile. Saves the game. And then loads it,
+        /// you must re-add the same improvement at the same index before world generation for it to safely load.
+        /// </remarks>
         public void AddImprovementAtIndex(Improvement i, int index)
         {
             improvements.Insert(index, i);
@@ -108,6 +128,10 @@ namespace CivGrid
         /// Removes an improvement from the improvement array.
         /// </summary>
         /// <param name="i">Improvement to remove</param>
+        /// <remarks>
+        /// Removing a improvement that is referenced elsewhere will cause null reference errors. Only use this
+        /// method if you are personally managing the specific improvement memory lifetime.
+        /// </remarks>
         public void DeleteImprovement(Improvement i)
         {
             improvements.Remove(i);
@@ -120,6 +144,36 @@ namespace CivGrid
         /// </summary>
         /// <param name="name">The name of the improvement to look for</param>
         /// <returns>The improvement with the name provided; null if not found</returns>
+        /// <example>
+        /// The following example adds an improvement, then retrieves it by it's name. Using <see cref="AddImprovement(Improvement)"/> is
+        /// not encouraged. Add improvements in the inspector.
+        /// <code>
+        /// using System;
+        /// using UnityEngine;
+        /// using CivGrid;
+        ///
+        /// public class ExampleClass : MonoBehaviour
+        /// {
+        ///    ImprovementManager improvementManager;
+        ///
+        ///    void Start()
+        ///    {
+        ///        improvementManager = GameObject.FindObjectOfType&lt;ImprovementManager&gt;();
+        ///
+        ///        //this method is not encouraged, used as a specific example and not best practice. Add improvements in the
+        ///        //inspector instead.
+        ///        improvementManager.AddImprovement(new Improvement("Test", null, null, false, new HexRule(null, null)));
+        ///
+        ///        Improvement improvement = improvementManager.TryGetImprovement("Test");
+        ///
+        ///        Debug.Log(improvement.name);
+        ///    }
+        /// }
+        ///
+        /// //Output:
+        /// //"Test"
+        /// </code>
+        /// </example>
         public Improvement TryGetImprovement(string name)
         {
             //cycle through all improvements
@@ -136,7 +190,7 @@ namespace CivGrid
         }
 
         /// <summary>
-        /// Creates an array of the improvement names.
+        /// Creates or updates an array of the improvement names. <see cref="improvementNames"/>
         /// </summary>
         public void UpdateImprovementNames()
         {
@@ -156,10 +210,39 @@ namespace CivGrid
         }
 
         /// <summary>
-        /// Adds improvement to specified hex if it meets the rule requirements; slower than passing in an Improvement.
+        /// Adds improvement to specified hex if it meets the rule requirements; slower than passing in an inprovement index.
         /// </summary>
         /// <param name="hex">Hex to attempt to add the improvement upon</param>
         /// <param name="improvementName">"Improvement to attempt to add</param>
+        /// <example>
+        /// The following code tries to add a "Farm" improvement to every tile.
+        /// <code>
+        /// /// using System;
+        /// using UnityEngine;
+        /// using CivGrid;
+        ///
+        /// public class ExampleClass : MonoBehaviour
+        /// {
+        ///    WorldManager worldManager;
+        ///    ImprovementManager improvementManager;
+        ///
+        ///    void Start()
+        ///    {
+        ///        worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
+        ///        improvementManager = GameObject.FindObjectOfType&lt;ImprovementManager&gt;();
+        ///
+        ///        //check again for each hex if it should spawn a resource
+        ///        foreach (HexChunk chunk in worldManager.hexChunks)
+        ///        {
+        ///            foreach (HexInfo hex in chunk.hexArray)
+        ///            {
+        ///                improvementManager.TestedAddImprovementToTile(hex, "Farm");
+        ///            }
+        ///        }
+        ///    }
+        /// }
+        /// </code>
+        /// </example>
         public void TestedAddImprovementToTile(HexInfo hex, string improvementName)
         {
             //if it's possible to spawn the improvement according to it's rules
@@ -190,7 +273,39 @@ namespace CivGrid
         /// Adds improvement to specified hex if it meets the rule requirements.
         /// </summary>
         /// <param name="hex">Hex to attempt to add the improvement upon</param>
-        /// <param name="improvementName">"Improvement to attempt to add</param>
+        /// <param name="improvement">"Improvement to attempt to add</param>
+        /// <example>
+        /// The following code makes a new improvement at runtime and then tests it's rules against all tiles.
+        /// <code>
+        /// using System;
+        /// using UnityEngine;
+        /// using CivGrid;
+        ///
+        /// public class ExampleClass : MonoBehaviour
+        /// {
+        ///   WorldManager worldManager;
+        ///    ImprovementManager improvementManager;
+        ///
+        ///    void Start()
+        ///    {
+        ///        worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
+        ///        improvementManager = GameObject.FindObjectOfType&lt;ImprovementManager&gt;();
+        ///
+        ///        Improvement improvement = new Improvement("NewImprovement", null, null, true, new HexRule(new int[]{4,5}, new Feature[]{Feature.Flat}));
+        ///        improvementManager.AddImprovement(improvement);
+        ///
+        ///        //check again for each hex if it should spawn a resource
+        ///        foreach (HexChunk chunk in worldManager.hexChunks)
+        ///        {
+        ///           foreach (HexInfo hex in chunk.hexArray)
+        ///           {
+        ///               improvementManager.TestedAddImprovementToTile(hex, improvement);
+        ///           }
+        ///        }
+        ///    }
+        /// }
+        /// </code>
+        /// </example>
         [System.Obsolete("Use improvementIndex overload; otherwise retrieve [index+1] to return correct improvement")]
         public void TestedAddImprovementToTile(HexInfo hex, Improvement improvement)
         {
@@ -220,6 +335,40 @@ namespace CivGrid
         /// </summary>
         /// <param name="hex">Hex to attempt to add the improvement upon</param>
         /// <param name="improvementIndex">Index of the improvement within the improvement manager to attemp to add</param>
+        /// <example>
+        /// The following code attempts to add the first improvement to every tile.
+        /// <code>
+        /// using System;
+        /// using UnityEngine;
+        /// using CivGrid;
+        ///
+        /// public class ExampleClass : MonoBehaviour
+        /// {
+        ///    WorldManager worldManager;
+        ///    ImprovementManager improvementManager;
+        ///
+        ///    void Start()
+        ///    {
+        ///        worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
+        ///        improvementManager = GameObject.FindObjectOfType&lt;ImprovementManager&gt;();
+        ///
+        ///        //check again for each hex if it should spawn a resource
+        ///        foreach (HexChunk chunk in worldManager.hexChunks)
+        ///        {
+        ///            foreach (HexInfo hex in chunk.hexArray)
+        ///            {
+        ///                //tries to add first improvement
+        ///                improvementManager.TestedAddImprovementToTile(hex, 0);
+        ///            }
+        ///        }
+        ///    }
+        /// }
+        /// </code>
+        /// </example>
+        /// <remarks>
+        /// The index system should be based off of the inspector indexes at startup. The automatically generated "None" improvement
+        /// is not included in the index numbering.
+        /// </remarks>
         public void TestedAddImprovementToTile(HexInfo hex, int improvementIndex)
         {
             //if it's possible to spawn the improvement according to it's rules
@@ -250,6 +399,36 @@ namespace CivGrid
         /// Removes the improvement from the specified hex and restores its past state.
         /// </summary>
         /// <param name="hex">Hex to remove all improvements from</param>
+        /// <example>
+        /// The following code removes all improvements from the map.
+        /// <code>
+        /// using System;
+        /// using UnityEngine;
+        /// using CivGrid;
+        ///
+        /// public class ExampleClass : MonoBehaviour
+        /// {
+        ///    WorldManager worldManager;
+        ///    ImprovementManager improvementManager;
+        ///
+        ///    void Start()
+        ///    {
+        ///        worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
+        ///        improvementManager = GameObject.FindObjectOfType&lt;ImprovementManager&gt;();
+        ///
+        ///        //check again for each hex if it should spawn a resource
+        ///        foreach (HexChunk chunk in worldManager.hexChunks)
+        ///        {
+        ///            foreach (HexInfo hex in chunk.hexArray)
+        ///            {
+        ///                //tries to add first improvement
+        ///                improvementManager.RemoveImprovementFromTile(hex);
+        ///            }
+        ///        }
+        ///    }
+        /// }
+        /// </code>
+        /// </example>
         public void RemoveImprovementFromTile(HexInfo hex)
         {
             if (hex.currentImprovement != null)
@@ -277,28 +456,53 @@ namespace CivGrid
     }
 
     /// <summary>
-    /// Improvement class that contains all values for the base improvement
+    /// Improvement class that contains all values for the base improvement.
     /// </summary>
     [System.Serializable]
     public class Improvement
     {
-        //improvement values
+        /// <summary>
+        /// Name of the improvement
+        /// </summary>
         public string name;
+        /// <summary>
+        /// The rules of where the improvement can spawn
+        /// </summary>
         public HexRule rule;
 
-        //object values
+        /// <summary>
+        /// The improvement mesh to spawn
+        /// </summary>
         public Mesh meshToSpawn;
+        /// <summary>
+        /// The texture for the spawned mesh
+        /// </summary>
         public Texture2D meshTexture;
+        /// <summary>
+        /// Decides if the ground texture is replaced with the improvement specific one in the texture atlas
+        /// </summary>
         public bool replaceGroundTexture;
 
-        public Improvement(string name, Mesh mesh, Texture2D improvementMeshTexture, bool replaceGroundTexture, HexRule rule)
+        /// <summary>
+        /// Constructor for this class.
+        /// </summary>
+        /// <param name="name">Name of the improvement</param>
+        /// <param name="meshToSpawn">The improvement mesh to spawn</param>
+        /// <param name="meshTexture">The texture for the spawned mesh</param>
+        /// <param name="replaceGroundTexture">Decides if the ground texture is replaced with the improvement specific one in the texture atlas</param>
+        /// <param name="rule">The rules of where the improvement can spawn</param>
+        public Improvement(string name, Mesh meshToSpawn, Texture2D meshTexture, bool replaceGroundTexture, HexRule rule)
         {
             this.name = name;
+            this.meshTexture = meshTexture;
+            this.meshToSpawn = meshToSpawn;
+            this.replaceGroundTexture = replaceGroundTexture;
             this.rule = rule;
-            this.meshTexture = improvementMeshTexture;
-            this.meshToSpawn = mesh;
         }
 
+        /// <summary>
+        /// Blank constrcutor for this class.
+        /// </summary>
         public Improvement() { }
     }
 }

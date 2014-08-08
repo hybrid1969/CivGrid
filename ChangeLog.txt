@@ -92,3 +92,9 @@ Version 0.5.5
 	+Complete code commentation
 	+Resource/Improvement/Tile generation speed up
 	+Resource and Improvement manager cleaned up once again
+Version 0.6
+	+Added delegate callbacks
+	+Added complete documentation
+	+Massive code cleanup
+	+Moved all example logic out of WorldManager
+	+Worked on hill and mountain generation

@@ -127,6 +127,7 @@ namespace CivGrid
             worldArrayPosition.x = x + (chunkSize.x * chunkLocation.x);
             worldArrayPosition.y = y + (chunkSize.y * chunkLocation.y);
 
+
             hex.CubeGridPosition = new Vector3(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f), worldArrayPosition.y, -(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f) + worldArrayPosition.y));
             //set local position of hex; this is the hex cord position local to the chunk
             hex.localPosition = new Vector3(x * ((worldManager.hexExt.x * 2)), 0, (y * worldManager.hexExt.z) * 1.5f);
@@ -170,7 +171,7 @@ namespace CivGrid
             //set world position of hex; this is the hex cord position local to the world
             hex.worldPosition = new Vector3(hex.localPosition.x + (chunkLocation.x * (chunkSize.x * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((chunkLocation.y * (chunkSize.y * hexSize.z)) * (.75f)));
 
-            ///Set Hex values
+            //Set Hex values
             hex.terrainFeature = worldManager.PickFeatureType((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
             hex.terrainType = worldManager.PickTileType((int)worldArrayPosition.x, (int)worldArrayPosition.y);
             hex.hexExt = worldManager.hexExt;

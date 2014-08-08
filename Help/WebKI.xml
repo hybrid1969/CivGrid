@@ -22,7 +22,7 @@
   <HelpKINode Title="ChangeTextureToImprovement method" Url="html/09429c86-a8f6-1a07-f4e4-08179b1854ca.htm" />
   <HelpKINode Title="ChangeTextureToNormalTile method" Url="html/31951235-43e3-7041-ca0c-0338a0bca979.htm" />
   <HelpKINode Title="ChangeTextureToResource method" Url="html/f18d65b0-88e6-4f54-4f18-5a887fbb6f1c.htm" />
-  <HelpKINode Title="CheckForResource method" Url="html/479eef28-19a0-5aea-2bbd-76fabe168385.htm" />
+  <HelpKINode Title="CheckForResource method" Url="html/21c385d4-13c9-95e9-3cc8-77257932abbc.htm" />
   <HelpKINode Title="chunkLocation field" Url="html/e5fc5432-0ce7-d2bd-f9be-9f0128a01da2.htm" />
   <HelpKINode Title="chunkSize field">
     <HelpKINode Title="HexChunk.chunkSize Field" Url="html/2be3defa-eeb8-52ab-9b07-5d9f7f8a1c9e.htm" />
@@ -131,7 +131,7 @@
   <HelpKINode Title="GameManager.worldEvent field" Url="html/3c1e2772-b488-629c-e50f-090e0a5c612a.htm" />
   <HelpKINode Title="GenerateChunk method" Url="html/c2d77e4b-9cbf-e98b-22db-ea786eba57b0.htm" />
   <HelpKINode Title="GenerateHexCollider method" Url="html/6b39210a-c6ec-2b26-ee8c-3f07a6c2dbc0.htm" />
-  <HelpKINode Title="GenerateNewMap method" Url="html/e4c4e8be-d5f2-3ac5-f961-3663cc6c92cf.htm" />
+  <HelpKINode Title="GenerateNewMap method" Url="html/1013f2cc-2ae2-6cb6-c58e-feccd270a6f1.htm" />
   <HelpKINode Title="generateOnStart field" Url="html/62773cd0-c0ff-63af-f5e6-eb06381b79a7.htm" />
   <HelpKINode Title="GetCamera method" Url="html/b1af049a-239e-2b50-e6a4-84cd763047aa.htm" />
   <HelpKINode Title="GetHexFromAxialPosition method" Url="html/d9a54b11-0dbe-8226-ca1b-47c9fec76c47.htm" />
@@ -181,15 +181,11 @@
   <HelpKINode Title="HexInfo.localPosition field" Url="html/355c5d94-cbff-9e1d-c200-688d7671859d.htm" />
   <HelpKINode Title="HexInfo.MeshSetup method" Url="html/0aab6fa0-82cd-f761-e944-0b04364bb8cb.htm" />
   <HelpKINode Title="HexInfo.parentChunk field" Url="html/3d6b5db5-4fc9-bc40-f7aa-79ba1cd87148.htm" />
-  <HelpKINode Title="HexInfo.pixelLocation field" Url="html/fd8d257b-9cad-e916-ed97-92a82e7fbc11.htm" />
   <HelpKINode Title="HexInfo.resourceLocations field" Url="html/dbe4c2a5-00a4-4f56-8510-ef9d5a833db9.htm" />
   <HelpKINode Title="HexInfo.rObject field" Url="html/3b7437d0-a87c-a55c-04d8-332b2fd1eef0.htm" />
   <HelpKINode Title="HexInfo.Start method" Url="html/ec10269f-d2ca-b4ac-5583-6ae1c513dec9.htm" />
   <HelpKINode Title="HexInfo.terrainFeature field" Url="html/e427d2d7-9195-952e-c39a-aaeed2f12942.htm" />
   <HelpKINode Title="HexInfo.terrainType field" Url="html/127c8880-916a-7853-47e2-e4da531f2f3a.htm" />
-  <HelpKINode Title="HexInfo.triangles field" Url="html/63fe5971-70d0-ddf8-e941-a1aa73ce0f45.htm" />
-  <HelpKINode Title="HexInfo.UV field" Url="html/b3f8a62a-22a3-f64c-6c27-828a9e826f1c.htm" />
-  <HelpKINode Title="HexInfo.vertices field" Url="html/a0017f62-4c28-da4b-a849-5dad2ea57f9d.htm" />
   <HelpKINode Title="HexInfo.worldPosition field" Url="html/a8029f49-e7c6-d7dc-4717-826f38a716a0.htm" />
   <HelpKINode Title="hexRadiusSize field" Url="html/237a3962-f799-6fc7-e9ba-7525f52946c9.htm" />
   <HelpKINode Title="HexRule class">
@@ -245,7 +241,6 @@
   <HelpKINode Title="ImprovementManager.UpdateImprovementNames method" Url="html/a61cd469-28db-89b9-4ae6-b9770ba3fbde.htm" />
   <HelpKINode Title="improvementNames field" Url="html/5e0e5a9f-dda3-839c-0f74-964f06fa15b4.htm" />
   <HelpKINode Title="improvements field" Url="html/3323773b-1525-f704-8ecc-8716885cd8a8.htm" />
-  <HelpKINode Title="InitiateResourceTexturesOnHexs method" Url="html/a256173f-e0be-d270-a4ab-6700a172271b.htm" />
   <HelpKINode Title="iObject field" Url="html/3b1fb820-647d-95c0-6abb-2c0b691ce132.htm" />
   <HelpKINode Title="isMountain field" Url="html/10d24e4a-bbf5-a04c-12b8-11443a404030.htm" />
   <HelpKINode Title="isOcean field" Url="html/ba721422-bc86-aa59-60af-b36c025c39b9.htm" />
@@ -273,6 +268,7 @@
   <HelpKINode Title="Melee.Melee constructor" Url="html/c7d1d511-5187-7355-c33c-7e20e42d969a.htm" />
   <HelpKINode Title="Melee.strength field" Url="html/7a65647a-06bf-366b-bb27-a0aa290bd9af.htm" />
   <HelpKINode Title="MeshSetup method" Url="html/0aab6fa0-82cd-f761-e944-0b04364bb8cb.htm" />
+  <HelpKINode Title="meshSpawnAmount field" Url="html/d5b7b039-18e6-0e40-af9a-8fea8c98230b.htm" />
   <HelpKINode Title="meshTexture field">
     <HelpKINode Title="Improvement.meshTexture Field" Url="html/08cb0854-dc32-5372-592c-0d4dada7055c.htm" />
     <HelpKINode Title="Resource.meshTexture Field" Url="html/a1797767-63b2-eb4f-d081-f1e367c83e30.htm" />
@@ -293,7 +289,6 @@
     <HelpKINode Title="Resource.name Field" Url="html/2e29b192-1be9-777d-e369-fb0ca58c2117.htm" />
     <HelpKINode Title="Tile.name Field" Url="html/aaafbbbc-e316-4d52-78aa-f2f5e6dcb759.htm" />
   </HelpKINode>
-  <HelpKINode Title="NewChunk method" Url="html/566887ff-c534-8d72-04ff-78489a307c9a.htm" />
   <HelpKINode Title="NextTurn delegate" Url="html/d5c27968-e79f-2adb-02ff-376f0988a462.htm" />
   <HelpKINode Title="nextTurn field" Url="html/444c2d5d-ec60-58cd-969a-e6eae6a4ecf4.htm" />
   <HelpKINode Title="NoiseGenerator class">
@@ -309,9 +304,6 @@
   <HelpKINode Title="Pangaea enumeration member" Url="html/5b2dc03f-ed13-aadd-fa91-77c2d3562f76.htm" />
   <HelpKINode Title="parentChunk field" Url="html/3d6b5db5-4fc9-bc40-f7aa-79ba1cd87148.htm" />
   <HelpKINode Title="PerlinNoise method" Url="html/af3ad95a-b7b5-4dba-6b26-27694e28d1cb.htm" />
-  <HelpKINode Title="PickFeatureType method" Url="html/31628a15-c242-1c31-59b2-0bdbc83a5a9d.htm" />
-  <HelpKINode Title="PickTileType method" Url="html/fbf26914-78ba-d921-453a-c45bc2b62989.htm" />
-  <HelpKINode Title="pixelLocation field" Url="html/fd8d257b-9cad-e916-ed97-92a82e7fbc11.htm" />
   <HelpKINode Title="possibleFeatures field" Url="html/d0f279ef-605b-9914-6313-8dde0366d583.htm" />
   <HelpKINode Title="possibleTiles field" Url="html/8c21d202-b698-9486-a374-bbd37897fe16.htm" />
   <HelpKINode Title="RandomOverlay method" Url="html/c8d31290-12ef-7986-b881-50324ba291ef.htm" />
@@ -324,7 +316,7 @@
   <HelpKINode Title="Range.Range constructor" Url="html/5c0f6644-245a-1da4-28c5-80d8d022b458.htm" />
   <HelpKINode Title="Range.strength field" Url="html/f0ebbd03-9060-628e-2381-69c9d94efb97.htm" />
   <HelpKINode Title="rarity field" Url="html/0d199902-6b47-e160-6b15-0519eebd2513.htm" />
-  <HelpKINode Title="RegenerateNewWorld method" Url="html/418fc781-a120-dfec-c740-8147814aa1a5.htm" />
+  <HelpKINode Title="RegenerateNewMap method" Url="html/26d58f9d-eb74-8acd-19e6-8cc773e1bca1.htm" />
   <HelpKINode Title="RemoveImprovementFromTile method" Url="html/ffa73a4c-e359-7b85-4a94-bd22b9b38a71.htm" />
   <HelpKINode Title="replaceGroundTexture field">
     <HelpKINode Title="Improvement.replaceGroundTexture Field" Url="html/9c6c9411-3b7f-8800-3228-b84813467c80.htm" />
@@ -338,6 +330,7 @@
     <HelpKINode Title="constructor" Url="html/7cdf8d51-8b49-5987-e959-14654d582bc2.htm" />
     <HelpKINode Title="fields" Url="html/550dc837-99ff-b1d3-e27b-c65ce833e6b9.htm" />
   </HelpKINode>
+  <HelpKINode Title="Resource.meshSpawnAmount field" Url="html/d5b7b039-18e6-0e40-af9a-8fea8c98230b.htm" />
   <HelpKINode Title="Resource.meshTexture field" Url="html/a1797767-63b2-eb4f-d081-f1e367c83e30.htm" />
   <HelpKINode Title="Resource.meshToSpawn field" Url="html/12a753ca-a67f-21c7-475b-775f5a94117c.htm" />
   <HelpKINode Title="Resource.name field" Url="html/2e29b192-1be9-777d-e369-fb0ca58c2117.htm" />
@@ -345,7 +338,6 @@
   <HelpKINode Title="Resource.replaceGroundTexture field" Url="html/88314ebf-9ebe-df0a-ff26-ece05fd1c539.htm" />
   <HelpKINode Title="Resource.Resource constructor" Url="html/7cdf8d51-8b49-5987-e959-14654d582bc2.htm" />
   <HelpKINode Title="Resource.rule field" Url="html/6674bd80-7e18-3a42-0b30-32dd52aeece7.htm" />
-  <HelpKINode Title="Resource.spawnAmount field" Url="html/302394ed-4a9c-b409-974a-98ea8f6829b6.htm" />
   <HelpKINode Title="ResourceItem class">
     <HelpKINode Title="ResourceItem Class" Url="html/3b35f08b-6452-a4fd-202b-c0a8de89dad7.htm" />
     <HelpKINode Title="about ResourceItem class" Url="html/3b35f08b-6452-a4fd-202b-c0a8de89dad7.htm" />
@@ -368,13 +360,11 @@
   </HelpKINode>
   <HelpKINode Title="ResourceManager.AddResource method" Url="html/56e656ef-915b-143a-9ffe-269991b0f08d.htm" />
   <HelpKINode Title="ResourceManager.AddResourceAtIndex method" Url="html/09382e63-76df-2513-12a6-9e6d86bb5f07.htm" />
-  <HelpKINode Title="ResourceManager.CheckForResource method" Url="html/479eef28-19a0-5aea-2bbd-76fabe168385.htm" />
+  <HelpKINode Title="ResourceManager.CheckForResource method" Url="html/21c385d4-13c9-95e9-3cc8-77257932abbc.htm" />
   <HelpKINode Title="ResourceManager.DeleteResource method" Url="html/f87daef2-4e5a-9f57-6356-f829046cc785.htm" />
-  <HelpKINode Title="ResourceManager.InitiateResourceTexturesOnHexs method" Url="html/a256173f-e0be-d270-a4ab-6700a172271b.htm" />
   <HelpKINode Title="ResourceManager.ResourceManager constructor" Url="html/c3760d54-7dd8-4813-0778-a735693d3113.htm" />
   <HelpKINode Title="ResourceManager.resourceNames field" Url="html/a3ee42df-3d9e-e16c-659d-bc9c53bc33b6.htm" />
   <HelpKINode Title="ResourceManager.resources field" Url="html/bf0b3eeb-dab6-cdeb-9784-280377a0251d.htm" />
-  <HelpKINode Title="ResourceManager.SetUp method" Url="html/3a37c77d-8ec6-f061-44f6-9d05cc6d849c.htm" />
   <HelpKINode Title="ResourceManager.SpawnResource method" Url="html/dfdc5ca4-4969-09ea-33a9-c2011fa1cdc6.htm" />
   <HelpKINode Title="ResourceManager.TryGetResource method" Url="html/e55e3cc8-08c2-085f-2732-ddbffeae3e7c.htm" />
   <HelpKINode Title="ResourceManager.UpdateResourceNames method" Url="html/3443f58c-dda4-2e93-b9d4-b9c407353bb0.htm" />
@@ -402,15 +392,10 @@
   <HelpKINode Title="SaveTexture method" Url="html/e6365e27-3ab4-f023-42c3-ebea191ac820.htm" />
   <HelpKINode Title="selected field" Url="html/01fea4f1-fb56-690c-a7c3-6cf4939ad9a3.htm" />
   <HelpKINode Title="SetSize method" Url="html/a7df0ec3-c56b-7bf1-3dbd-849c601bc4fd.htm" />
-  <HelpKINode Title="SetUp method">
-    <HelpKINode Title="ImprovementManager.SetUp Method " Url="html/72033cba-a978-584e-8155-198a7a344f32.htm" />
-    <HelpKINode Title="ResourceManager.SetUp Method " Url="html/3a37c77d-8ec6-f061-44f6-9d05cc6d849c.htm" />
-    <HelpKINode Title="TileManager.SetUp Method " Url="html/e769198b-d557-ac94-aad4-73e017c4c6c4.htm" />
-  </HelpKINode>
+  <HelpKINode Title="SetUp method" Url="html/72033cba-a978-584e-8155-198a7a344f32.htm" />
   <HelpKINode Title="SetupCameras method" Url="html/1d314268-5e6b-c712-7095-a32b49000c16.htm" />
   <HelpKINode Title="SmallIslands enumeration member" Url="html/5b2dc03f-ed13-aadd-fa91-77c2d3562f76.htm" />
   <HelpKINode Title="SmoothPerlinNoise method" Url="html/0e832ce6-d6b8-f4c9-d458-4c103d803b73.htm" />
-  <HelpKINode Title="spawnAmount field" Url="html/302394ed-4a9c-b409-974a-98ea8f6829b6.htm" />
   <HelpKINode Title="SpawnResource method" Url="html/dfdc5ca4-4969-09ea-33a9-c2011fa1cdc6.htm" />
   <HelpKINode Title="StabalizeFloat method" Url="html/10d4ba2f-42b0-63ed-d5a1-f4959a329311.htm" />
   <HelpKINode Title="Start method" Url="html/ec10269f-d2ca-b4ac-5583-6ae1c513dec9.htm" />
@@ -475,7 +460,6 @@
   <HelpKINode Title="TileManager.AddTile method" Url="html/9cb90085-eae2-1972-614b-f8d7a08d7e63.htm" />
   <HelpKINode Title="TileManager.DeleteTile method" Url="html/0296afb8-e03b-1f67-e625-29fcda285398.htm" />
   <HelpKINode Title="TileManager.GetTileFromLattitude method" Url="html/d46ac36b-0198-5816-d096-098675288f6e.htm" />
-  <HelpKINode Title="TileManager.SetUp method" Url="html/e769198b-d557-ac94-aad4-73e017c4c6c4.htm" />
   <HelpKINode Title="TileManager.TileManager constructor" Url="html/27b73617-57c3-658e-b7bd-b35bc7805798.htm" />
   <HelpKINode Title="TileManager.tileNames field" Url="html/82e9d943-4837-3a8f-5f9c-a6f203b77394.htm" />
   <HelpKINode Title="TileManager.tiles field" Url="html/1b4f0e06-15c4-f047-727f-252e6885367e.htm" />
@@ -488,7 +472,6 @@
   <HelpKINode Title="tiles field" Url="html/1b4f0e06-15c4-f047-727f-252e6885367e.htm" />
   <HelpKINode Title="topLat field" Url="html/d70dba02-4e5b-885f-0ec4-b4bcfb995951.htm" />
   <HelpKINode Title="ToSingleArray method" Url="html/92b35ddb-36f8-93c1-1494-98924572721e.htm" />
-  <HelpKINode Title="triangles field" Url="html/63fe5971-70d0-ddf8-e941-a1aa73ce0f45.htm" />
   <HelpKINode Title="TryGetImprovement method" Url="html/20c28ec7-41cb-5c00-b0ac-5d6f7fe215f0.htm" />
   <HelpKINode Title="TryGetMountain method" Url="html/218197ad-6e45-1f55-6eea-e3d4513a069c.htm" />
   <HelpKINode Title="TryGetOcean method" Url="html/3fa7ad9d-d995-2150-9039-8325767ba623.htm" />
@@ -520,13 +503,11 @@
   <HelpKINode Title="UpdateTileNames method" Url="html/bc5830ae-4211-06a2-c5e6-d9df7fc59dc9.htm" />
   <HelpKINode Title="useCivGridCamera field" Url="html/b41c1200-f258-02db-7510-7fb5d9299e53.htm" />
   <HelpKINode Title="useWorldTypeValues field" Url="html/d2c64c09-661c-3b3d-b639-9e5ed5463ba2.htm" />
-  <HelpKINode Title="UV field" Url="html/b3f8a62a-22a3-f64c-6c27-828a9e826f1c.htm" />
   <HelpKINode Title="Value property">
     <HelpKINode Title="ImprovementItem.Value Property " Url="html/95518d13-f3b2-0706-d63b-fe35dd1841c5.htm" />
     <HelpKINode Title="ResourceItem.Value Property " Url="html/2b56589f-556d-11bc-f0a9-47262a7a88e0.htm" />
     <HelpKINode Title="TileItem.Value Property " Url="html/a0a981bf-0a52-cb54-cd92-9a6f37939b68.htm" />
   </HelpKINode>
-  <HelpKINode Title="vertices field" Url="html/a0017f62-4c28-da4b-a849-5dad2ea57f9d.htm" />
   <HelpKINode Title="WorldEvent delegate" Url="html/6c82f1e2-45e8-dbfa-1be0-7ddacf9f0552.htm" />
   <HelpKINode Title="worldEvent field" Url="html/3c1e2772-b488-629c-e50f-090e0a5c612a.htm" />
   <HelpKINode Title="WorldManager class">
@@ -537,7 +518,7 @@
     <HelpKINode Title="methods" Url="html/583b8f50-833c-2b44-5ee4-2a251116f2ef.htm" />
   </HelpKINode>
   <HelpKINode Title="WorldManager.chunkSize field" Url="html/28cee6fa-1095-2b74-7faa-31e5ff6bf2b9.htm" />
-  <HelpKINode Title="WorldManager.GenerateNewMap method" Url="html/e4c4e8be-d5f2-3ac5-f961-3663cc6c92cf.htm" />
+  <HelpKINode Title="WorldManager.GenerateNewMap method" Url="html/1013f2cc-2ae2-6cb6-c58e-feccd270a6f1.htm" />
   <HelpKINode Title="WorldManager.generateOnStart field" Url="html/62773cd0-c0ff-63af-f5e6-eb06381b79a7.htm" />
   <HelpKINode Title="WorldManager.GetHexFromAxialPosition method" Url="html/d9a54b11-0dbe-8226-ca1b-47c9fec76c47.htm" />
   <HelpKINode Title="WorldManager.GetHexFromMouse method" Url="html/e2d2cd05-10e7-4030-b695-a17d5ce80cc3.htm" />
@@ -548,11 +529,8 @@
   <HelpKINode Title="WorldManager.mountainMap field" Url="html/19632389-025c-8396-7941-da6809d2d9b1.htm" />
   <HelpKINode Title="WorldManager.mountainScaleY field" Url="html/6629a09d-1403-7945-459b-946b7a9a392f.htm" />
   <HelpKINode Title="WorldManager.mousePos field" Url="html/7f025ed5-4e64-76ec-984b-95faeee0fd89.htm" />
-  <HelpKINode Title="WorldManager.NewChunk method" Url="html/566887ff-c534-8d72-04ff-78489a307c9a.htm" />
   <HelpKINode Title="WorldManager.noiseScale field" Url="html/33ac0d4f-3ebe-80eb-5720-830ee287042d.htm" />
-  <HelpKINode Title="WorldManager.PickFeatureType method" Url="html/31628a15-c242-1c31-59b2-0bdbc83a5a9d.htm" />
-  <HelpKINode Title="WorldManager.PickTileType method" Url="html/fbf26914-78ba-d921-453a-c45bc2b62989.htm" />
-  <HelpKINode Title="WorldManager.RegenerateNewWorld method" Url="html/418fc781-a120-dfec-c740-8147814aa1a5.htm" />
+  <HelpKINode Title="WorldManager.RegenerateNewMap method" Url="html/26d58f9d-eb74-8acd-19e6-8cc773e1bca1.htm" />
   <HelpKINode Title="WorldManager.SaveMap method" Url="html/1060355e-8f8a-5360-3e25-e76207808025.htm" />
   <HelpKINode Title="WorldManager.textureAtlas field" Url="html/d6f96db8-170e-7645-5e7d-fafa5fb99146.htm" />
   <HelpKINode Title="WorldManager.useCivGridCamera field" Url="html/b41c1200-f258-02db-7510-7fb5d9299e53.htm" />

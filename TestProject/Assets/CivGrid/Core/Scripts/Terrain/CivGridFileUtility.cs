@@ -324,7 +324,7 @@ namespace CivGrid
 
                                 writer.WriteAttributeString("yParentChunk", XmlConvert.ToString(y));
 
-                                ///Texture Rect Location
+                                //Texture Rect Location
                                 writer.WriteAttributeString("rLeft", XmlConvert.ToString(hex.currentRectLocation.xMin));
                                 writer.WriteAttributeString("rTop", XmlConvert.ToString(hex.currentRectLocation.yMin));
                                 writer.WriteAttributeString("rWidth", XmlConvert.ToString(hex.currentRectLocation.width));

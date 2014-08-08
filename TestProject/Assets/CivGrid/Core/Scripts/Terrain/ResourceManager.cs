@@ -12,22 +12,30 @@ namespace CivGrid
     /// </summary>
     public class ResourceManager : MonoBehaviour
     {
-        //resources
+        /// <summary>
+        /// Possible resources to spawn.
+        /// </summary>
         public List<Resource> resources;
+        /// <summary>
+        /// Names of the possible resources to spawn.
+        /// </summary>
+        /// <remarks>
+        /// The index is the same for the respective resource.
+        /// </remarks>
         public string[] resourceNames;
 
         //internal array for speed
         private Resource[] internalResources;
 
         //cached managers
-        public WorldManager worldManager;
-        public TileManager tileManager;
+        internal WorldManager worldManager;
+        internal TileManager tileManager;
 
         /// <summary>
         /// Sets up the resource manager.
         /// Caches all needed values.
         /// </summary>
-        public void SetUp()
+        internal void SetUp()
         {
             //insert default "None" resource into the resource array
             resources.Insert(0, new Resource("None", 0, 0, null, null, false, null));
@@ -49,7 +57,7 @@ namespace CivGrid
         /// <summary>
         /// Called on start-up to make sure all hexs with resources are changed to use their resource texture.
         /// </summary>
-        public void InitiateResourceTexturesOnHexs()
+        internal void InitiateResourceTexturesOnHexs()
         {
             //loop through all hexs
             foreach (HexChunk chunk in worldManager.hexChunks)
@@ -70,6 +78,10 @@ namespace CivGrid
         /// Adds a resource to the resource array.
         /// </summary>
         /// <param name="r">Resource to add</param>
+        /// <remarks>
+        /// This method should only be used before world generation as it will 
+        /// not have an effect unless you re-check for resources on each hex.
+        /// </remarks>
         public void AddResource(Resource r)
         {
             resources.Add(r);
@@ -82,6 +94,10 @@ namespace CivGrid
         /// </summary>
         /// <param name="r">Resource to add</param>
         /// <param name="index">Index in which to add the resource</param>
+        /// <remarks>
+        /// This method should only be used before world generation as it will 
+        /// not have an effect unless you re-check for resources on each hex.
+        /// </remarks>
         public void AddResourceAtIndex(Resource r, int index)
         {
             resources.Insert(index, r);
@@ -93,6 +109,10 @@ namespace CivGrid
         /// Removes a resource from the resource array.
         /// </summary>
         /// <param name="r">Resource to remove</param>
+        /// <remarks>
+        /// Removing a resource that is referenced elsewhere will cause null reference errors. Only use this
+        /// method if you are personally managing the specific resources memory lifetime.
+        /// </remarks>
         public void DeleteResource(Resource r)
         {
             resources.Remove(r);
@@ -105,6 +125,36 @@ namespace CivGrid
         /// </summary>
         /// <param name="name">The name of the resource to look for</param>
         /// <returns>The improvement with the name provided; null if not found</returns>
+        /// <example>
+        /// The following example adds a resource, then retrieves it by it's name. Using <see cref="AddResource(Resource)"/> is
+        /// not encouraged. Add resources in the inspector.
+        /// <code>
+        /// using System;
+        /// using UnityEngine;
+        /// using CivGrid;
+        ///
+        /// public class ExampleClass : MonoBehaviour
+        /// {
+        ///    ResourceManager resourceManager;
+        ///
+        ///    void Start()
+        ///    {
+        ///        resourceManager = GameObject.FindObjectOfType&lt;ResourceManager&gt;();
+        ///
+        ///        //this method is not encouraged, used as a specific example and not best practice. Add resources in the
+        ///        //inspector instead.
+        ///        resourceManager.AddResource(new Resource("Test", 0, 0, null, null, false, new HexRule(null, null)));
+        ///
+        ///        Resource resource = resourceManager.TryGetResource("Test");
+        ///
+        ///        Debug.Log(resource.name);
+        ///    }
+        /// }
+        ///
+        /// //Output:
+        /// //"Test"
+        /// </code>
+        /// </example>
         public Resource TryGetResource(string name)
         {
             //cycle through all resources
@@ -121,7 +171,7 @@ namespace CivGrid
         }
 
         /// <summary>
-        /// Creates an array of the resource names.
+        /// Creates an array of the resource names. <see cref="resourceNames"/>
         /// </summary>
         public void UpdateResourceNames()
         {
@@ -141,11 +191,42 @@ namespace CivGrid
         }
 
         /// <summary>
-        /// Checks if a resource should be spawned on a hexagon
+        /// Checks if a resource should be spawned on a hexagon.
         /// </summary>
         /// <param name="hex">The hexagon to check</param>
-        /// <param name="returnResource">The resource that is spawned on the hexagon</param>
-        public void CheckForResource(HexInfo hex, out Resource returnResource)
+        /// <example>
+        /// The following code changes the possible resources and then re-checks each hex for the resource.
+        /// <code>
+        /// using System;
+        /// using UnityEngine;
+        /// using CivGrid;
+        ///
+        /// public class ExampleClass : MonoBehaviour
+        /// {
+        ///    WorldManager worldManager;
+        ///    ResourceManager resourceManager;
+        ///
+        ///    void Start()
+        ///    {
+        ///        worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
+        ///        resourceManager = GameObject.FindObjectOfType&lt;ResourceManager&gt;();
+        ///
+        ///        //creates a new resource to possibly spawn
+        ///        resourceManager.AddResource(new Resource("SpecialNewResource", 15, 1, null, null, false, new HexRule(new int[] { 3, 4 }, new Feature[] { Feature.Flat })));
+        ///
+        ///        //check again for each hex if it should spawn a resource
+        ///        foreach (HexChunk chunk in worldManager.hexChunks)
+        ///        {
+        ///            foreach (HexInfo hex in chunk.hexArray)
+        ///            {
+        ///                resourceManager.CheckForResource(hex); 
+        ///            }
+        ///        }
+        ///    }
+        /// }
+        /// </code>
+        /// </example>
+        public void CheckForResource(HexInfo hex)
         {
 
             //loop through all resources
@@ -163,8 +244,8 @@ namespace CivGrid
                         if (number == 0)
                         {
                             //spawn resource
-                            returnResource = r;
-                            SpawnResource(hex, returnResource, false);
+                            hex.currentResource = r;
+                            SpawnResource(hex, hex.currentResource, false);
                             return;
                         }
                     }
@@ -172,13 +253,16 @@ namespace CivGrid
             }
 
             //no resource spawned; return "None"
-            returnResource = internalResources[0];
+            hex.currentResource = internalResources[0];
         }
 
         /// <summary>
         /// Spawns the provided resource on the tile.
         /// Optional to regenerate the chunk.
         /// </summary>
+        /// <remarks>
+        /// This can be used to force a resource to spawn, even if against it's rules.
+        /// </remarks>
         /// <param name="hex">Hex to spawn the resource on</param>
         /// <param name="r">Resource to spawn</param>
         /// <param name="regenerateChunk">If the parent chunk should be regenerated</param>
@@ -208,7 +292,7 @@ namespace CivGrid
                 }
 
                 //spawn a resource for each spawn amount
-                for (int i = 0; i < r.spawnAmount; i++)
+                for (int i = 0; i < r.meshSpawnAmount; i++)
                 {
                     //position setting
                     float x = (worldManager.hexCenter.x + Random.Range(-0.2f, 0.2f));
@@ -283,28 +367,63 @@ namespace CivGrid
 
 
     /// <summary>
-    /// Resource class that contains all the values for the base resource
+    /// Resource class that contains all the values for the base resource.
     /// </summary>
     [System.Serializable]
     public class Resource
     {
-        //improvement values
+        /// <summary>
+        /// Name of the resource
+        /// </summary>
         public string name;
+        /// <summary>
+        /// The rules of where the resource can spawn
+        /// </summary>
         public HexRule rule;
+        /// <summary>
+        /// The rarity of the resource
+        /// </summary>
+        /// <remarks>
+        /// This is a calculated probabilty of 1/<see cref="rarity"/>.
+        /// </remarks>
         public float rarity;
-        public int spawnAmount;
+        /// <summary>
+        /// Amount of mesh to spawn
+        /// </summary>
+        /// <remarks>
+        /// Only has an effect if <see cref="meshToSpawn"/> is present.
+        /// </remarks>
+        public int meshSpawnAmount;
 
-        //object values
+        /// <summary>
+        /// The resource mesh to spawn
+        /// </summary>
         public Mesh meshToSpawn;
+        /// <summary>
+        /// The texture for the spawned mesh
+        /// </summary>
         public Texture2D meshTexture;
+        /// <summary>
+        /// Decides if the ground texture is replaced with the resource specific one in the texture atlas
+        /// </summary>
         public bool replaceGroundTexture;
 
-        public Resource(string name, float rarity, int spawnAmount, Mesh mesh, Texture2D resourceMeshTexture, bool replaceGroundTexture, HexRule rule)
+        /// <summary>
+        /// Constructor of this class.
+        /// </summary>
+        /// <param name="name">Name of the resource</param>
+        /// <param name="rarity">This is a calculated probabilty of 1/<see cref="rarity"/>.</param>
+        /// <param name="meshSpawnAmount">Amount of mesh to spawn</param>
+        /// <param name="meshToSpawn">The resource mesh to spawn</param>
+        /// <param name="meshTexture">The texture for the spawned mesh</param>
+        /// <param name="replaceGroundTexture">Decides if the ground texture is replaced with the resource specific one in the texture atlas</param>
+        /// <param name="rule">The rules of where the resource can spawn</param>
+        public Resource(string name, float rarity, int meshSpawnAmount, Mesh meshToSpawn, Texture2D meshTexture, bool replaceGroundTexture, HexRule rule)
         {
             this.name = name;
             this.rarity = rarity;
-            this.meshToSpawn = mesh;
-            this.meshTexture = resourceMeshTexture;
+            this.meshToSpawn = meshToSpawn;
+            this.meshTexture = meshTexture;
             this.replaceGroundTexture = replaceGroundTexture;
             this.rule = rule;
         }

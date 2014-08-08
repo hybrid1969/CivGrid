@@ -117,60 +117,120 @@ namespace CivGrid
         #region fields
 
         //Moving
-        public Vector3 currentHex;
-        public Vector3 goToHex;
-        public int distance;
+        //internal Vector3 currentHex;
+        //internal Vector3 goToHex;
+        //sinternal int distance;
 
-        //hexInstances
+        /// <summary>
+        /// The extents of a hexagon from the origin
+        /// </summary>
         public Vector3 hexExt;
+        /// <summary>
+        /// The size of a hexagon from side to side
+        /// </summary>
         public Vector3 hexSize;
+        /// <summary>
+        /// The center of a hexagon
+        /// </summary>
         public Vector3 hexCenter;
 
         //internals
         private Vector3 moveVector;
         private RaycastHit chunkHit;
         private GameObject selectedHex;
+        /// <summary>
+        /// The position of the mouse in screen coordinates
+        /// </summary>
         public Vector2 mousePos;
         private GameObject chunkHolder;
+        /// <summary>
+        /// The chunks in the generated world, <see cref="HexChunk"/>
+        /// </summary>
         public HexChunk[,] hexChunks;
         private int xSectors;
         private int zSectors;
+        /// <summary>
+        /// A cached flat hexagon mesh
+        /// </summary>
         public Mesh flatHexagonSharedMesh;
         private bool doneGenerating;
-        public CivGridCamera civGridCamera;
+        internal CivGridCamera civGridCamera;
         //public Color borderColor;
 
         //World Values
         private Texture2D tileMap;
+        /// <summary>
+        /// Scale of the noise map, and in turn the world
+        /// </summary>
         public float noiseScale;
+        /// <summary>
+        /// The world texture atlas
+        /// </summary>
         [SerializeField]
         public TextureAtlas textureAtlas;
+        /// <summary>
+        /// The type of the world, if one selected
+        /// </summary>
         public WorldType worldType;
+        /// <summary>
+        /// The size of the map in hexagons
+        /// </summary>
         public Vector2 mapSize;
+        /// <summary>
+        /// The number of hexagons in one chunk, in one axis
+        /// </summary>
+        /// <remarks>
+        /// The real amount of hexagons in the chunk is represented as: <b>(chunkSize)^2</b>
+        /// </remarks>
         public int chunkSize;
+        /// <summary>
+        /// The radius of the hexagon
+        /// </summary>
         public float hexRadiusSize;
 
         //world setup
+        /// <summary>
+        /// Whether or not to use the built in <see cref="CivGridCamera"/> 
+        /// </summary>
         public bool useCivGridCamera;
+        /// <summary>
+        /// Whether or not to generate the world on start up
+        /// </summary>
         public bool generateOnStart;
-        public bool generateNewValues;
+        internal bool generateNewValues;
+        /// <summary>
+        /// Whether or not to use the built in world type values or custom user ones
+        /// </summary>
         public bool useWorldTypeValues;
         //public bool showBorder;
 
         //Hill and mountains
+        /// <summary>
+        /// The base heightmap for mountains
+        /// </summary>
         [SerializeField]
         public Texture2D mountainMap;
+        /// <summary>
+        /// Amount to scale the mountain heightmap upon
+        /// </summary>
         public float mountainScaleY;
 
 
         //managers
-        public ResourceManager resourceManager;
-        public ImprovementManager improvementManager;
-        public TileManager tileManager;
+        internal ResourceManager resourceManager;
+        internal ImprovementManager improvementManager;
+        internal TileManager tileManager;
+
+        //delegates
+        public delegate void OnHexClick(HexInfo hex, int mouseButton);
+        public static OnHexClick onHexClick;
+
+        public delegate void OnMouseOverHex(HexInfo hex);
+        public static OnMouseOverHex onMouseOverHex;
         #endregion
 
         /// <summary>
-        /// Sets up values for world generation
+        /// Sets up values for world generation.
         /// </summary>
         void Awake()
         {
@@ -187,13 +247,32 @@ namespace CivGrid
             else { civGridCamera.enabled = false; }
         }
 
+        /// <summary>
+        /// Starts world generation.
+        /// </summary>
+        /// <param name="assignTypes">If it should assign values to hexagons</param>
+        /// <remarks>
+        /// For generating a new map, and not loading values, set the parameter to true.
+        /// </remarks>
         public void GenerateNewMap(bool assignTypes)
         {
             this.generateNewValues = assignTypes;
             StartGeneration(true);
         }
 
-        public void RegenerateNewWorld()
+        /// <summary>
+        /// Starts world generation.
+        /// </summary>
+        public void GenerateNewMap()
+        {
+            this.generateNewValues = true;
+            StartGeneration(true);
+        }
+
+        /// <summary>
+        /// Handles destruction of world dependencies and generates a brand new world.
+        /// </summary>
+        public void RegenerateNewMap()
         {
             Destroy(GameObject.Find("ChunkHolder"));
             if (useCivGridCamera)
@@ -204,6 +283,13 @@ namespace CivGrid
             StartGeneration(false);
         }
 
+        /// <summary>
+        /// Loads a map from a file name.
+        /// </summary>
+        /// <param name="name">Name of the saved map</param>
+        /// <remarks>
+        /// The file name should not be a complete file path, only the name given to the saved map.
+        /// </remarks>
         public void LoadAndGenerateMap(string name)
         {
             generateNewValues = false;
@@ -212,11 +298,19 @@ namespace CivGrid
             resourceManager.InitiateResourceTexturesOnHexs();
         }
 
+        /// <summary>
+        /// Saves a map under the given name.
+        /// </summary>
+        /// <param name="name">Name of the save</param>
         public void SaveMap(string name)
         {
             CivGridFileUtility.SaveTerrain(name);
         }
 
+        /// <summary>
+        /// Disbatches generation work.
+        /// </summary>
+        /// <param name="setUpManagers">If the manager need setup</param>
         private void StartGeneration(bool setUpManagers)
         {
             if (setUpManagers)
@@ -246,13 +340,16 @@ namespace CivGrid
             doneGenerating = true;
         }
 
-        void SetNoiseScaleToTrueValue()
+        /// <summary>
+        /// Scales noise to be consistant between world sizes.
+        /// </summary>
+        private void SetNoiseScaleToTrueValue()
         {
             noiseScale /= mapSize.magnitude;
         }
 
         /// <summary>
-        /// Sets the tileMap to the correct mapping settings
+        /// Sets the tileMap to the correct mapping settings.
         /// </summary>
         private void DetermineWorldType()
         {
@@ -275,7 +372,7 @@ namespace CivGrid
         }
 
         /// <summary>
-        /// Generates and caches a flat hexagon mesh for all the hexagon's to pull down into their localMesh, if they are flat
+        /// Generates and caches a flat hexagon mesh for all the hexagon's to pull down into their localMesh, if they are flat.
         /// </summary>
         private void GetHexProperties()
         {
@@ -367,12 +464,12 @@ namespace CivGrid
         }
 
         /// <summary>
-        /// Creates a new chunk
+        /// Creates a new chunk.
         /// </summary>
         /// <param name="x">The width interval of the chunks</param>
         /// <param name="y">The height interval of the chunks</param>
         /// <returns>The new chunk's script</returns>
-        public HexChunk NewChunk(int x, int y)
+        private HexChunk NewChunk(int x, int y)
         {
             //if this the first chunk made?
             if (x == 0 && y == 0)
@@ -399,7 +496,7 @@ namespace CivGrid
         }
 
         /// <summary>
-        /// Generate Chunks to make the map
+        /// Generate Chunks to make the map.
         /// </summary>
         private void GenerateMap()
         {
@@ -441,12 +538,12 @@ namespace CivGrid
         }
 
         /// <summary>
-        /// Use lattitude to determine the biome the tile is in
+        /// Use lattitude to determine the biome the tile is in.
         /// </summary>
         /// <param name="x">The x cords of the tile</param>
         /// <param name="h">The h(height) cord of the tile</param>
         /// <returns>An int corresponding to the biome it should be within</returns>
-        public Tile PickTileType(int x, int h)
+        internal Tile PickTileType(int x, int h)
         {
             //temp no influence from rainfall values
             float latitude = Mathf.Abs((mapSize.y / 2) - h) / (mapSize.y / 2);//1 == snow (top) 0 == eqautor
@@ -497,7 +594,14 @@ namespace CivGrid
             }
         }
 
-        public Feature PickFeatureType(int xArrayPosition, int yArrayPosition, bool edge)
+        /// <summary>
+        /// Determines the tile's <see cref="Feature"/> type from the world map.
+        /// </summary>
+        /// <param name="xArrayPosition">X array position</param>
+        /// <param name="yArrayPosition">Y array position</param>
+        /// <param name="edge">If the world is an edge of a chunk</param>
+        /// <returns>The correct <see cref="Feature"/> for this tile</returns>
+        internal Feature PickFeatureType(int xArrayPosition, int yArrayPosition, bool edge)
         {
             float value = tileMap.GetPixel(xArrayPosition, yArrayPosition).r;
             Feature returnVal = 0;
@@ -526,27 +630,37 @@ namespace CivGrid
             if (doneGenerating)
             {
                 mousePos = Input.mousePosition;
-                MouseInput();
             }
+            RegisterDelegates();
         }
 
-
-        void MouseInput()
+        private void RegisterDelegates()
         {
+            HexInfo hex = GetHexFromMouse();
 
-            if (Input.GetMouseButtonDown(0))
+            //OnHexClick
+            if (onHexClick != null)
             {
-                improvementManager.TestedAddImprovementToTile(GetHexFromMouse(), 0);
+                if (Input.GetMouseButtonDown(0))
+                {
+                    if (hex != null) { onHexClick.Invoke(hex, 0); }
+                }
+                if (Input.GetMouseButtonDown(1))
+                {
+                    if (hex != null) { onHexClick.Invoke(hex, 1); }
+                }
             }
-            if (Input.GetMouseButtonDown(1))
+
+            //OnMouseOverHex
+            if (onMouseOverHex != null)
             {
-                improvementManager.RemoveImprovementFromTile(GetHexFromMouse());
+                if (hex != null) { onMouseOverHex.Invoke(hex); }
             }
         }
 
 
         /// <summary>
-        /// Get a hexagon from a world position
+        /// Get a hexagon from a world position.
         /// </summary>
         /// <param name="worldPosition">The position of the needed hexagon</param>
         /// <returns>The hex at the nearest position</returns>
@@ -574,11 +688,11 @@ namespace CivGrid
 
 
         /// <summary>
-        /// Get a hexagon from a world position; This is faster than not giving a chunk
+        /// Get a hexagon from a world position; This is faster than not giving a chunk.
         /// </summary>
         /// <param name="worldPosition">The position of the needed hexagon</param>
-        /// <param name="chunk">The chunk that contains the hexagon</param>
-        /// <returns>The hex at the nearest position within the provided chunk</returns>
+        /// <param name="originalchunk">The chunk that contains the hexagon</param>
+        /// <returns>The hexagon at the nearest position within the provided chunk</returns>
         public HexInfo GetHexFromWorldPosition(Vector3 worldPosition, HexChunk originalchunk)
         {
             //print(worldPosition);
@@ -605,6 +719,11 @@ namespace CivGrid
             return hexToReturn;
         }
 
+        /// <summary>
+        /// Get a hexagon from a axial position.
+        /// </summary>
+        /// <param name="position">Axial position to look for</param>
+        /// <returns>The hexagon at the nearest position</returns>
         public HexInfo GetHexFromAxialPosition(Vector2 position)
         {
             foreach (HexChunk chunk in hexChunks)
@@ -617,11 +736,27 @@ namespace CivGrid
             return null;
         }
 
+
+        //testing
+        Vector3 hitLocation;
+        void OnSceneGUI()
+        {
+            Debug.Log("lol");
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(hitLocation, 5f);
+        }
+
+
+        /// <summary>
+        /// Gets a hexagon from the mouse posion.
+        /// </summary>
+        /// <returns>The hexagon closest to the mouse position</returns>
         public HexInfo GetHexFromMouse()
         {
             Ray ray1 = civGridCamera.GetCamera(0).ScreenPointToRay(mousePos);
             if (Physics.Raycast(ray1, out chunkHit, 100f))
             {
+                hitLocation = chunkHit.point;
                 HexChunk chunkHexIsLocatedIn = chunkHit.collider.gameObject.GetComponent<HexChunk>();
                 if (chunkHit.collider != null)
                 {
@@ -633,6 +768,7 @@ namespace CivGrid
                 Ray ray2 = civGridCamera.GetCamera(1).ScreenPointToRay(mousePos);
                 if (Physics.Raycast(ray2, out chunkHit, 100f))
                 {
+                    hitLocation = chunkHit.point;
                     HexChunk chunkHexIsLocatedIn = chunkHit.collider.gameObject.GetComponent<HexChunk>();
                     if (chunkHit.collider != null)
                     {
@@ -682,6 +818,7 @@ namespace CivGrid
             return false;
         }
 
+        /*
         void CalculateDistance()
         {
             int dx = Mathf.Abs(Mathf.RoundToInt(goToHex.x - currentHex.x));
@@ -725,13 +862,26 @@ namespace CivGrid
             //GUI.Label(new Rect(20, 0, 100, 20), goToHex.ToString());
             //GUI.Label(new Rect(20, 30, 100, 20), distance.ToString("Distance: #."));
         }
+         */
     }
 
+    /// <summary>
+    /// The world texture atlas.
+    /// </summary>
+    /// <remarks>
+    /// Contains the locations of each element within the texture.
+    /// </remarks>
     [System.Serializable]
     public class TextureAtlas
     {
+        /// <summary>
+        /// The terrain texture
+        /// </summary>
         [SerializeField]
         public Texture2D terrainAtlas;
+        /// <summary>
+        /// The location of each 
+        /// </summary>
         [SerializeField]
         public TileItem[] tileLocations;
         [SerializeField]

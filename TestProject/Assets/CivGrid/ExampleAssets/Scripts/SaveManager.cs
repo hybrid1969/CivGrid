@@ -24,7 +24,7 @@ namespace CivGrid.SampleResources
         {
             if (GUI.Button(new Rect((Screen.width / 2) - 75f, (Screen.height / 2) - (75f), 150f, 50f), "New World"))
             {
-                worldManager.RegenerateNewWorld();
+                worldManager.RegenerateNewMap();
             }
             if (GUI.Button(new Rect((Screen.width / 2) - 75f, (Screen.height / 2) - (25f), 150f, 50f), "Menu")) { if (show == false) { show = true; } else { show = false; } }
 

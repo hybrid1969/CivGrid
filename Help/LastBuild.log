@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shfbBuild product="Sandcastle Help File Builder" version="2014.5.31.0" projectFile="C:\Users\Landon\Desktop\CivGridRepository\DocumentationBuilderFile.shfbproj" started="7/31/2014 1:21:52 PM">
+<shfbBuild product="Sandcastle Help File Builder" version="2014.5.31.0" projectFile="C:\Users\Landon\Desktop\CivGridRepository\DocumentationBuilderFile.shfbproj" started="8/6/2014 11:02:31 AM">
 <buildStep step="Initializing">
 Finding tools...
 The Sandcastle tools are located in &#39;C:\Program Files (x86)\EWSoftware\Sandcastle Help File Builder\&#39;
@@ -11,11 +11,17 @@ Lightweight Website Style Version 2014.5.31.0
 Copyright &#169; 2006-2014, Eric Woodruff, All Rights Reserved
 Portions Copyright &#169; 2014, Sam Harwell, All Rights Reserved
 </buildStep>
+<buildStep step="ClearWorkFolder">
+Clearing working folder...
+</buildStep>
 <buildStep step="ValidatingDocumentationSources">
 Validating and copying documentation source information
 Source: C:\Users\Landon\Desktop\CivGridRepository\TestProject\Temp\bin\Release\Assembly-CSharp.dll
     Found assembly &#39;C:\Users\Landon\Desktop\CivGridRepository\TestProject\Temp\bin\Release\Assembly-CSharp.dll&#39;
 Source: C:\Users\Landon\Desktop\CivGridRepository\TestProject\Temp\bin\Release\CivGrid.xml
+
+References to include (excluding framework assemblies):
+    UnityEngine
 
 Copying XML comments files
     C:\Users\Landon\Desktop\CivGridRepository\TestProject\Temp\bin\Release\CivGrid.xml -&gt; C:\Users\Landon\Desktop\CivGridRepository\Help\Working\CivGrid.xml
@@ -23,16 +29,16 @@ Copying XML comments files
 <buildStep step="GenerateSharedContent">
 Generating shared content files (en-US, English (United States))...
 <plugIn name="Lightweight Website Style" behavior="After" priority="1000">
-</plugIn>    Last step completed in 00:00:00.0080
+</plugIn>    Last step completed in 00:00:00.1722
 </buildStep>
 <buildStep step="GenerateApiFilter">
 Generating API filter for MRefBuilder...
-    Last step completed in 00:00:00.0050
+    Last step completed in 00:00:00.0201
 </buildStep>
 <buildStep step="GenerateReflectionInfo">
 Generating reflection information...
 [C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe]
-Build started 7/31/2014 1:21:54 PM.
+Build started 8/6/2014 11:02:34 AM.
 Project &quot;C:\Users\Landon\Desktop\CivGridRepository\Help\Working\GenerateRefInfo.proj&quot; on node 1 (default targets).
 PrepareForBuild:
   Creating directory &quot;obj\Debug\&quot;.
@@ -40,8 +46,8 @@ GenerateRefInfo:
   MRefBuilder (v2014.5.31.0)
   Copyright c 2006-2014, Microsoft Corporation, All Rights Reserved.
   Portions Copyright c 2006-2014, Eric Woodruff, All Rights Reserved.
-  Loaded 1 assemblies for reflection and 1 dependency assemblies.
-  Wrote information on 2 namespaces, 30 types, and 205 members
+  Loaded 1 assemblies for reflection and 2 dependency assemblies.
+  Wrote information on 2 namespaces, 30 types, and 196 members
   Copying file from &quot;reflection.org&quot; to &quot;reflection.all&quot;.
   XslTransform (v2014.5.31.0)
   Copyright c 2006-2014, Microsoft Corporation, All Rights Reserved.
@@ -51,13 +57,13 @@ Done Building Project &quot;C:\Users\Landon\Desktop\CivGridRepository\Help\Worki
 
 Build succeeded.
 
-Time Elapsed 00:00:01.07
-    Last step completed in 00:00:01.2471
+Time Elapsed 00:00:03.07
+    Last step completed in 00:00:04.0336
 </buildStep>
 <buildStep step="TransformReflectionInfo">
 Transforming reflection output...
 [C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe]
-Build started 7/31/2014 1:21:55 PM.
+Build started 8/6/2014 11:02:37 AM.
 Project &quot;C:\Users\Landon\Desktop\CivGridRepository\Help\Working\TransformManifest.proj&quot; on node 1 (default targets).
 TransformManifest:
   XslTransform (v2014.5.31.0)
@@ -77,26 +83,26 @@ Done Building Project &quot;C:\Users\Landon\Desktop\CivGridRepository\Help\Worki
 
 Build succeeded.
 
-Time Elapsed 00:00:00.77
-    Last step completed in 00:00:00.9500
+Time Elapsed 00:00:01.34
+    Last step completed in 00:00:01.5218
 </buildStep>
 <buildStep step="GenerateNamespaceSummaries">
 Generating namespace summary information...
-    Last step completed in 00:00:00.0280
+    Last step completed in 00:00:00.0631
 </buildStep>
 <buildStep step="CopyAdditionalContent">
 Copying additional content files...
 No additional content to copy
-    Last step completed in 00:00:00.0030
+    Last step completed in 00:00:00.0281
 </buildStep>
 <buildStep step="MergeTablesOfContents">
 Merging conceptual and additional tables of contents...
-    Last step completed in 00:00:00.0010
+    Last step completed in 00:00:00.0031
 </buildStep>
 <buildStep step="GenerateIntermediateTableOfContents">
 Generating intermediate table of contents file...
 [C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe]
-Build started 7/31/2014 1:21:56 PM.
+Build started 8/6/2014 11:02:39 AM.
 Project &quot;C:\Users\Landon\Desktop\CivGridRepository\Help\Working\GenerateIntermediateTOC.proj&quot; on node 1 (default targets).
 GenerateIntermediateTOC:
   XslTransform (v2014.5.31.0)
@@ -107,24 +113,24 @@ Done Building Project &quot;C:\Users\Landon\Desktop\CivGridRepository\Help\Worki
 
 Build succeeded.
 
-Time Elapsed 00:00:00.17
+Time Elapsed 00:00:00.18
 Generating conceptual content intermediate TOC file...
-    Last step completed in 00:00:00.3400
+    Last step completed in 00:00:00.3614
 </buildStep>
 <buildStep step="CreateBuildAssemblerConfigs">
 Creating Sandcastle configuration files...
     sandcastle.config
-    Last step completed in 00:00:00.1270
+    Last step completed in 00:00:00.2301
 </buildStep>
 <buildStep step="MergeCustomConfigs">
 Merging custom build component configurations
 C:\Users\Landon\Desktop\CivGridRepository\Help\Working\sandcastle.config
-    Last step completed in 00:00:00.0440
+    Last step completed in 00:00:00.0607
 </buildStep>
 <buildStep step="BuildReferenceTopics">
 Building reference help topics...
 [C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe]
-Build started 7/31/2014 1:21:57 PM.
+Build started 8/6/2014 11:02:39 AM.
 Project &quot;C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj&quot; on node 1 (default targets).
 BuildReferenceTopics:
   BuildAssembler (v2014.5.31.0)
@@ -156,56 +162,20 @@ BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.HexChunk] 
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.HexChunk.chunkLocation] Unknown reference link target &#39;T:UnityEngine.Vector2&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.HexChunk.chunkSize] Unknown reference link target &#39;T:UnityEngine.Vector2&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.HexChunk.hexSize] Unknown reference link target &#39;T:UnityEngine.Vector3&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.HexInfo.ApplyChanges] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [P:CivGrid.HexInfo.AxialGridPosition] Unknown reference link target &#39;T:UnityEngine.Vector2&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [P:CivGrid.HexInfo.CubeGridPosition] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [P:CivGrid.HexInfo.CubeGridPosition] Unknown reference link target &#39;T:UnityEngine.Vector3&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexInfo.currentImprovement] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexInfo.currentRectLocation] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.HexInfo.currentRectLocation] Unknown reference link target &#39;T:UnityEngine.Rect&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexInfo.currentResource] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexInfo.defaultRectLocation] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.HexInfo.defaultRectLocation] Unknown reference link target &#39;T:UnityEngine.Rect&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexInfo.iObject] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.HexInfo.iObject] Unknown reference link target &#39;T:UnityEngine.GameObject&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexInfo.localMesh] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.HexInfo.localMesh] Unknown reference link target &#39;T:UnityEngine.Mesh&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexInfo.localPosition] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.HexInfo.localPosition] Unknown reference link target &#39;T:UnityEngine.Vector3&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexInfo.parentChunk] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexInfo.pixelLocation] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.HexInfo.pixelLocation] Unknown reference link target &#39;T:UnityEngine.Vector2&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexInfo.resourceLocations] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.HexInfo.resourceLocations] Unknown reference link target &#39;T:UnityEngine.Vector3&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexInfo.rObject] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.HexInfo.rObject] Unknown reference link target &#39;T:UnityEngine.GameObject&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexInfo.terrainFeature] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexInfo.terrainType] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexInfo.triangles] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexInfo.UV] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.HexInfo.UV] Unknown reference link target &#39;T:UnityEngine.Vector2&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexInfo.vertices] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.HexInfo.vertices] Unknown reference link target &#39;T:UnityEngine.Vector3&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexInfo.worldPosition] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.HexInfo.worldPosition] Unknown reference link target &#39;T:UnityEngine.Vector3&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.HexRule.#ctor(System.Int32[],CivGrid.Feature[])] Missing &lt;param name=&quot;possibleTiles&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.HexRule.#ctor(System.Int32[],CivGrid.Feature[])] Missing &lt;param name=&quot;possibleFeatures&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexRule.possibleFeatures] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.HexRule.possibleTiles] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Improvement.#ctor(System.String,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)] Missing &lt;param name=&quot;name&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Improvement.#ctor(System.String,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)] Missing &lt;param name=&quot;mesh&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Improvement.#ctor(System.String,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)] Missing &lt;param name=&quot;improvementMeshTexture&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Improvement.#ctor(System.String,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)] Missing &lt;param name=&quot;replaceGroundTexture&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Improvement.#ctor(System.String,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)] Missing &lt;param name=&quot;rule&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [M:CivGrid.Improvement.#ctor(System.String,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)] Unknown reference link target &#39;T:UnityEngine.Mesh&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [M:CivGrid.Improvement.#ctor(System.String,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)] Unknown reference link target &#39;T:UnityEngine.Texture2D&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Improvement.meshTexture] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.Improvement.meshTexture] Unknown reference link target &#39;T:UnityEngine.Texture2D&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Improvement.meshToSpawn] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.Improvement.meshToSpawn] Unknown reference link target &#39;T:UnityEngine.Mesh&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Improvement.name] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Improvement.replaceGroundTexture] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Improvement.rule] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ShowMissingComponent: [T:CivGrid.ImprovementItem] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.ImprovementItem.#ctor(CivGrid.Improvement,UnityEngine.Rect)] Missing &lt;param name=&quot;key&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.ImprovementItem.#ctor(CivGrid.Improvement,UnityEngine.Rect)] Missing &lt;param name=&quot;value&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
@@ -217,32 +187,15 @@ BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.Improvemen
 BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.ImprovementManager] Unknown reference link target &#39;T:UnityEngine.Component&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.ImprovementManager] Unknown reference link target &#39;T:UnityEngine.Behaviour&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.ImprovementManager] Unknown reference link target &#39;T:UnityEngine.MonoBehaviour&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.ImprovementManager.improvementNames] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.ImprovementManager.improvements] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.ImprovementManager.TestedAddImprovementToTile(CivGrid.HexInfo,CivGrid.Improvement)] Missing &lt;param name=&quot;improvement&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [M:CivGrid.NoiseGenerator.PerlinNoise(System.Int32,System.Int32,System.Single)] Unknown reference link target &#39;T:UnityEngine.Texture2D&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.NoiseGenerator.RandomOverlay(UnityEngine.Texture2D,System.Single,System.Single,System.Single,System.Single,System.Single,System.Boolean)] Missing &lt;returns&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [M:CivGrid.NoiseGenerator.RandomOverlay(UnityEngine.Texture2D,System.Single,System.Single,System.Single,System.Single,System.Single,System.Boolean)] Unknown reference link target &#39;T:UnityEngine.Texture2D&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [M:CivGrid.NoiseGenerator.RandomOverlay(UnityEngine.Texture2D,System.Single,System.Single,System.Single,System.Single,System.Single,System.Boolean)] Unknown reference link target &#39;T:UnityEngine.Texture2D&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [M:CivGrid.NoiseGenerator.SmoothPerlinNoise(System.Int32,System.Int32,System.Single,System.Int32)] Unknown reference link target &#39;T:UnityEngine.Texture2D&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Resource.#ctor(System.String,System.Single,System.Int32,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)] Missing &lt;param name=&quot;name&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Resource.#ctor(System.String,System.Single,System.Int32,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)] Missing &lt;param name=&quot;rarity&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Resource.#ctor(System.String,System.Single,System.Int32,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)] Missing &lt;param name=&quot;spawnAmount&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Resource.#ctor(System.String,System.Single,System.Int32,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)] Missing &lt;param name=&quot;mesh&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Resource.#ctor(System.String,System.Single,System.Int32,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)] Missing &lt;param name=&quot;resourceMeshTexture&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Resource.#ctor(System.String,System.Single,System.Int32,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)] Missing &lt;param name=&quot;replaceGroundTexture&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Resource.#ctor(System.String,System.Single,System.Int32,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)] Missing &lt;param name=&quot;rule&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [M:CivGrid.Resource.#ctor(System.String,System.Single,System.Int32,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)] Unknown reference link target &#39;T:UnityEngine.Mesh&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [M:CivGrid.Resource.#ctor(System.String,System.Single,System.Int32,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)] Unknown reference link target &#39;T:UnityEngine.Texture2D&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Resource.meshTexture] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.Resource.meshTexture] Unknown reference link target &#39;T:UnityEngine.Texture2D&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Resource.meshToSpawn] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.Resource.meshToSpawn] Unknown reference link target &#39;T:UnityEngine.Mesh&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Resource.name] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Resource.rarity] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Resource.replaceGroundTexture] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Resource.rule] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Resource.spawnAmount] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ShowMissingComponent: [T:CivGrid.ResourceItem] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.ResourceItem.#ctor(CivGrid.Resource,UnityEngine.Rect)] Missing &lt;param name=&quot;key&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.ResourceItem.#ctor(CivGrid.Resource,UnityEngine.Rect)] Missing &lt;param name=&quot;value&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
@@ -254,38 +207,12 @@ BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.ResourceMa
 BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.ResourceManager] Unknown reference link target &#39;T:UnityEngine.Component&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.ResourceManager] Unknown reference link target &#39;T:UnityEngine.Behaviour&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.ResourceManager] Unknown reference link target &#39;T:UnityEngine.MonoBehaviour&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.ResourceManager.resourceNames] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.ResourceManager.resources] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [T:CivGrid.RuleTest] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.RuleTest.Test(CivGrid.HexInfo,CivGrid.HexRule,CivGrid.TileManager)] Missing &lt;param name=&quot;tileManager&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [T:CivGrid.TextureAtlas] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.TextureAtlas.improvementLocations] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.TextureAtlas.resourceLocations] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.TextureAtlas.terrainAtlas] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.TextureAtlas.terrainAtlas] Unknown reference link target &#39;T:UnityEngine.Texture2D&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.TextureAtlas.tileLocations] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [M:CivGrid.TexturePacker.AtlasTextures(UnityEngine.Texture2D[],System.Int32,UnityEngine.Rect[]@)] Unknown reference link target &#39;T:UnityEngine.Texture2D&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [M:CivGrid.TexturePacker.AtlasTextures(UnityEngine.Texture2D[],System.Int32,UnityEngine.Rect[]@)] Unknown reference link target &#39;T:UnityEngine.Rect&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [M:CivGrid.TexturePacker.AtlasTextures(UnityEngine.Texture2D[],System.Int32,UnityEngine.Rect[]@)] Unknown reference link target &#39;T:UnityEngine.Texture2D&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Tile.#ctor(System.String,System.Boolean,System.Boolean,System.Boolean)] Missing &lt;param name=&quot;name&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Tile.#ctor(System.String,System.Boolean,System.Boolean,System.Boolean)] Missing &lt;param name=&quot;isShore&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Tile.#ctor(System.String,System.Boolean,System.Boolean,System.Boolean)] Missing &lt;param name=&quot;isOcean&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Tile.#ctor(System.String,System.Boolean,System.Boolean,System.Boolean)] Missing &lt;param name=&quot;isMountain&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Tile.#ctor(System.String,System.Boolean,System.Boolean,System.Boolean,System.Single,System.Single)] Missing &lt;param name=&quot;name&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Tile.#ctor(System.String,System.Boolean,System.Boolean,System.Boolean,System.Single,System.Single)] Missing &lt;param name=&quot;isShore&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Tile.#ctor(System.String,System.Boolean,System.Boolean,System.Boolean,System.Single,System.Single)] Missing &lt;param name=&quot;isOcean&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Tile.#ctor(System.String,System.Boolean,System.Boolean,System.Boolean,System.Single,System.Single)] Missing &lt;param name=&quot;isMountain&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Tile.#ctor(System.String,System.Boolean,System.Boolean,System.Boolean,System.Single,System.Single)] Missing &lt;param name=&quot;bottomLat&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Tile.#ctor(System.String,System.Boolean,System.Boolean,System.Boolean,System.Single,System.Single)] Missing &lt;param name=&quot;topLat&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Tile.#ctor(System.String,System.Single,System.Single)] Missing &lt;param name=&quot;name&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Tile.#ctor(System.String,System.Single,System.Single)] Missing &lt;param name=&quot;bottomLat&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.Tile.#ctor(System.String,System.Single,System.Single)] Missing &lt;param name=&quot;topLat&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Tile.bottomLat] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Tile.isMountain] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Tile.isOcean] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Tile.isShore] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Tile.name] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.Tile.topLat] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ShowMissingComponent: [T:CivGrid.TileItem] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.TileItem.#ctor(CivGrid.Tile,UnityEngine.Rect)] Missing &lt;param name=&quot;key&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.TileItem.#ctor(CivGrid.Tile,UnityEngine.Rect)] Missing &lt;param name=&quot;value&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
@@ -297,51 +224,18 @@ BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.TileManage
 BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.TileManager] Unknown reference link target &#39;T:UnityEngine.Component&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.TileManager] Unknown reference link target &#39;T:UnityEngine.Behaviour&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.TileManager] Unknown reference link target &#39;T:UnityEngine.MonoBehaviour&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.TileManager.GetTileFromLattitude(System.Single)] Missing &lt;returns&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.TileManager.GetTileFromLattitude(System.Single)] Missing &lt;param name=&quot;lat&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.TileManager.tileNames] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.TileManager.tiles] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.TileManager.TryGetShore] Missing &lt;returns&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
+BuildAssembler : warning : ResolveReferenceLinksComponent: [M:CivGrid.TileManager.TryGetTile(System.String)] Unknown reference link target &#39;!:AddResource(Resource)&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
+BuildAssembler : warning : ResolveReferenceLinksComponent: [M:CivGrid.TileManager.TryGetTile(System.String)] Invalid reference link target &#39;!:AddResource(Resource)&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.WorldManager] Unknown reference link target &#39;T:UnityEngine.Object&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.WorldManager] Unknown reference link target &#39;T:UnityEngine.Component&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.WorldManager] Unknown reference link target &#39;T:UnityEngine.Behaviour&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.WorldManager] Unknown reference link target &#39;T:UnityEngine.MonoBehaviour&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.WorldManager.chunkSize] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.GenerateNewMap(System.Boolean)] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.GenerateNewMap(System.Boolean)] Missing &lt;param name=&quot;assignTypes&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.WorldManager.generateOnStart] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.GetHexFromAxialPosition(UnityEngine.Vector2)] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.GetHexFromAxialPosition(UnityEngine.Vector2)] Missing &lt;returns&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.GetHexFromAxialPosition(UnityEngine.Vector2)] Missing &lt;param name=&quot;position&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [M:CivGrid.WorldManager.GetHexFromAxialPosition(UnityEngine.Vector2)] Unknown reference link target &#39;T:UnityEngine.Vector2&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.GetHexFromMouse] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.GetHexFromMouse] Missing &lt;returns&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [M:CivGrid.WorldManager.GetHexFromWorldPosition(UnityEngine.Vector3)] Unknown reference link target &#39;T:UnityEngine.Vector3&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.GetHexFromWorldPosition(UnityEngine.Vector3,CivGrid.HexChunk)] Missing &lt;param name=&quot;originalchunk&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [M:CivGrid.WorldManager.GetHexFromWorldPosition(UnityEngine.Vector3,CivGrid.HexChunk)] Unknown reference link target &#39;T:UnityEngine.Vector3&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.WorldManager.hexRadiusSize] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.LoadAndGenerateMap(System.String)] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.LoadAndGenerateMap(System.String)] Missing &lt;param name=&quot;name&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.WorldManager.mapSize] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.WorldManager.mapSize] Unknown reference link target &#39;T:UnityEngine.Vector2&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.WorldManager.mountainMap] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.WorldManager.mountainMap] Unknown reference link target &#39;T:UnityEngine.Texture2D&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.WorldManager.mountainScaleY] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.WorldManager.mousePos] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [F:CivGrid.WorldManager.mousePos] Unknown reference link target &#39;T:UnityEngine.Vector2&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.WorldManager.noiseScale] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.PickFeatureType(System.Int32,System.Int32,System.Boolean)] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.PickFeatureType(System.Int32,System.Int32,System.Boolean)] Missing &lt;returns&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.PickFeatureType(System.Int32,System.Int32,System.Boolean)] Missing &lt;param name=&quot;xArrayPosition&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.PickFeatureType(System.Int32,System.Int32,System.Boolean)] Missing &lt;param name=&quot;yArrayPosition&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.PickFeatureType(System.Int32,System.Int32,System.Boolean)] Missing &lt;param name=&quot;edge&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.RegenerateNewWorld] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.SaveMap(System.String)] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.WorldManager.SaveMap(System.String)] Missing &lt;param name=&quot;name&quot;/&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.WorldManager.textureAtlas] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.WorldManager.useCivGridCamera] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.WorldManager.useWorldTypeValues] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.WorldManager.worldType] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ShowMissingComponent: [N:CivGrid.SampleResources] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ShowMissingComponent: [T:CivGrid.SampleResources.GameManager] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ResolveReferenceLinksComponent: [T:CivGrid.SampleResources.GameManager] Unknown reference link target &#39;T:UnityEngine.Object&#39;. [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
@@ -395,22 +289,22 @@ BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.SampleResources.Unit
 BuildAssembler : warning : ShowMissingComponent: [F:CivGrid.SampleResources.Unit.unitMoves] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ShowMissingComponent: [M:CivGrid.SampleResources.Unit.Update] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
 BuildAssembler : warning : ShowMissingComponent: [T:CivGrid.SampleResources.WorldEvent] Missing &lt;summary&gt; documentation [C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj]
-  Processed 275 topic(s)
-  263 warning(s)
+  Processed 267 topic(s)
+  151 warning(s)
   CopyFromIndexComponent: &quot;reflection&quot; in-memory cache entries used: 3 of 15.
   CopyFromIndexComponent: &quot;comments&quot; in-memory cache entries used: 1 of 30.
 Done Building Project &quot;C:\Users\Landon\Desktop\CivGridRepository\Help\Working\BuildReferenceTopics.proj&quot; (default targets).
 
 Build succeeded.
 
-Time Elapsed 00:00:12.75
-    Last step completed in 00:00:13.0227
+Time Elapsed 00:00:26.01
+    Last step completed in 00:00:26.3011
 </buildStep>
 <buildStep step="CombiningIntermediateTocFiles">
 Combining conceptual and API intermediate TOC files...
 
 Clearing any prior web output
-    Last step completed in 00:00:00.2549
+    Last step completed in 00:00:00.6804
 </buildStep>
 <buildStep step="ExtractingHtmlInfo">
 Extracting HTML info for HTML Help 1 and/or website...
@@ -422,11 +316,11 @@ E-Mail: Eric@EWoodruff.us
 Using LCID &#39;1033&#39;, code page &#39;65001&#39;, encoding charset &#39;UTF-8&#39;.
 
 Processing website files in C:\Users\Landon\Desktop\CivGridRepository\Help\Working\Output\Website
-Processed 275 HTML files
+Processed 267 HTML files
 Sorting keywords and generating See Also indices
 Saving website keyword index to C:\Users\Landon\Desktop\CivGridRepository\Help\Working\WebKI.xml
 Saving website table of contents to C:\Users\Landon\Desktop\CivGridRepository\Help\Working\WebTOC.xml
-    Last step completed in 00:00:01.5727
+    Last step completed in 00:00:02.0630
 </buildStep>
 <buildStep step="CopyStandardHelpContent">
 Copying standard help content...
@@ -506,18 +400,18 @@ C:\Program Files (x86)\EWSoftware\Sandcastle Help File Builder\PresentationStyle
 C:\Program Files (x86)\EWSoftware\Sandcastle Help File Builder\PresentationStyles\VS2013\Web\icons\TocOpen.gif -&gt; C:\Users\Landon\Desktop\CivGridRepository\Help\Working\Output\Website\icons\TocOpen.gif
 C:\Program Files (x86)\EWSoftware\Sandcastle Help File Builder\PresentationStyles\VS2013\Web\scripts\branding-Website.js -&gt; C:\Users\Landon\Desktop\CivGridRepository\Help\Working\Output\Website\scripts\branding-Website.js
 C:\Program Files (x86)\EWSoftware\Sandcastle Help File Builder\PresentationStyles\VS2013\Web\scripts\jquery-1.11.0.min.js -&gt; C:\Users\Landon\Desktop\CivGridRepository\Help\Working\Output\Website\scripts\jquery-1.11.0.min.js
-    Last step completed in 00:00:00.2920
+    Last step completed in 00:00:01.2528
 </buildStep>
 <buildStep step="GenerateHelpFormatTableOfContents">
 Generating website table of contents file...
-    Last step completed in 00:00:00.0010
+    Last step completed in 00:00:00.0060
 </buildStep>
 <buildStep step="GenerateFullTextIndex">
 Generating full-text index for the website...
 
 <plugIn name="Lightweight Website Style" behavior="After" priority="1000">
 Adding lightweight search and TOC elements to each topic...
-</plugIn>    Last step completed in 00:00:02.1920
+</plugIn>    Last step completed in 00:00:06.7598
 </buildStep>
 <buildStep step="CopyingWebsiteFiles">
 Copying website files to output folder...
@@ -526,16 +420,16 @@ Copied 100 files
 Copied 200 files
 Copied 300 files
 Copied 400 files
-Copied 454 files for the website content
-    Last step completed in 00:00:00.7390
+Copied 448 files for the website content
+    Last step completed in 00:00:01.5909
 </buildStep>
 <buildStep step="CleanIntermediates">
 Removing intermediate files...
-    Last step completed in 00:00:00.6054
+    Last step completed in 00:00:00.3284
 </buildStep>
 <buildStep step="Completed">
 
-Build completed successfully at 07/31/2014 01:22 PM.  Total time: 00:00:23.0100
+Build completed successfully at 08/06/2014 11:03 AM.  Total time: 00:00:47.5406
 
 </buildStep>
 </shfbBuild>

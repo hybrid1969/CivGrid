@@ -16,55 +16,116 @@ namespace CivGrid
     {
         //positioning
         private Vector3 gridPosition;//cube cordinates stored(x,y == axial)
+        /// <summary>
+        /// The position of this hexagon local to the parent chunk.
+        /// </summary>
+        /// <remarks>
+        /// This is the local position with the origin being the chunk. Therefore, if the chunk is located
+        /// at (10,10,10) in world space and the hexagon is located at (12,12,12) in world space. This values would
+        /// contain (2,2,2).
+        /// </remarks>
         public Vector3 localPosition;
+        /// <summary>
+        /// The position of the hexagon in world space.
+        /// </summary>
         public Vector3 worldPosition;
-        public Vector2 pixelLocation;
 
         /// <summary>
         /// Ignore this field block; used for testing a sample game.
         /// </summary>
         public bool isSelected;
-        public Unit currentUnit;
+        internal Unit currentUnit;
         
-        //tile/feature type
+        /// <summary>
+        /// The type of terrain that this hexagon represents.
+        /// </summary>
+        /// <remarks>
+        /// Since this is represented by a class that is generated from user data, differation is possible.
+        /// </remarks>
         public Tile terrainType;
+        /// <summary>
+        /// The type of terrain feature that this hexagon includes.
+        /// </summary>
+        /// <remarks>
+        /// Since this is represented by an <see cref="System.Enum"/>, it is considered failsafe.
+        /// </remarks>
         public Feature terrainFeature;
        
-        //parent chunk; allows access to all outside scripts
+        /// <summary>
+        /// The chunk that this hexagon is within.
+        /// </summary>
         public HexChunk parentChunk;
 
-        TextureAtlas worldTextureAtlas;
+        private TextureAtlas worldTextureAtlas;
 
-        //hexagon mesh and texture data
-        public Vector3[] vertices;
-        public Vector2[] UV;
+        /// <summary>
+        /// The current location of the texture that the hexagon is using.
+        /// </summary>
         public Rect currentRectLocation;
+        /// <summary>
+        /// The location of the base terrain texture.
+        /// </summary>
+        /// <remarks>
+        /// This value should not be changed, as it holds the location to pull the default terrain
+        /// texture from.
+        /// </remarks>
+        /// <example>
+        /// If the <see cref="terrainType"/> is set to a <see cref="Tile"/> with the name of "Grass", this value
+        /// will hold the location of the selected grass texture in the terrain atlas.
+        /// </example>
         public Rect defaultRectLocation;
-        public int[] triangles;
-        public Vector3[] vertsx;
-        Vector2[] baseFeatureUV;
-        public Vector3 hexExt;
-        public Vector3 hexCenter;
+        private Vector2[] baseFeatureUV;
+        internal Vector3 hexExt;
+        internal Vector3 hexCenter;
+        /// <summary>
+        /// The mesh of this hexagon.
+        /// </summary>
+        /// <remarks>
+        /// This mesh is used in the parent chunk to represent this hexagon in the chunk mesh.
+        /// </remarks>
         public Mesh localMesh;
 
         //resources
+        /// <summary>
+        /// The current resource on this hexagon.
+        /// </summary>
+        /// <remarks>
+        /// This holds a reference to the global resource. All changes to this <see cref="Resource"/> will be reflected in
+        /// other hexagon sharing the resource.
+        /// </remarks>
         [SerializeField]
         public Resource currentResource;
-        public ResourceManager resourceManager;
+        internal ResourceManager resourceManager;
+        /// <summary>
+        /// The locations of each resource mesh.
+        /// </summary>
         public List<Vector3> resourceLocations = new List<Vector3>();
+        /// <summary>
+        /// The GameObject that holds the resource meshes for this hexagon.
+        /// </summary>
         public GameObject rObject;
 
         //improvments
+        /// <summary>
+        /// The current improvement on this hexagon.
+        /// </summary>
+        /// <remarks>
+        /// This holds a reference to the global improvement. All changes to this <see cref="Improvement"/> will be reflected in
+        /// other hexagon sharing the impovement.
+        /// </remarks>
         [SerializeField]
         public Improvement currentImprovement;
-        public ImprovementManager improvementManager;
+        internal ImprovementManager improvementManager;
+        /// <summary>
+        /// The GameObject that holds the improvement meshes for this hexagon.
+        /// </summary>
         public GameObject iObject;
 
         /// <summary>
         /// The coordinates of the hexagon in axial grid format.
         /// </summary>
         /// <remarks>
-        /// This is simply a lighter version of the cube format, made possible by the fact, x + y + z = 0.
+        /// This is simply a lighter version of <see cref="CubeGridPosition"/>, made possible by the fact, x + y + z = 0.
         /// With this equation we can include only the (x,y) cordinates and assume
         /// </remarks>
         public Vector2 AxialGridPosition
@@ -72,7 +133,13 @@ namespace CivGrid
             get { return new Vector2(CubeGridPosition.x, CubeGridPosition.y); }
         }
 
-        //get/set cube grid position
+        /// <summary>
+        /// The coordinates of the hexagon in cube grid format.
+        /// </summary>
+        /// <remarks>
+        /// This is simply the complete version of the grid location. You can use <see cref="AxialGridPosition"/> and imply
+        /// the "z" location with the rule of x + y + z = 0.
+        /// </remarks>
         public Vector3 CubeGridPosition
         {
             get { return gridPosition; }
@@ -114,7 +181,7 @@ namespace CivGrid
             {
                 //check for resources and default to no improvement
                 currentImprovement = improvementManager.improvements[0];
-                resourceManager.CheckForResource(this, out currentResource);
+                resourceManager.CheckForResource(this);
             }
         }
 
@@ -139,7 +206,7 @@ namespace CivGrid
         ///    public void Start()
         ///    {
         ///        //cache and find the world manager
-        ///        worldManager = GameObject.FindObjectOfType<WorldManager>();
+        ///        worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
         ///
         ///        //gets the very middle hexagon in the map
         ///        HexChunk chunk = worldManager.hexChunks[worldManager.hexChunks.GetLength(0) / 2, worldManager.hexChunks.GetLength(1) / 2];
@@ -152,7 +219,7 @@ namespace CivGrid
         ///        hex.ApplyChanges();
         ///    }
         /// }
-
+        ///
         /// </code>
         /// </example>
         public void ApplyChanges()
@@ -163,6 +230,27 @@ namespace CivGrid
         /// <summary>
         /// Switches this hexagon's UV data to display it's resource texture.
         /// </summary>
+        /// <example>
+        /// The following code changes this hexagon to show its resource texture if a resource and a resource tile
+        /// texture is present.
+        /// <code>
+        /// using System;
+        /// using UnityEngine;
+        /// using CivGrid;
+        ///
+        /// public class ExampleClass : MonoBehaviour
+        /// {
+        ///   WorldManager worldManager;
+        ///
+        ///    void Start()
+        ///    {
+        ///        worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
+        ///
+        ///        worldManager.hexChunks[0, 0].hexArray[0, 0].ChangeTextureToResource();
+        ///    }
+        /// }
+        /// </code>
+        /// </example>
         public void ChangeTextureToResource()
         {
             //if the current resource contains a ground texture
@@ -189,6 +277,27 @@ namespace CivGrid
         /// <summary>
         /// Switches this hexagon's UV data to display it's improvement texture.
         /// </summary>
+        /// <example>
+        /// The following code changes this hexagon to show its improvement texture if a improvement and a improvement tile texture
+        /// is present.
+        /// <code>
+        /// using System;
+        /// using UnityEngine;
+        /// using CivGrid;
+        ///
+        /// public class ExampleClass : MonoBehaviour
+        /// {
+        ///   WorldManager worldManager;
+        ///
+        ///    void Start()
+        ///    {
+        ///        worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
+        ///
+        ///        worldManager.hexChunks[0, 0].hexArray[0, 0].ChangeTextureToImprovement();
+        ///    }
+        /// }
+        /// </code>
+        /// </example>
         public void ChangeTextureToImprovement()
         {
             //if the current improvement contains a ground texture
@@ -213,8 +322,28 @@ namespace CivGrid
         }
 
         /// <summary>
-        /// Switches this hexagon's UV data to display it's base tile texture.
+        /// Switches this hexagon's UV data to display it's normal base texture.
         /// </summary>
+        /// <example>
+        /// The following code changes this hexagon to show its normal texture.
+        /// <code>
+        /// using System;
+        /// using UnityEngine;
+        /// using CivGrid;
+        ///
+        /// public class ExampleClass : MonoBehaviour
+        /// {
+        ///   WorldManager worldManager;
+        ///
+        ///    void Start()
+        ///    {
+        ///        worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
+        ///
+        ///        worldManager.hexChunks[0, 0].hexArray[0, 0].ChangeTextureToNormalTile();
+        ///    }
+        /// }
+        /// </code>
+        /// </example>
         public void ChangeTextureToNormalTile()
         {
             //if we have a texture that is not the base tile texture; switch it
@@ -264,6 +393,8 @@ namespace CivGrid
             //if we are generating a hexagon with a feature
             else if (terrainFeature == Feature.Mountain || terrainFeature == Feature.Hill)
             {
+                Vector3[] vertices;
+
                 //pull base mountain height map
                 Texture2D localMountainTexture = new Texture2D(parentChunk.worldManager.mountainMap.width, parentChunk.worldManager.mountainMap.height);
                 
@@ -271,12 +402,12 @@ namespace CivGrid
                 if (terrainFeature == Feature.Mountain)
                 {
                     //large overlay
-                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.2f, 0.5f), Random.Range(0.3f, 0.6f), 2, true);
+                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.2f, 0.5f), Random.Range(0.3f, 0.6f), 2, true, false);
                 }
                 else if (terrainFeature == Feature.Hill)
                 {
                     //small overlay
-                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.75f, 1f), Random.Range(0.4f, 0.7f), 2, true);
+                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.75f, 1f), Random.Range(0.4f, 0.7f), 2, true, true);
                 }
 
                 //feature values
@@ -351,7 +482,7 @@ namespace CivGrid
                 localMesh.vertices = tempVerts;
 
                 // Build triangle indices: 3 indices into vertex array for each triangle
-                triangles = new int[vertices.Length * 6];
+                int[] triangles = new int[vertices.Length * 6];
                 int index = 0;
                 for (y = 0; y < height - 1; y++)
                 {
@@ -391,6 +522,8 @@ namespace CivGrid
         /// </summary>
         private void AssignUVToDefaultTile()
         {
+            Vector2[] UV;
+
             //the base 1:1 UV map
             Vector2[] rawUV = parentChunk.worldManager.flatHexagonSharedMesh.uv;
 
@@ -427,6 +560,8 @@ namespace CivGrid
         /// <param name="rectArea">The location of the texture in the texture atlas</param>
         private void AssignUVToTile(Rect rectArea)
         {
+            Vector2[] UV;
+
             //the base 1:1 UV map
             Vector2[] rawUV = parentChunk.worldManager.flatHexagonSharedMesh.uv;
 
@@ -449,6 +584,8 @@ namespace CivGrid
         /// <param name="rawUV">UV map locations for (0,0) sector of texture atlas</param>
         private void AssignPresetUVToDefaultTile(Vector2[] rawUV)
         {
+            Vector2[] UV;
+
             //if we are NOT loading a map
             if (parentChunk.worldManager.generateNewValues == true)
             {
@@ -484,6 +621,8 @@ namespace CivGrid
         /// <param name="rectArea">Location of the texture on the texture atlas</param>
         private void AssignPresetUVToTile(Mesh mesh, Rect rectArea)
         {
+            Vector2[] UV;
+
             //temp UV data
             UV = new Vector2[mesh.vertexCount];
 

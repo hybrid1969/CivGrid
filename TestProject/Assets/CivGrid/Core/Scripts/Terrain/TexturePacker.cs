@@ -19,6 +19,10 @@ namespace CivGrid
         /// <example>
         /// This will atlas the two textures, TextureA and TextureB, into one efficient texture map.
         /// <code>
+        /// using System;
+        /// using UnityEngine;
+        /// using CivGrid;
+        /// 
         /// class TextureTest : MonoBehaviour
         /// {
         ///     Texture2D[] texturesToCombine;

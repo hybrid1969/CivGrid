@@ -80,7 +80,7 @@ namespace CivGrid.Editors
                     {
                         resource.name = EditorGUILayout.TextField("Resource Name:", resource.name);
                         resource.rarity = EditorGUILayout.FloatField("Rarity:", resource.rarity);
-                        resource.spawnAmount = EditorGUILayout.IntField("Spawn Amount:", resource.spawnAmount);
+                        resource.meshSpawnAmount = EditorGUILayout.IntField("Spawn Amount:", resource.meshSpawnAmount);
                         resource.replaceGroundTexture = EditorGUILayout.Toggle("Replace Ground Texture", resource.replaceGroundTexture);
 
                         //if (resource.replaceGroundTexture == true)

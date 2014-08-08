@@ -5,16 +5,28 @@ using CivGrid;
 namespace CivGrid
 {
     /// <summary>
-    /// Contains all possible tiles and features for the improvement to spawn on
+    /// Contains all possible tiles and features for the improvement or resource to spawn upon.
     /// </summary>
     [System.Serializable]
     public class HexRule
     {
-        //array of tiles that the improvement can spawn on
+        /// <summary>
+        /// Array of tiles that the resource or improvement can spawn upon
+        /// </summary>
+        /// <remarks>
+        /// Tiles are represented by their index. Zero being the first in the tile array.
+        /// </remarks>
         public int[] possibleTiles;
-        //array of the features that the improvement can spawn on
+        /// <summary>
+        /// Array of Features that the resource or improvement can spawn upon
+        /// </summary>
         public Feature[] possibleFeatures;
 
+        /// <summary>
+        /// Constructor for this class.
+        /// </summary>
+        /// <param name="possibleTiles">Index position of tiles that we can spawn on</param>
+        /// <param name="possibleFeatures">Features that we can spawn on</param>
         public HexRule(int[] possibleTiles, Feature[] possibleFeatures)
         {
             this.possibleTiles = possibleTiles;
@@ -22,6 +34,9 @@ namespace CivGrid
         }
     }
 
+    /// <summary>
+    /// Contains testing logic for HexRules.
+    /// </summary>
     public static class RuleTest
     {
         /// <summary>
@@ -29,6 +44,7 @@ namespace CivGrid
         /// </summary>
         /// <param name="hex">Hex to compare the rules upon</param>
         /// <param name="rule">Rules to check</param>
+        /// <param name="tileManager">The scene tile manager</param>
         /// <returns>If the hex passed the tests</returns>
         public static bool Test(HexInfo hex, HexRule rule, TileManager tileManager)
         {

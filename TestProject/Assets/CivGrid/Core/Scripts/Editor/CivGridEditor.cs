@@ -140,7 +140,7 @@ namespace CivGrid.Editors
 
                 r.name = EditorGUILayout.TextField("Resource Name:", r.name);
                 r.rarity = EditorGUILayout.FloatField("Rariety:", r.rarity);
-                r.spawnAmount = EditorGUILayout.IntField("Mesh Spawn Amount:", r.spawnAmount);
+                r.meshSpawnAmount = EditorGUILayout.IntField("Mesh Spawn Amount:", r.meshSpawnAmount);
                 r.replaceGroundTexture = EditorGUILayout.Toggle("Replace Ground Texture", r.replaceGroundTexture);
                 r.meshToSpawn = (Mesh)EditorGUILayout.ObjectField("Resource Mesh:", (Object)r.meshToSpawn, typeof(Mesh), false);
                 r.meshTexture = (Texture2D)EditorGUILayout.ObjectField("Resource Mesh Texture:", (Object)r.meshTexture, typeof(Texture2D), false);
@@ -214,7 +214,7 @@ namespace CivGrid.Editors
 
                 if (GUILayout.Button("Close"))
                 {
-                    EditResource(r.name, r.rarity, r.spawnAmount, r.meshToSpawn, r.meshTexture, r.replaceGroundTexture, resourceIndexToEdit);
+                    EditResource(r.name, r.rarity, r.meshSpawnAmount, r.meshToSpawn, r.meshTexture, r.replaceGroundTexture, resourceIndexToEdit);
                     resourceManager.resources.RemoveAt(resourceIndexToEdit+1);
                     EditorUtility.UnloadUnusedAssets();
                     Resources.UnloadUnusedAssets();

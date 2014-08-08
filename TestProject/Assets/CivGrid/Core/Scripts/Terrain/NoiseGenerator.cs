@@ -85,6 +85,7 @@ namespace CivGrid
         /// </summary>
         /// <param name="texture">Texture to smooth</param>
         /// <param name="noiseScale">Noise scale you used to generate the texture</param>
+        /// <param name="smoothingCutoff">The number of like tiles surronding a pixel needed in order for it to remain the original tupe</param>
         private static void CleanWater(Texture2D texture, float noiseScale, int smoothingCutoff)
         {
             //loop through all pixels in the texture
@@ -125,7 +126,7 @@ namespace CivGrid
                             texture.SetPixel(x, y, new Color(pixelValue, pixelValue, pixelValue));
                         }
                     }
-                    ///LAND
+                    //LAND
                     else
                     {
                         //amount of water tiles around this tile
@@ -192,7 +193,7 @@ namespace CivGrid
         /// <param name="maxHeight">Maximum height the final pixel can be</param>
         /// <param name="ignoreBlack">Avoids adding noise to fully black pixels of the source texture</param>
         /// <returns></returns>
-        public static Texture2D RandomOverlay(Texture2D texture, float position, float noiseScale, float noiseSize, float finalSize, float maxHeight, bool ignoreBlack)
+        public static Texture2D RandomOverlay(Texture2D texture, float position, float noiseScale, float noiseSize, float finalSize, float maxHeight, bool ignoreBlack, bool noiseFalloff)
         {
             //shifts the source over
             position *= Random.Range(0.2f, 5f);
@@ -213,7 +214,14 @@ namespace CivGrid
                     //overlay noise upon the pixel
                     if (ignoreBlack == false || pixelColor > 0.05f)
                     {
-                        noiseValue = Mathf.PerlinNoise(x * noiseScale + position, y * noiseScale + position) * noiseSize;
+                        if (noiseFalloff)
+                        {
+                            noiseValue = (Mathf.PerlinNoise(x * noiseScale + position, y * noiseScale + position) * noiseSize) * (pixelColor * 2);
+                        }
+                        else
+                        {
+                            noiseValue = Mathf.PerlinNoise(x * noiseScale + position, y * noiseScale + position) * noiseSize;
+                        }
                     }
                     //no overlay noise
                     else
