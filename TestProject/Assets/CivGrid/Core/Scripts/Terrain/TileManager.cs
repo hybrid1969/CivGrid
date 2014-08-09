@@ -87,7 +87,7 @@ namespace CivGrid
         /// <param name="name">The name of the tile to look for</param>
         /// <returns>The tile with the name provided; null if not found</returns>
         /// <example>
-        /// The following example adds a resource, then retrieves it by it's name. Using <see cref="AddResource(Resource)"/> is
+        /// The following example adds a resource, then retrieves it by it's name. Using <see cref="ResourceManager.AddResource(Resource)"/> is
         /// not encouraged. Add resources in the inspector.
         /// <code>
         /// using System;

@@ -59,6 +59,8 @@
   <HelpKINode Title="CivGrid.TileItem class" Url="html/ddb9c912-2d11-e9eb-6194-a6e1dd8714e6.htm" />
   <HelpKINode Title="CivGrid.TileManager class" Url="html/eea02ba7-b487-e686-1a64-b2ed2f829abc.htm" />
   <HelpKINode Title="CivGrid.WorldManager class" Url="html/bb9cafb6-fdf5-c85f-e3b8-90b40ebd64e9.htm" />
+  <HelpKINode Title="CivGrid.WorldManager.OnHexClick delegate" Url="html/3515bd74-0784-6abf-829b-51d7dbbae60f.htm" />
+  <HelpKINode Title="CivGrid.WorldManager.OnMouseOverHex delegate" Url="html/eb2399bc-91ad-7531-4ff2-c96ee7615919.htm" />
   <HelpKINode Title="CivGrid.WorldType enumeration" Url="html/5b2dc03f-ed13-aadd-fa91-77c2d3562f76.htm" />
   <HelpKINode Title="CivGridCamera class">
     <HelpKINode Title="CivGridCamera Class" Url="html/58c51860-ec41-22fa-91d7-310e27060c38.htm" />
@@ -297,16 +299,18 @@
     <HelpKINode Title="methods" Url="html/8273bd20-ee43-2e2a-9015-08c4d094aee5.htm" />
   </HelpKINode>
   <HelpKINode Title="NoiseGenerator.PerlinNoise method" Url="html/af3ad95a-b7b5-4dba-6b26-27694e28d1cb.htm" />
-  <HelpKINode Title="NoiseGenerator.RandomOverlay method" Url="html/c8d31290-12ef-7986-b881-50324ba291ef.htm" />
+  <HelpKINode Title="NoiseGenerator.RandomOverlay method" Url="html/5b6de4cd-cfc5-34f8-cb82-31f0f93d110d.htm" />
   <HelpKINode Title="NoiseGenerator.SmoothPerlinNoise method" Url="html/0e832ce6-d6b8-f4c9-d458-4c103d803b73.htm" />
   <HelpKINode Title="NoiseGenerator.StabalizeFloat method" Url="html/10d4ba2f-42b0-63ed-d5a1-f4959a329311.htm" />
   <HelpKINode Title="noiseScale field" Url="html/33ac0d4f-3ebe-80eb-5720-830ee287042d.htm" />
+  <HelpKINode Title="onHexClick field" Url="html/5cebb919-4630-7ad0-ce3e-3bca865a7ba0.htm" />
+  <HelpKINode Title="onMouseOverHex field" Url="html/adb554a8-37d2-bf03-ddf7-41a362f1a941.htm" />
   <HelpKINode Title="Pangaea enumeration member" Url="html/5b2dc03f-ed13-aadd-fa91-77c2d3562f76.htm" />
   <HelpKINode Title="parentChunk field" Url="html/3d6b5db5-4fc9-bc40-f7aa-79ba1cd87148.htm" />
   <HelpKINode Title="PerlinNoise method" Url="html/af3ad95a-b7b5-4dba-6b26-27694e28d1cb.htm" />
   <HelpKINode Title="possibleFeatures field" Url="html/d0f279ef-605b-9914-6313-8dde0366d583.htm" />
   <HelpKINode Title="possibleTiles field" Url="html/8c21d202-b698-9486-a374-bbd37897fe16.htm" />
-  <HelpKINode Title="RandomOverlay method" Url="html/c8d31290-12ef-7986-b881-50324ba291ef.htm" />
+  <HelpKINode Title="RandomOverlay method" Url="html/5b6de4cd-cfc5-34f8-cb82-31f0f93d110d.htm" />
   <HelpKINode Title="Range class">
     <HelpKINode Title="Range Class" Url="html/62d4aa36-826a-da3b-be4d-133ae40ebb94.htm" />
     <HelpKINode Title="about Range class" Url="html/62d4aa36-826a-da3b-be4d-133ae40ebb94.htm" />
@@ -530,6 +534,10 @@
   <HelpKINode Title="WorldManager.mountainScaleY field" Url="html/6629a09d-1403-7945-459b-946b7a9a392f.htm" />
   <HelpKINode Title="WorldManager.mousePos field" Url="html/7f025ed5-4e64-76ec-984b-95faeee0fd89.htm" />
   <HelpKINode Title="WorldManager.noiseScale field" Url="html/33ac0d4f-3ebe-80eb-5720-830ee287042d.htm" />
+  <HelpKINode Title="WorldManager.OnHexClick delegate" Url="html/3515bd74-0784-6abf-829b-51d7dbbae60f.htm" />
+  <HelpKINode Title="WorldManager.onHexClick field" Url="html/5cebb919-4630-7ad0-ce3e-3bca865a7ba0.htm" />
+  <HelpKINode Title="WorldManager.OnMouseOverHex delegate" Url="html/eb2399bc-91ad-7531-4ff2-c96ee7615919.htm" />
+  <HelpKINode Title="WorldManager.onMouseOverHex field" Url="html/adb554a8-37d2-bf03-ddf7-41a362f1a941.htm" />
   <HelpKINode Title="WorldManager.RegenerateNewMap method" Url="html/26d58f9d-eb74-8acd-19e6-8cc773e1bca1.htm" />
   <HelpKINode Title="WorldManager.SaveMap method" Url="html/1060355e-8f8a-5360-3e25-e76207808025.htm" />
   <HelpKINode Title="WorldManager.textureAtlas field" Url="html/d6f96db8-170e-7645-5e7d-fafa5fb99146.htm" />

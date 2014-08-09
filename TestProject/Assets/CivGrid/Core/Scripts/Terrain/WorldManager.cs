@@ -221,11 +221,25 @@ namespace CivGrid
         internal ImprovementManager improvementManager;
         internal TileManager tileManager;
 
-        //delegates
+        /// <summary>
+        /// Delegate for when a hexagon is clicked with a mouse button.
+        /// </summary>
+        /// <param name="hex">The hexagon clicked</param>
+        /// <param name="mouseButton">The mouse button used</param>
         public delegate void OnHexClick(HexInfo hex, int mouseButton);
+        /// <summary>
+        /// Delegate to listen to for OnHexClick events.
+        /// </summary>
         public static OnHexClick onHexClick;
 
+        /// <summary>
+        /// Delegate for when the mouse pointer is over a hexagon.
+        /// </summary>
+        /// <param name="hex">The hexagon that the mouse is over</param>
         public delegate void OnMouseOverHex(HexInfo hex);
+        /// <summary>
+        /// Delegate to listen to for OnMouseOverHex events.
+        /// </summary>
         public static OnMouseOverHex onMouseOverHex;
         #endregion
 
@@ -880,22 +894,37 @@ namespace CivGrid
         [SerializeField]
         public Texture2D terrainAtlas;
         /// <summary>
-        /// The location of each 
+        /// The location of each tile texture in the atlas
         /// </summary>
         [SerializeField]
         public TileItem[] tileLocations;
+        /// <summary>
+        /// The location of each resource texture in the atlas
+        /// </summary>
         [SerializeField]
         public ResourceItem[] resourceLocations;
+        /// <summary>
+        /// The location of each improvement texture in the atlas
+        /// </summary>
         [SerializeField]
         public ImprovementItem[] improvementLocations;
     }
 
+    /// <summary>
+    /// A tile item in the texture atlas.
+    /// </summary>
+    /// <remarks>
+    /// Mimics Dictionary behaviour using serializable methods.
+    /// </remarks>
     [System.Serializable]
     public class TileItem
     {
         [SerializeField]
         private Tile key;
 
+        /// <summary>
+        /// The key, in this case a <see cref="Tile"/>, in which a Rect is given
+        /// </summary>
         [SerializeField]
         public Tile Key
         {
@@ -912,6 +941,9 @@ namespace CivGrid
         [SerializeField]
         private Rect value;
 
+        /// <summary>
+        /// The Rect value for this key
+        /// </summary>
         [SerializeField]
         public Rect Value
         {
@@ -925,6 +957,11 @@ namespace CivGrid
             }
         }
 
+        /// <summary>
+        /// Constructor for this class.
+        /// </summary>
+        /// <param name="key">The key</param>
+        /// <param name="value">The value for the given key</param>
         [SerializeField]
         public TileItem(Tile key, Rect value)
         {
@@ -934,12 +971,21 @@ namespace CivGrid
 
     }
 
+    /// <summary>
+    /// A resource item in the texture atlas.
+    /// </summary>
+    /// <remarks>
+    /// Mimics Dictionary behaviour using serializable methods.
+    /// </remarks>
     [System.Serializable]
     public class ResourceItem
     {
         [SerializeField]
         private Resource key;
 
+        /// <summary>
+        /// The key, in this case a <see cref="Resource"/>, in which a Rect is given
+        /// </summary>
         [SerializeField]
         public Resource Key
         {
@@ -956,6 +1002,9 @@ namespace CivGrid
         [SerializeField]
         private Rect value;
 
+        /// <summary>
+        /// The Rect value for this key
+        /// </summary>
         [SerializeField]
         public Rect Value
         {
@@ -969,6 +1018,11 @@ namespace CivGrid
             }
         }
 
+        /// <summary>
+        /// The constructor for this class.
+        /// </summary>
+        /// <param name="key">The key</param>
+        /// <param name="value">The value for the given key</param>
         [SerializeField]
         public ResourceItem(Resource key, Rect value)
         {
@@ -977,12 +1031,21 @@ namespace CivGrid
         }
     }
 
+    /// <summary>
+    /// A improvement item in the texture atlas.
+    /// </summary>
+    /// <remarks>
+    /// Mimics Dictionary behaviour using serializable methods.
+    /// </remarks>
     [System.Serializable]
     public class ImprovementItem
     {
         [SerializeField]
         private Improvement key;
 
+        /// <summary>
+        /// The key, in this case a <see cref="Improvement"/>, in which a Rect is given
+        /// </summary>
         [SerializeField]
         public Improvement Key
         {
@@ -999,6 +1062,9 @@ namespace CivGrid
         [SerializeField]
         private Rect value;
 
+        /// <summary>
+        /// The Rect value for this key
+        /// </summary>
         [SerializeField]
         public Rect Value
         {
@@ -1012,6 +1078,11 @@ namespace CivGrid
             }
         }
 
+        /// <summary>
+        /// Constructor for this class.
+        /// </summary>
+        /// <param name="key">The key</param>
+        /// <param name="value">The value for the given key</param>
         [SerializeField]
         public ImprovementItem(Improvement key, Rect value)
         {

@@ -192,6 +192,7 @@ namespace CivGrid
         /// <param name="finalSize">Scales the value of the final pixel</param>
         /// <param name="maxHeight">Maximum height the final pixel can be</param>
         /// <param name="ignoreBlack">Avoids adding noise to fully black pixels of the source texture</param>
+        /// <param name="noiseFalloff">Whether or not to use smooth noise falloff</param>
         /// <returns></returns>
         public static Texture2D RandomOverlay(Texture2D texture, float position, float noiseScale, float noiseSize, float finalSize, float maxHeight, bool ignoreBlack, bool noiseFalloff)
         {

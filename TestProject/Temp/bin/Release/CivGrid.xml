@@ -1,0 +1,2273 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Assembly-CSharp</name>
+    </assembly>
+    <members>
+        <member name="T:CivGrid.SampleResources.Unit">
+            <summary>
+            This is the base script for ALL units in the game, combat and speical abilities is handled in the child class (Melee, Range Attack, Build, etc)
+            This handles movement, health, death, selection, and basic statistics.
+            It is not recamended to add to this class instead use this as a base class and extend methods from it(see Melee for more information on how to do this)
+            </summary>
+        </member>
+        <member name="T:CivGrid.TexturePacker">
+            <summary>
+            Packs textures into atlases.
+            </summary>
+        </member>
+        <member name="M:CivGrid.TexturePacker.AtlasTextures(UnityEngine.Texture2D[],System.Int32,UnityEngine.Rect[]@)">
+            <summary>
+            Creates a single texture atlas from the provided source textures.
+            </summary>
+            <param name="textures">Textures to combine into one</param>
+            <param name="textureSize">Size of the texture atlas to create</param>
+            <param name="rectAreas">Rect locations of each texture</param>
+            <returns>The created atlased texture</returns>
+            <example>
+            This will atlas the two textures, TextureA and TextureB, into one efficient texture map.
+            <code>
+            using System;
+            using UnityEngine;
+            using CivGrid;
+            
+            class TextureTest : MonoBehaviour
+            {
+                Texture2D[] texturesToCombine;
+                public Texture2D texture1;
+                public Texture2D texture2;
+                
+                Texture2D atlasedTexture;
+                Rect[] rectLocations;
+                
+                void Start()
+                {
+                    texturesToCombine = new Texture2D[2];
+                    texturesToCombine[0] = texture1;
+                    texturesToCombine[1] = texture2;
+                    
+                    atlasedTexture = TexturePacker.AtlasTextures(texturesToCombine, 2048, out rectLocations);
+                }
+            }
+            </code>
+            </example>
+        </member>
+        <member name="T:CivGrid.CivGridFileUtility">
+            <summary>
+            Saves and loads numerious data types.
+            </summary>
+        </member>
+        <member name="M:CivGrid.CivGridFileUtility.SaveTexture(UnityEngine.Texture2D,System.String,System.Boolean)">
+             <summary>
+             Saves the provided Texture2D to a the file name in the application path.
+             </summary>
+             <param name="texture">Texture to save to file</param>
+             <param name="name">Name of the file</param>
+             <param name="openTextureToView">If the texture is opened in a window to view after saving</param>
+             <example>
+             The following will save the texture to a file named <b>savedTexture</b> in the root folder of the game
+             and open the file for viewing.
+             <code>
+             class SaveTexture : MonoBehaviour
+             {
+                 public Texture2D textureToSave;
+            
+                 void Start()
+                 {
+                     CivGridFileUtility.SaveTexture(textureToSave, "savedTexture", true);
+                 }
+             }
+             </code>
+             </example>
+             <remarks>
+             If <b>openTextureToView</b> is true, it will open the saved file in your default image editor/browser.
+             </remarks>
+        </member>
+        <member name="M:CivGrid.CivGridFileUtility.SaveTexture(UnityEngine.Texture2D,System.String,System.String,System.Boolean)">
+             <summary>
+             Saves the provided Texture2D to a file name in the provided location.
+             </summary>
+             <param name="texture">Texture to save to file</param>
+             <param name="location">Location to save the file</param>
+             <param name="name">Name of the file</param>
+             <param name="openTextureToView">If the texture is opened in a window to view after saving</param>
+             <example>
+             The following will save the texture to a file named <b>savedTexture</b> in the path provided, in this case the root
+             folder of the game, and open the file for viewing.
+             <code>
+             class SaveTexture : MonoBehaviour
+             {
+                 public Texture2D textureToSave;
+            
+                 void Start()
+                 {
+                     CivGridFileUtility.SaveTexture(textureToSave, Application.dataPath, "savedTexture", true);
+                 }
+             }
+             </code>
+             </example>
+             <remarks>
+             If <b>openTextureToView</b> is true, it will open the saved file in your default image editor/browser.
+             </remarks>
+        </member>
+        <member name="M:CivGrid.CivGridFileUtility.SaveTexture(System.Byte[],System.String,System.String,System.Boolean)">
+             <summary>
+             Saves the provided texture provided as a byte[] to a file name in the provided location.
+             </summary>
+             <param name="texture">Texture to save to file</param>
+             <param name="location">Location to save the file</param>
+             <param name="name">Name of the file</param>
+             <param name="openTextureToView">If the texture is opened in a window to view after saving</param>
+             <example>
+             The following will save the texture to a file named <b>savedTexture</b> in the path provided, in this case the root
+             folder of the game, and open the file for viewing.
+             <code>
+             class SaveTexture : MonoBehaviour
+             {
+                public byte[] textureToSave;
+            
+                void Start()
+                {
+                    CivGridFileUtility.SaveTexture(textureToSave, Application.dataPath, "savedTexture", true);
+                }
+             }
+             </code>
+             </example>
+             <remarks>
+             If <b>openTextureToView</b> is true, it will open the saved file in your default image editor/browser.
+             </remarks>
+        </member>
+        <member name="M:CivGrid.CivGridFileUtility.SaveTerrain(System.String)">
+            <summary>
+            Saves the current terrain to a file. <see cref="M:CivGrid.WorldManager.SaveMap(System.String)"/> is a wrapper for this method, both are congruent.
+            </summary>
+            <param name="name">Name of the file</param>
+            <example>
+            The following code saves the terrain to a file called <b>terrainSave</b>.
+            <code>
+            class SaveTerrain : MonoBehaviour
+            {
+               void Start()
+               {
+                   CivGridFileUtility.SaveTerrain("terrainSave");
+               }
+            }
+            </code>
+            <remarks>
+            <see cref="T:CivGrid.WorldManager"/> must be in the scene and currently have a world in memory. Method will return errors if a WorldManager
+            is not currently in the scene or if it doesn't have a world currently loaded into memory.
+            </remarks>
+            </example>
+        </member>
+        <member name="M:CivGrid.CivGridFileUtility.LoadTerrain(System.String)">
+            <summary>
+            Loads a terrain into the scene from a file.
+            <see cref="M:CivGrid.WorldManager.LoadAndGenerateMap(System.String)"/> should be used unless additional custom modification will be used.
+            This method only loads the data into memory and does not generate the world from the data.
+            </summary>
+            <param name="location">File to load</param>
+            <remarks>
+            <see cref="M:CivGrid.WorldManager.LoadAndGenerateMap(System.String)"/> should be used instead of this method unless advanced custom work needs to be implimented.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.CivGridFileUtility.LoadTexture(System.String,System.String)">
+             <summary>
+             Load a texture into memory from a file.
+             </summary>
+             <param name="location">Location of the file</param>
+             <param name="name">Name of the file</param>
+             <returns>The texture loaded from the location</returns>
+             <example>
+             The following code loads a .png file from a file location.
+             <code>
+             class LoadTexture : MonoBehaviour
+             {
+                Texture2D texture;
+                string fileLocation = Application.dataPath;
+            
+                void Start()
+                {
+                   CivGridFileUtility.LoadTexture(fileLocation, "savedTexture");
+                }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="M:CivGrid.CivGridFileUtility.LoadTexture(System.String)">
+             <summary>
+             Load a texture into memory from a file.
+             </summary>
+             <param name="name">Name of the file</param>
+             <returns>The texture loaded from the file name</returns>
+             <example>
+             The following code loads a .png file from a file location.
+             <code>
+             class LoadTexture : MonoBehaviour
+             {
+                Texture2D texture;
+            
+                void Start()
+                {
+                   CivGridFileUtility.LoadTexture("savedTexture");
+                }
+             }
+             </code>
+             <remarks>
+             This overload assumes that you are loading from the games root folder, if you want to load
+             from another location use <see cref="M:CivGrid.CivGridFileUtility.LoadTexture(System.String,System.String)"/>.
+             </remarks>
+             </example>
+        </member>
+        <member name="T:CivGrid.ImprovementManager">
+            <summary>
+            Contains all possible improvements.
+            Handles the addition and removal of these improvements upon hexagons.
+            </summary>
+        </member>
+        <member name="F:CivGrid.ImprovementManager.improvements">
+            <summary>
+            Possible improvements to spawn.
+            </summary>
+        </member>
+        <member name="F:CivGrid.ImprovementManager.improvementNames">
+            <summary>
+            Names of the possible improvements to spawn.
+            </summary>
+            <remarks>
+            The index is the same for the respective improvement.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.ImprovementManager.SetUp">
+            <summary>
+            Sets up the improvement manager.
+            Caches all needed values.
+            </summary>
+        </member>
+        <member name="M:CivGrid.ImprovementManager.InitiateImprovementsOnHexs(CivGrid.HexInfo,CivGrid.Improvement)">
+            <summary>
+            Creates the improvement GameObject and switches the hex texture.
+            </summary>
+            <param name="hex">Hex to create the improvement on</param>
+            <param name="i">Improvement to add</param>
+        </member>
+        <member name="M:CivGrid.ImprovementManager.AddImprovement(CivGrid.Improvement)">
+            <summary>
+            Adds an improvement to the improvement array.
+            </summary>
+            <param name="i">Improvement to add</param>
+            <remarks>
+            This method is safe to use after world generation. However, the improvement must be present on
+            a world load to be safe./n 
+            For example if you add an improvment and the user adds it a tile. Saves the game. And then loads it,
+            you must re-add the same improvement at the same index before world generation for it to safely load.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.ImprovementManager.AddImprovementAtIndex(CivGrid.Improvement,System.Int32)">
+            <summary>
+            Adds an improvement to the improvement array at the provided index.
+            </summary>
+            <param name="i">Improvement to add</param>
+            <param name="index">Index in which to add the improvement</param>
+            <remarks>
+            This method is safe to use after world generation. However, the improvement must be present on
+            a world load to be safe./n 
+            For example if you add an improvment and the user adds it a tile. Saves the game. And then loads it,
+            you must re-add the same improvement at the same index before world generation for it to safely load.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.ImprovementManager.DeleteImprovement(CivGrid.Improvement)">
+            <summary>
+            Removes an improvement from the improvement array.
+            </summary>
+            <param name="i">Improvement to remove</param>
+            <remarks>
+            Removing a improvement that is referenced elsewhere will cause null reference errors. Only use this
+            method if you are personally managing the specific improvement memory lifetime.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.ImprovementManager.TryGetImprovement(System.String)">
+             <summary>
+             Attempts to return an improvement from a provided name.
+             </summary>
+             <param name="name">The name of the improvement to look for</param>
+             <returns>The improvement with the name provided; null if not found</returns>
+             <example>
+             The following example adds an improvement, then retrieves it by it's name. Using <see cref="M:CivGrid.ImprovementManager.AddImprovement(CivGrid.Improvement)"/> is
+             not encouraged. Add improvements in the inspector.
+             <code>
+             using System;
+             using UnityEngine;
+             using CivGrid;
+            
+             public class ExampleClass : MonoBehaviour
+             {
+                ImprovementManager improvementManager;
+            
+                void Start()
+                {
+                    improvementManager = GameObject.FindObjectOfType&lt;ImprovementManager&gt;();
+            
+                    //this method is not encouraged, used as a specific example and not best practice. Add improvements in the
+                    //inspector instead.
+                    improvementManager.AddImprovement(new Improvement("Test", null, null, false, new HexRule(null, null)));
+            
+                    Improvement improvement = improvementManager.TryGetImprovement("Test");
+            
+                    Debug.Log(improvement.name);
+                }
+             }
+            
+             //Output:
+             //"Test"
+             </code>
+             </example>
+        </member>
+        <member name="M:CivGrid.ImprovementManager.UpdateImprovementNames">
+            <summary>
+            Creates or updates an array of the improvement names. <see cref="F:CivGrid.ImprovementManager.improvementNames"/>
+            </summary>
+        </member>
+        <member name="M:CivGrid.ImprovementManager.TestedAddImprovementToTile(CivGrid.HexInfo,System.String)">
+             <summary>
+             Adds improvement to specified hex if it meets the rule requirements; slower than passing in an inprovement index.
+             </summary>
+             <param name="hex">Hex to attempt to add the improvement upon</param>
+             <param name="improvementName">"Improvement to attempt to add</param>
+             <example>
+             The following code tries to add a "Farm" improvement to every tile.
+             <code>
+             /// using System;
+             using UnityEngine;
+             using CivGrid;
+            
+             public class ExampleClass : MonoBehaviour
+             {
+                WorldManager worldManager;
+                ImprovementManager improvementManager;
+            
+                void Start()
+                {
+                    worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
+                    improvementManager = GameObject.FindObjectOfType&lt;ImprovementManager&gt;();
+            
+                    //check again for each hex if it should spawn a resource
+                    foreach (HexChunk chunk in worldManager.hexChunks)
+                    {
+                        foreach (HexInfo hex in chunk.hexArray)
+                        {
+                            improvementManager.TestedAddImprovementToTile(hex, "Farm");
+                        }
+                    }
+                }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="M:CivGrid.ImprovementManager.TestedAddImprovementToTile(CivGrid.HexInfo,CivGrid.Improvement)">
+             <summary>
+             Adds improvement to specified hex if it meets the rule requirements.
+             </summary>
+             <param name="hex">Hex to attempt to add the improvement upon</param>
+             <param name="improvement">"Improvement to attempt to add</param>
+             <example>
+             The following code makes a new improvement at runtime and then tests it's rules against all tiles.
+             <code>
+             using System;
+             using UnityEngine;
+             using CivGrid;
+            
+             public class ExampleClass : MonoBehaviour
+             {
+               WorldManager worldManager;
+                ImprovementManager improvementManager;
+            
+                void Start()
+                {
+                    worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
+                    improvementManager = GameObject.FindObjectOfType&lt;ImprovementManager&gt;();
+            
+                    Improvement improvement = new Improvement("NewImprovement", null, null, true, new HexRule(new int[]{4,5}, new Feature[]{Feature.Flat}));
+                    improvementManager.AddImprovement(improvement);
+            
+                    //check again for each hex if it should spawn a resource
+                    foreach (HexChunk chunk in worldManager.hexChunks)
+                    {
+                       foreach (HexInfo hex in chunk.hexArray)
+                       {
+                           improvementManager.TestedAddImprovementToTile(hex, improvement);
+                       }
+                    }
+                }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="M:CivGrid.ImprovementManager.TestedAddImprovementToTile(CivGrid.HexInfo,System.Int32)">
+             <summary>
+             Adds improvement to specified hex if it meets the rule requirements.
+             </summary>
+             <param name="hex">Hex to attempt to add the improvement upon</param>
+             <param name="improvementIndex">Index of the improvement within the improvement manager to attemp to add</param>
+             <example>
+             The following code attempts to add the first improvement to every tile.
+             <code>
+             using System;
+             using UnityEngine;
+             using CivGrid;
+            
+             public class ExampleClass : MonoBehaviour
+             {
+                WorldManager worldManager;
+                ImprovementManager improvementManager;
+            
+                void Start()
+                {
+                    worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
+                    improvementManager = GameObject.FindObjectOfType&lt;ImprovementManager&gt;();
+            
+                    //check again for each hex if it should spawn a resource
+                    foreach (HexChunk chunk in worldManager.hexChunks)
+                    {
+                        foreach (HexInfo hex in chunk.hexArray)
+                        {
+                            //tries to add first improvement
+                            improvementManager.TestedAddImprovementToTile(hex, 0);
+                        }
+                    }
+                }
+             }
+             </code>
+             </example>
+             <remarks>
+             The index system should be based off of the inspector indexes at startup. The automatically generated "None" improvement
+             is not included in the index numbering.
+             </remarks>
+        </member>
+        <member name="M:CivGrid.ImprovementManager.RemoveImprovementFromTile(CivGrid.HexInfo)">
+             <summary>
+             Removes the improvement from the specified hex and restores its past state.
+             </summary>
+             <param name="hex">Hex to remove all improvements from</param>
+             <example>
+             The following code removes all improvements from the map.
+             <code>
+             using System;
+             using UnityEngine;
+             using CivGrid;
+            
+             public class ExampleClass : MonoBehaviour
+             {
+                WorldManager worldManager;
+                ImprovementManager improvementManager;
+            
+                void Start()
+                {
+                    worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
+                    improvementManager = GameObject.FindObjectOfType&lt;ImprovementManager&gt;();
+            
+                    //check again for each hex if it should spawn a resource
+                    foreach (HexChunk chunk in worldManager.hexChunks)
+                    {
+                        foreach (HexInfo hex in chunk.hexArray)
+                        {
+                            //tries to add first improvement
+                            improvementManager.RemoveImprovementFromTile(hex);
+                        }
+                    }
+                }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="T:CivGrid.Improvement">
+            <summary>
+            Improvement class that contains all values for the base improvement.
+            </summary>
+        </member>
+        <member name="F:CivGrid.Improvement.name">
+            <summary>
+            Name of the improvement
+            </summary>
+        </member>
+        <member name="F:CivGrid.Improvement.rule">
+            <summary>
+            The rules of where the improvement can spawn
+            </summary>
+        </member>
+        <member name="F:CivGrid.Improvement.meshToSpawn">
+            <summary>
+            The improvement mesh to spawn
+            </summary>
+        </member>
+        <member name="F:CivGrid.Improvement.meshTexture">
+            <summary>
+            The texture for the spawned mesh
+            </summary>
+        </member>
+        <member name="F:CivGrid.Improvement.replaceGroundTexture">
+            <summary>
+            Decides if the ground texture is replaced with the improvement specific one in the texture atlas
+            </summary>
+        </member>
+        <member name="M:CivGrid.Improvement.#ctor(System.String,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)">
+            <summary>
+            Constructor for this class.
+            </summary>
+            <param name="name">Name of the improvement</param>
+            <param name="meshToSpawn">The improvement mesh to spawn</param>
+            <param name="meshTexture">The texture for the spawned mesh</param>
+            <param name="replaceGroundTexture">Decides if the ground texture is replaced with the improvement specific one in the texture atlas</param>
+            <param name="rule">The rules of where the improvement can spawn</param>
+        </member>
+        <member name="M:CivGrid.Improvement.#ctor">
+            <summary>
+            Blank constrcutor for this class.
+            </summary>
+        </member>
+        <member name="T:CivGrid.Feature">
+            <summary>
+            Enum for the feature on a tile.<br />
+            <br />
+            Contains three basic types of features. See remarks for descriptions of each.
+            </summary>
+            <remarks>
+            <list type="definition">
+            <item>
+            <term>Flat</term>
+            <description>A completly flat hexagon with no change in the vertical axis.</description>
+            </item>
+            <item>
+            <term>Hill</term>
+            <description>A hill with vertical noise.</description>
+            </item>
+            <item>
+            <term>Mountain</term>
+            <description>A large pointed mountain with vertical noise.</description>
+            </item>
+            </list>
+            </remarks>
+        </member>
+        <member name="F:CivGrid.Feature.Flat">
+            <summary>
+            A completly flat hexagon with no change in the vertical axis.
+            </summary>
+        </member>
+        <member name="F:CivGrid.Feature.Hill">
+            <summary>
+            A hill with vertical noise.
+            </summary>
+        </member>
+        <member name="F:CivGrid.Feature.Mountain">
+            <summary>
+            A large pointed mountain with vertical noise.
+            </summary>
+        </member>
+        <member name="T:CivGrid.WorldType">
+            <summary>
+            Preset world generator values that create numerous world types.<br />
+            <br />
+            Contains six basic types of worlds. See remarks for description of each.<br />
+            </summary>
+            <remarks>
+            Description for each world type.
+            <list type="definition">
+            <item>
+            <term>Diced</term>
+            <description>A very random map with many very small noisy island. No large landmasses, with a high ratio of water.</description>
+            </item>
+            <item>
+            <term>Continents</term>
+            <description>A world like ours. A few large land masses with numerous smaller islands. Fair amount of both water and land.</description>
+            </item>
+            <item>
+            <term>Pangaea</term>
+            <description>An extremely large landmass with a few smaller islands offshore. A large amount of land.</description>
+            </item>
+            <item>
+            <term>Strings</term>
+            <description>Long snakey islands throughout. No large landmasses, with a high ratio of water.</description>
+            </item>
+            <item>
+            <term>Small Islands</term>
+            <description>Many small islands. Islands are larger and more regular than with Diced. No large landmasses, with a high ratio of water.</description>
+            </item>
+            <item>
+            <term>Large Islands</term>
+            <description>A fair amount of medium sized landmasses. Medium landmasses, with a somewhat high ratio of water.</description>
+            </item>
+            </list>
+            </remarks>
+        </member>
+        <member name="F:CivGrid.WorldType.Diced">
+            <summary>
+            A very random map with many very small noisy island. No large landmasses, with a high ratio of water.
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldType.Continents">
+            <summary>
+            A world like ours. A few large land masses with numerous smaller islands. Fair amount of both water and land.
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldType.Pangaea">
+            <summary>
+            An extremely large landmass with a few smaller islands offshore. A large amount of land.
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldType.Strings">
+            <summary>
+            Long snakey islands throughout. No large landmasses, with a high ratio of water.
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldType.SmallIslands">
+            <summary>
+            Many small islands. Islands are larger and more regular than with Diced. No large landmasses, with a high ratio of water.
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldType.LargeIslands">
+            <summary>
+            A fair amount of medium sized landmasses. Medium landmasses, with a somewhat high ratio of water.
+            </summary>
+        </member>
+        <member name="T:CivGrid.WorldManager">
+            <summary>
+            This script runs the entire CivGrid system. <br />
+            <br />
+            Holds all chunks, and in turn each hexagon, in memory and runs all the operations throughout them when needed. Contains the methods to generate worlds, load worlds, and save worlds.
+            While some generation methods are exposed for use, it is best to not try and use the lower level methods.
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.hexExt">
+            <summary>
+            The extents of a hexagon from the origin
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.hexSize">
+            <summary>
+            The size of a hexagon from side to side
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.hexCenter">
+            <summary>
+            The center of a hexagon
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.mousePos">
+            <summary>
+            The position of the mouse in screen coordinates
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.hexChunks">
+            <summary>
+            The chunks in the generated world, <see cref="T:CivGrid.HexChunk"/>
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.flatHexagonSharedMesh">
+            <summary>
+            A cached flat hexagon mesh
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.noiseScale">
+            <summary>
+            Scale of the noise map, and in turn the world
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.textureAtlas">
+            <summary>
+            The world texture atlas
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.worldType">
+            <summary>
+            The type of the world, if one selected
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.mapSize">
+            <summary>
+            The size of the map in hexagons
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.chunkSize">
+            <summary>
+            The number of hexagons in one chunk, in one axis
+            </summary>
+            <remarks>
+            The real amount of hexagons in the chunk is represented as: <b>(chunkSize)^2</b>
+            </remarks>
+        </member>
+        <member name="F:CivGrid.WorldManager.hexRadiusSize">
+            <summary>
+            The radius of the hexagon
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.useCivGridCamera">
+            <summary>
+            Whether or not to use the built in <see cref="T:CivGrid.CivGridCamera"/> 
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.generateOnStart">
+            <summary>
+            Whether or not to generate the world on start up
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.useWorldTypeValues">
+            <summary>
+            Whether or not to use the built in world type values or custom user ones
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.mountainMap">
+            <summary>
+            The base heightmap for mountains
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.mountainScaleY">
+            <summary>
+            Amount to scale the mountain heightmap upon
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.onHexClick">
+            <summary>
+            Delegate to listen to for OnHexClick events.
+            </summary>
+        </member>
+        <member name="F:CivGrid.WorldManager.onMouseOverHex">
+            <summary>
+            Delegate to listen to for OnMouseOverHex events.
+            </summary>
+        </member>
+        <member name="M:CivGrid.WorldManager.Awake">
+            <summary>
+            Sets up values for world generation.
+            </summary>
+        </member>
+        <member name="M:CivGrid.WorldManager.GenerateNewMap(System.Boolean)">
+            <summary>
+            Starts world generation.
+            </summary>
+            <param name="assignTypes">If it should assign values to hexagons</param>
+            <remarks>
+            For generating a new map, and not loading values, set the parameter to true.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.WorldManager.GenerateNewMap">
+            <summary>
+            Starts world generation.
+            </summary>
+        </member>
+        <member name="M:CivGrid.WorldManager.RegenerateNewMap">
+            <summary>
+            Handles destruction of world dependencies and generates a brand new world.
+            </summary>
+        </member>
+        <member name="M:CivGrid.WorldManager.LoadAndGenerateMap(System.String)">
+            <summary>
+            Loads a map from a file name.
+            </summary>
+            <param name="name">Name of the saved map</param>
+            <remarks>
+            The file name should not be a complete file path, only the name given to the saved map.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.WorldManager.SaveMap(System.String)">
+            <summary>
+            Saves a map under the given name.
+            </summary>
+            <param name="name">Name of the save</param>
+        </member>
+        <member name="M:CivGrid.WorldManager.StartGeneration(System.Boolean)">
+            <summary>
+            Disbatches generation work.
+            </summary>
+            <param name="setUpManagers">If the manager need setup</param>
+        </member>
+        <member name="M:CivGrid.WorldManager.SetNoiseScaleToTrueValue">
+            <summary>
+            Scales noise to be consistant between world sizes.
+            </summary>
+        </member>
+        <member name="M:CivGrid.WorldManager.DetermineWorldType">
+            <summary>
+            Sets the tileMap to the correct mapping settings.
+            </summary>
+        </member>
+        <member name="M:CivGrid.WorldManager.GetHexProperties">
+            <summary>
+            Generates and caches a flat hexagon mesh for all the hexagon's to pull down into their localMesh, if they are flat.
+            </summary>
+        </member>
+        <member name="M:CivGrid.WorldManager.NewChunk(System.Int32,System.Int32)">
+            <summary>
+            Creates a new chunk.
+            </summary>
+            <param name="x">The width interval of the chunks</param>
+            <param name="y">The height interval of the chunks</param>
+            <returns>The new chunk's script</returns>
+        </member>
+        <member name="M:CivGrid.WorldManager.GenerateMap">
+            <summary>
+            Generate Chunks to make the map.
+            </summary>
+        </member>
+        <member name="M:CivGrid.WorldManager.PickTileType(System.Int32,System.Int32)">
+            <summary>
+            Use lattitude to determine the biome the tile is in.
+            </summary>
+            <param name="x">The x cords of the tile</param>
+            <param name="h">The h(height) cord of the tile</param>
+            <returns>An int corresponding to the biome it should be within</returns>
+        </member>
+        <member name="M:CivGrid.WorldManager.PickFeatureType(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Determines the tile's <see cref="T:CivGrid.Feature"/> type from the world map.
+            </summary>
+            <param name="xArrayPosition">X array position</param>
+            <param name="yArrayPosition">Y array position</param>
+            <param name="edge">If the world is an edge of a chunk</param>
+            <returns>The correct <see cref="T:CivGrid.Feature"/> for this tile</returns>
+        </member>
+        <member name="M:CivGrid.WorldManager.GetHexFromWorldPosition(UnityEngine.Vector3)">
+            <summary>
+            Get a hexagon from a world position.
+            </summary>
+            <param name="worldPosition">The position of the needed hexagon</param>
+            <returns>The hex at the nearest position</returns>
+        </member>
+        <member name="M:CivGrid.WorldManager.GetHexFromWorldPosition(UnityEngine.Vector3,CivGrid.HexChunk)">
+            <summary>
+            Get a hexagon from a world position; This is faster than not giving a chunk.
+            </summary>
+            <param name="worldPosition">The position of the needed hexagon</param>
+            <param name="originalchunk">The chunk that contains the hexagon</param>
+            <returns>The hexagon at the nearest position within the provided chunk</returns>
+        </member>
+        <member name="M:CivGrid.WorldManager.GetHexFromAxialPosition(UnityEngine.Vector2)">
+            <summary>
+            Get a hexagon from a axial position.
+            </summary>
+            <param name="position">Axial position to look for</param>
+            <returns>The hexagon at the nearest position</returns>
+        </member>
+        <member name="M:CivGrid.WorldManager.GetHexFromMouse">
+            <summary>
+            Gets a hexagon from the mouse posion.
+            </summary>
+            <returns>The hexagon closest to the mouse position</returns>
+        </member>
+        <member name="T:CivGrid.WorldManager.OnHexClick">
+            <summary>
+            Delegate for when a hexagon is clicked with a mouse button.
+            </summary>
+            <param name="hex">The hexagon clicked</param>
+            <param name="mouseButton">The mouse button used</param>
+        </member>
+        <member name="T:CivGrid.WorldManager.OnMouseOverHex">
+            <summary>
+            Delegate for when the mouse pointer is over a hexagon.
+            </summary>
+            <param name="hex">The hexagon that the mouse is over</param>
+        </member>
+        <member name="T:CivGrid.TextureAtlas">
+            <summary>
+            The world texture atlas.
+            </summary>
+            <remarks>
+            Contains the locations of each element within the texture.
+            </remarks>
+        </member>
+        <member name="F:CivGrid.TextureAtlas.terrainAtlas">
+            <summary>
+            The terrain texture
+            </summary>
+        </member>
+        <member name="F:CivGrid.TextureAtlas.tileLocations">
+            <summary>
+            The location of each tile texture in the atlas
+            </summary>
+        </member>
+        <member name="F:CivGrid.TextureAtlas.resourceLocations">
+            <summary>
+            The location of each resource texture in the atlas
+            </summary>
+        </member>
+        <member name="F:CivGrid.TextureAtlas.improvementLocations">
+            <summary>
+            The location of each improvement texture in the atlas
+            </summary>
+        </member>
+        <member name="T:CivGrid.TileItem">
+            <summary>
+            A tile item in the texture atlas.
+            </summary>
+            <remarks>
+            Mimics Dictionary behaviour using serializable methods.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.TileItem.#ctor(CivGrid.Tile,UnityEngine.Rect)">
+            <summary>
+            Constructor for this class.
+            </summary>
+            <param name="key">The key</param>
+            <param name="value">The value for the given key</param>
+        </member>
+        <member name="P:CivGrid.TileItem.Key">
+            <summary>
+            The key, in this case a <see cref="T:CivGrid.Tile"/>, in which a Rect is given
+            </summary>
+        </member>
+        <member name="P:CivGrid.TileItem.Value">
+            <summary>
+            The Rect value for this key
+            </summary>
+        </member>
+        <member name="T:CivGrid.ResourceItem">
+            <summary>
+            A resource item in the texture atlas.
+            </summary>
+            <remarks>
+            Mimics Dictionary behaviour using serializable methods.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.ResourceItem.#ctor(CivGrid.Resource,UnityEngine.Rect)">
+            <summary>
+            The constructor for this class.
+            </summary>
+            <param name="key">The key</param>
+            <param name="value">The value for the given key</param>
+        </member>
+        <member name="P:CivGrid.ResourceItem.Key">
+            <summary>
+            The key, in this case a <see cref="T:CivGrid.Resource"/>, in which a Rect is given
+            </summary>
+        </member>
+        <member name="P:CivGrid.ResourceItem.Value">
+            <summary>
+            The Rect value for this key
+            </summary>
+        </member>
+        <member name="T:CivGrid.ImprovementItem">
+            <summary>
+            A improvement item in the texture atlas.
+            </summary>
+            <remarks>
+            Mimics Dictionary behaviour using serializable methods.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.ImprovementItem.#ctor(CivGrid.Improvement,UnityEngine.Rect)">
+            <summary>
+            Constructor for this class.
+            </summary>
+            <param name="key">The key</param>
+            <param name="value">The value for the given key</param>
+        </member>
+        <member name="P:CivGrid.ImprovementItem.Key">
+            <summary>
+            The key, in this case a <see cref="T:CivGrid.Improvement"/>, in which a Rect is given
+            </summary>
+        </member>
+        <member name="P:CivGrid.ImprovementItem.Value">
+            <summary>
+            The Rect value for this key
+            </summary>
+        </member>
+        <member name="T:CivGrid.TileManager">
+            <summary>
+            Contains all possible tiles.
+            </summary>
+        </member>
+        <member name="F:CivGrid.TileManager.tiles">
+            <summary>
+            Possible tiles to assign.
+            </summary>
+        </member>
+        <member name="F:CivGrid.TileManager.tileNames">
+            <summary>
+            Names of the possible tiless to assign.
+            </summary>
+        </member>
+        <member name="M:CivGrid.TileManager.SetUp">
+            <summary>
+            Sets up the tile manager.
+            Caches all needed values.
+            </summary>
+        </member>
+        <member name="M:CivGrid.TileManager.UpdateTileNames">
+            <summary>
+            Creates an array of the tiles names. <see cref="F:CivGrid.TileManager.tileNames"/>
+            </summary>
+        </member>
+        <member name="M:CivGrid.TileManager.AddTile(CivGrid.Tile)">
+            <summary>
+            Adds a tile to the tile array.
+            </summary>
+            <param name="t">Tile to add</param>
+            <remarks>
+            This method should only be used before world generation.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.TileManager.DeleteTile(CivGrid.Tile)">
+            <summary>
+            Removes a tile from the tile array.
+            </summary>
+            <param name="t">Improvement to remove</param>
+            <remarks>
+            Removing a tile that is referenced elsewhere will cause null reference errors. Only use this
+            method if you are personally managing the specific tiles memory lifetime.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.TileManager.TryGetTile(System.String)">
+             <summary>
+             Attempts to return a tile from a provided name.
+             </summary>
+             <param name="name">The name of the tile to look for</param>
+             <returns>The tile with the name provided; null if not found</returns>
+             <example>
+             The following example adds a resource, then retrieves it by it's name. Using <see cref="M:CivGrid.ResourceManager.AddResource(CivGrid.Resource)"/> is
+             not encouraged. Add resources in the inspector.
+             <code>
+             using System;
+             using UnityEngine;
+             using CivGrid;
+            
+             public class ExampleClass : MonoBehaviour
+             {
+                TileManager tileManager;
+            
+                void Start()
+                {
+                    tileManager = GameObject.FindObjectOfType&lt;TileManager&gt;();
+            
+                    //this method is not encouraged, used as a specific example and not best practice. Add tiles in the
+                    //inspector instead.
+                    tileManager.AddTile(new Tile("Test", 0.0f, 0.2f));
+            
+                    Tile tile = tileManager.TryGetTile("Test");
+            
+                    Debug.Log(tile.name);
+                }
+             }
+            
+             //Output:
+             //"Test"
+             </code>
+             </example>
+        </member>
+        <member name="M:CivGrid.TileManager.TryGetOcean">
+             <summary>
+             Wrapper method of TryGetTile() to find a tile marked as an ocean.
+             </summary>
+             <returns>The tile found as ocean; null if not found</returns>
+             <example>
+             The following code adds an "Ocean" tile and then retrieves it automatically.
+             <code>
+             using System;
+             using UnityEngine;
+             using CivGrid;
+            
+             public class ExampleClass : MonoBehaviour
+             {
+                TileManager tileManager;
+            
+                void Start()
+                {
+                    tileManager = GameObject.FindObjectOfType&lt;TileManager&gt;();
+            
+                    //this method is not encouraged, used as a specific example and not best practice. Add tiles in the
+                    //inspector instead.
+                    tileManager.AddTile(new Tile("Ocean", false, true, false));
+            
+                    Tile tile = tileManager.TryGetOcean();
+            
+                    Debug.Log(tile.name);
+                }
+             }
+            
+             //Output:
+             //"Ocean"
+             </code>
+             </example>
+        </member>
+        <member name="M:CivGrid.TileManager.TryGetMountain">
+             <summary>
+             Wrapper method of TryGetTile() to find a tile marked as a mountain.
+             </summary>
+             <returns>The tile found as mountain; null if not found</returns>
+             <example>
+             The following code adds a "Mountain" tile and then retrieves it automatically.
+             <code>
+             using System;
+             using UnityEngine;
+             using CivGrid;
+            
+             public class ExampleClass : MonoBehaviour
+             {
+                TileManager tileManager;
+            
+                void Start()
+                {
+                    tileManager = GameObject.FindObjectOfType&lt;TileManager&gt;();
+            
+                    //this method is not encouraged, used as a specific example and not best practice. Add tiles in the
+                    //inspector instead.
+                    tileManager.AddTile(new Tile("Mountain", false, false, true));
+            
+                    Tile tile = tileManager.TryGetMountain();
+            
+                    Debug.Log(tile.name);
+                }
+             }
+            
+             //Output:
+             //"Mountain"
+             </code>
+             </example>
+        </member>
+        <member name="M:CivGrid.TileManager.TryGetShore">
+             <summary>
+             Wrapper method of TryGetTile() to find a tile marked as a shore.
+             </summary>
+             <returns>The tile founds as shore; null if not found</returns>
+             <example>
+             The following code adds a "Shore" tile and then retrieves it automatically.
+             <code>
+             using System;
+             using UnityEngine;
+             using CivGrid;
+            
+             public class ExampleClass : MonoBehaviour
+             {
+                TileManager tileManager;
+            
+                void Start()
+                {
+                    tileManager = GameObject.FindObjectOfType&lt;TileManager&gt;();
+            
+                    //this method is not encouraged, used as a specific example and not best practice. Add tiles in the
+                    //inspector instead.
+                    tileManager.AddTile(new Tile("Shore", true, false, true));
+            
+                    Tile tile = tileManager.TryGetShore();
+            
+                    Debug.Log(tile.name);
+                }
+             }
+            
+             //Output:
+             //"Shore"
+             </code>
+             </example>
+        </member>
+        <member name="M:CivGrid.TileManager.GetTileFromLattitude(System.Single)">
+            <summary>
+            Finds a tile for a provided lattitude.
+            </summary>
+            <param name="lat">The lattitude of the tile you want</param>
+            <returns>The tile that should be assign at the given lattitude</returns>
+        </member>
+        <member name="T:CivGrid.Tile">
+            <summary>
+            Tile class that contains all values for the base tile
+            </summary>
+        </member>
+        <member name="F:CivGrid.Tile.name">
+            <summary>
+            Name of the tile
+            </summary>
+        </member>
+        <member name="F:CivGrid.Tile.bottomLat">
+            <summary>
+            The bottom lattitude of where this tile can be assigned
+            </summary>
+        </member>
+        <member name="F:CivGrid.Tile.topLat">
+            <summary>
+            The top lattitude of where this tile can be assigned
+            </summary>
+        </member>
+        <member name="F:CivGrid.Tile.isOcean">
+            <summary>
+            Is an ocean tile
+            </summary>
+        </member>
+        <member name="F:CivGrid.Tile.isShore">
+            <summary>
+            Is a shore tile
+            </summary>
+        </member>
+        <member name="F:CivGrid.Tile.isMountain">
+            <summary>
+            Is a mountain tile
+            </summary>
+        </member>
+        <member name="M:CivGrid.Tile.#ctor(System.String,System.Single,System.Single)">
+            <summary>
+            Constructor for this class.
+            </summary>
+            <param name="name">Name of the tile</param>
+            <param name="bottomLat">Bottom lattitude clamp</param>
+            <param name="topLat">"Top lattitude clamp</param>
+        </member>
+        <member name="M:CivGrid.Tile.#ctor(System.String,System.Boolean,System.Boolean,System.Boolean,System.Single,System.Single)">
+            <summary>
+            Full constructor for this class.
+            </summary>
+            <param name="name">Name of the tile</param>
+            <param name="isShore">Is a shore tile</param>
+            <param name="isOcean">Is an ocean tile</param>
+            <param name="isMountain">Is a mountain tile</param>
+            <param name="bottomLat">Bottom lattitude clamp</param>
+            <param name="topLat">Top lattitude clamp</param>
+        </member>
+        <member name="M:CivGrid.Tile.#ctor(System.String,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Special tile constructor for this class.
+            </summary>
+            <param name="name">Name of the tile</param>
+            <param name="isShore">Is a shore tile</param>
+            <param name="isOcean">Is an ocean tile</param>
+            <param name="isMountain">Is a mountain</param>
+        </member>
+        <member name="T:CivGrid.HexChunk">
+            <summary>
+            Contains all hexagons within this chunk.
+            Positions and setups up each hexagon within this chunk.
+            Handles combining them upon one mesh.
+            </summary>
+        </member>
+        <member name="F:CivGrid.HexChunk.hexArray">
+            <summary>
+            The array of hexagons in this chunk.
+            Each hexagon is represented by the class <see cref="T:CivGrid.HexInfo"/>, which holds all
+            data concerning the hexagon.
+            </summary>
+        </member>
+        <member name="F:CivGrid.HexChunk.chunkSize">
+            <summary>
+            The size of the chunk described as, width and height in the number of hexagons included within
+            the chunk.
+            </summary>
+            <remarks>Setting this number too large will cause difficulties as the chunk mesh can reach the
+            vertex limits of unity. This will cause an internal error from unity.</remarks>
+        </member>
+        <member name="F:CivGrid.HexChunk.chunkLocation">
+            <summary>
+            The location of the chunk in (x,y) coordinates.
+            </summary>
+        </member>
+        <member name="F:CivGrid.HexChunk.hexSize">
+            <summary>
+            The dimensions and size of the hexagon in this world.
+            </summary>
+        </member>
+        <member name="M:CivGrid.HexChunk.SetSize(System.Int32,System.Int32)">
+            <summary>
+            Sets the amount of hexagons in the chunk.
+            </summary>
+            <param name="x">Amount of hexagons in "x" axis</param>
+            <param name="y">Amount of hexagons in "y" axis</param>
+        </member>
+        <member name="M:CivGrid.HexChunk.OnDestroy">
+            <summary>
+            Cleans up the material on this object after it is destroyed.
+            </summary>
+        </member>
+        <member name="M:CivGrid.HexChunk.AllocateHexArray">
+            <summary>
+            Allocates the hex array of this chunk.
+            </summary>
+            <remarks>
+            This method uses <see cref="F:CivGrid.HexChunk.chunkSize"/> to determine the allocation amount. This value must
+            be set before invoking this method.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.HexChunk.GenerateChunk">
+            <summary>
+            Generates all hexagons in this chunk in their proper positioning.
+            </summary>
+        </member>
+        <member name="M:CivGrid.HexChunk.GenerateHex(System.Int32,System.Int32)">
+            <summary>
+            Generates the hex in the provided array location
+            </summary>
+            <param name="x">Array location of hex in x axis</param>
+            <param name="y">Array location of hex in y axis</param>
+        </member>
+        <member name="M:CivGrid.HexChunk.GenerateHexOffset(System.Int32,System.Int32)">
+            <summary>
+            Generates the offset hex in the provided array location
+            </summary>
+            <param name="x">Array location of hex in x axis</param>
+            <param name="y">Array location of hex in y axis</param>
+        </member>
+        <member name="M:CivGrid.HexChunk.DetermineWorldEdge(CivGrid.HexInfo,System.Int32,System.Int32)">
+            <summary>
+            Determine if this hexagon is on the world edge
+            </summary>
+            <param name="hex">Hexagon to check</param>
+            <param name="x">Width location of hex within chunk</param>
+            <param name="y">Height location of hex within chunk</param>
+            <returns>If the hex is on the world edge</returns>
+        </member>
+        <member name="M:CivGrid.HexChunk.Begin">
+            <summary>
+            Starts chunk operations of spawning the hexagons and then chunking them
+            </summary>
+        </member>
+        <member name="M:CivGrid.HexChunk.StartHex">
+            <summary>
+            Starts hex operations.
+            </summary>
+        </member>
+        <member name="M:CivGrid.HexChunk.GenerateHexCollider">
+            <summary>
+            Adds a collider if there is none; resizes to chunks size if there is one.
+            </summary>
+            <remarks>
+            This method generates a new collider for the chunk if it does not already include a collider.
+            If one is present it will resize it.
+            
+            Therefore any <b>BoxCollider</b> on a <b>GameObject</b> that has a <see cref="T:CivGrid.HexChunk"/> script
+            will use the present <b>BoxCollider</b> and resize it.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.HexChunk.RegenerateMesh">
+            <summary>
+            Combines all localMeshes' in the hexes of this chunk into one mesh.
+            </summary>
+            <remarks>
+            This method must be called to apply any changes to a hexagon's <see cref="F:CivGrid.HexInfo.localMesh"/>. Without calling
+            this method the changes won't be seen in the chunk mesh.
+            </remarks>
+        </member>
+        <member name="T:CivGrid.ResourceManager">
+            <summary>
+            Contains all possible resources.
+            Handles the addition and removal of these resources upon hexagons.
+            </summary>
+        </member>
+        <member name="F:CivGrid.ResourceManager.resources">
+            <summary>
+            Possible resources to spawn.
+            </summary>
+        </member>
+        <member name="F:CivGrid.ResourceManager.resourceNames">
+            <summary>
+            Names of the possible resources to spawn.
+            </summary>
+            <remarks>
+            The index is the same for the respective resource.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.ResourceManager.SetUp">
+            <summary>
+            Sets up the resource manager.
+            Caches all needed values.
+            </summary>
+        </member>
+        <member name="M:CivGrid.ResourceManager.InitiateResourceTexturesOnHexs">
+            <summary>
+            Called on start-up to make sure all hexs with resources are changed to use their resource texture.
+            </summary>
+        </member>
+        <member name="M:CivGrid.ResourceManager.AddResource(CivGrid.Resource)">
+            <summary>
+            Adds a resource to the resource array.
+            </summary>
+            <param name="r">Resource to add</param>
+            <remarks>
+            This method should only be used before world generation as it will 
+            not have an effect unless you re-check for resources on each hex.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.ResourceManager.AddResourceAtIndex(CivGrid.Resource,System.Int32)">
+            <summary>
+            Adds a resource to the resource array at the provided index.
+            </summary>
+            <param name="r">Resource to add</param>
+            <param name="index">Index in which to add the resource</param>
+            <remarks>
+            This method should only be used before world generation as it will 
+            not have an effect unless you re-check for resources on each hex.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.ResourceManager.DeleteResource(CivGrid.Resource)">
+            <summary>
+            Removes a resource from the resource array.
+            </summary>
+            <param name="r">Resource to remove</param>
+            <remarks>
+            Removing a resource that is referenced elsewhere will cause null reference errors. Only use this
+            method if you are personally managing the specific resources memory lifetime.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.ResourceManager.TryGetResource(System.String)">
+             <summary>
+             Attempts to return a resource from a provided name.
+             </summary>
+             <param name="name">The name of the resource to look for</param>
+             <returns>The improvement with the name provided; null if not found</returns>
+             <example>
+             The following example adds a resource, then retrieves it by it's name. Using <see cref="M:CivGrid.ResourceManager.AddResource(CivGrid.Resource)"/> is
+             not encouraged. Add resources in the inspector.
+             <code>
+             using System;
+             using UnityEngine;
+             using CivGrid;
+            
+             public class ExampleClass : MonoBehaviour
+             {
+                ResourceManager resourceManager;
+            
+                void Start()
+                {
+                    resourceManager = GameObject.FindObjectOfType&lt;ResourceManager&gt;();
+            
+                    //this method is not encouraged, used as a specific example and not best practice. Add resources in the
+                    //inspector instead.
+                    resourceManager.AddResource(new Resource("Test", 0, 0, null, null, false, new HexRule(null, null)));
+            
+                    Resource resource = resourceManager.TryGetResource("Test");
+            
+                    Debug.Log(resource.name);
+                }
+             }
+            
+             //Output:
+             //"Test"
+             </code>
+             </example>
+        </member>
+        <member name="M:CivGrid.ResourceManager.UpdateResourceNames">
+            <summary>
+            Creates an array of the resource names. <see cref="F:CivGrid.ResourceManager.resourceNames"/>
+            </summary>
+        </member>
+        <member name="M:CivGrid.ResourceManager.CheckForResource(CivGrid.HexInfo)">
+             <summary>
+             Checks if a resource should be spawned on a hexagon.
+             </summary>
+             <param name="hex">The hexagon to check</param>
+             <example>
+             The following code changes the possible resources and then re-checks each hex for the resource.
+             <code>
+             using System;
+             using UnityEngine;
+             using CivGrid;
+            
+             public class ExampleClass : MonoBehaviour
+             {
+                WorldManager worldManager;
+                ResourceManager resourceManager;
+            
+                void Start()
+                {
+                    worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
+                    resourceManager = GameObject.FindObjectOfType&lt;ResourceManager&gt;();
+            
+                    //creates a new resource to possibly spawn
+                    resourceManager.AddResource(new Resource("SpecialNewResource", 15, 1, null, null, false, new HexRule(new int[] { 3, 4 }, new Feature[] { Feature.Flat })));
+            
+                    //check again for each hex if it should spawn a resource
+                    foreach (HexChunk chunk in worldManager.hexChunks)
+                    {
+                        foreach (HexInfo hex in chunk.hexArray)
+                        {
+                            resourceManager.CheckForResource(hex); 
+                        }
+                    }
+                }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="M:CivGrid.ResourceManager.SpawnResource(CivGrid.HexInfo,CivGrid.Resource,System.Boolean)">
+            <summary>
+            Spawns the provided resource on the tile.
+            Optional to regenerate the chunk.
+            </summary>
+            <remarks>
+            This can be used to force a resource to spawn, even if against it's rules.
+            </remarks>
+            <param name="hex">Hex to spawn the resource on</param>
+            <param name="r">Resource to spawn</param>
+            <param name="regenerateChunk">If the parent chunk should be regenerated</param>
+        </member>
+        <member name="T:CivGrid.Resource">
+            <summary>
+            Resource class that contains all the values for the base resource.
+            </summary>
+        </member>
+        <member name="F:CivGrid.Resource.name">
+            <summary>
+            Name of the resource
+            </summary>
+        </member>
+        <member name="F:CivGrid.Resource.rule">
+            <summary>
+            The rules of where the resource can spawn
+            </summary>
+        </member>
+        <member name="F:CivGrid.Resource.rarity">
+            <summary>
+            The rarity of the resource
+            </summary>
+            <remarks>
+            This is a calculated probabilty of 1/<see cref="F:CivGrid.Resource.rarity"/>.
+            </remarks>
+        </member>
+        <member name="F:CivGrid.Resource.meshSpawnAmount">
+            <summary>
+            Amount of mesh to spawn
+            </summary>
+            <remarks>
+            Only has an effect if <see cref="F:CivGrid.Resource.meshToSpawn"/> is present.
+            </remarks>
+        </member>
+        <member name="F:CivGrid.Resource.meshToSpawn">
+            <summary>
+            The resource mesh to spawn
+            </summary>
+        </member>
+        <member name="F:CivGrid.Resource.meshTexture">
+            <summary>
+            The texture for the spawned mesh
+            </summary>
+        </member>
+        <member name="F:CivGrid.Resource.replaceGroundTexture">
+            <summary>
+            Decides if the ground texture is replaced with the resource specific one in the texture atlas
+            </summary>
+        </member>
+        <member name="M:CivGrid.Resource.#ctor(System.String,System.Single,System.Int32,UnityEngine.Mesh,UnityEngine.Texture2D,System.Boolean,CivGrid.HexRule)">
+            <summary>
+            Constructor of this class.
+            </summary>
+            <param name="name">Name of the resource</param>
+            <param name="rarity">This is a calculated probabilty of 1/<see cref="F:CivGrid.Resource.rarity"/>.</param>
+            <param name="meshSpawnAmount">Amount of mesh to spawn</param>
+            <param name="meshToSpawn">The resource mesh to spawn</param>
+            <param name="meshTexture">The texture for the spawned mesh</param>
+            <param name="replaceGroundTexture">Decides if the ground texture is replaced with the resource specific one in the texture atlas</param>
+            <param name="rule">The rules of where the resource can spawn</param>
+        </member>
+        <member name="T:CivGrid.CivGridCamera">
+            <summary>
+            Operates a camera, or cameras if wrapping is enabled, to function similar to a locked real time game.
+            </summary>
+        </member>
+        <member name="F:CivGrid.CivGridCamera.enableWrapping">
+            <summary>
+            Should the terrain wrap around when a camera moves too far off in the horizontal side?
+            This adds a small overhead from running two cameras and a depth buffer.
+            </summary>
+        </member>
+        <member name="F:CivGrid.CivGridCamera.cameraHeight">
+            <summary>
+            The height of the camera from the terrain.
+            </summary>
+        </member>
+        <member name="F:CivGrid.CivGridCamera.cameraAngle">
+            <summary>
+            The angle of the camera in degrees. Default is 65*.
+            </summary>
+        </member>
+        <member name="F:CivGrid.CivGridCamera.cameraSpeed">
+            <summary>
+            The speed at which the camera moves in units per second.
+            </summary>
+        </member>
+        <member name="M:CivGrid.CivGridCamera.GetCamera(System.Int32)">
+            <summary>
+            Helper method to retrieve a camera from the camera system, containing camera(s).
+            Index 0 will return the first camera and if present index 1 will return the second camera.
+            </summary>
+            <param name="index">The camera index to retrieve</param>
+            <returns>The retrieved camera</returns>
+            <remarks>
+            If an invalid index is supplied, for example if index 1 is given when enableWrapping is false, null
+            will be returned. This also applies for any other index then 0 or 1.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.CivGridCamera.SetupCameras">
+            <summary>
+            Sets up the cameras to position themselves correctly depending on the user settings.
+            Spawns the second follow camera if wrapping is enabled.
+            Caches transforms for the cameras for speed.
+            </summary>
+            <remarks>
+            The WorldManager script must be within the scene for this method to execute.
+            </remarks>
+        </member>
+        <member name="M:CivGrid.CivGridCamera.Update">
+            <summary>
+            Checks if the camera is recieving zoom input.
+            Calls the correct update method on the camera depending if the camera has wrapping enabled.
+            </summary>
+        </member>
+        <member name="M:CivGrid.CivGridCamera.CheckInput">
+            <summary>
+            Assigns moveVector in the vetical axis depending on zoom input.
+            </summary>
+        </member>
+        <member name="M:CivGrid.CivGridCamera.UpdateCamera">
+            <summary>
+            Movement update for a camera system with wrapping disabled.
+            Assigns the direction in which the camera needs to move and then translates it.
+            Directions are described in screen space.
+            </summary>
+        </member>
+        <member name="M:CivGrid.CivGridCamera.UpdateCameraW">
+            <summary>
+            Movement update for a camera system with wrapping enabled.
+            Assigns the direction in which the camera needs to move and then translates it.
+            Directions are described in screen space.
+            </summary>
+        </member>
+        <member name="M:CivGrid.CivGridCamera.MoveRightW">
+            <summary>
+            Moves the camera system to the right when wrapping is enabled.
+            Assigns the horizontal direction in which the camera needs to move.
+            Wraps the cameras around the map when moving.
+            Directions are described in screen space.
+            </summary>
+        </member>
+        <member name="M:CivGrid.CivGridCamera.MoveLeftW">
+            <summary>
+            Moves the camera system to the left when wrapping is enabled.
+            Assigns the horizontal direction in which the camera needs to move.
+            Wraps the cameras around the map when moving.
+            Directions are described in screen space.
+            </summary>
+        </member>
+        <member name="T:CivGrid.HexRule">
+            <summary>
+            Contains all possible tiles and features for the improvement or resource to spawn upon.
+            </summary>
+        </member>
+        <member name="F:CivGrid.HexRule.possibleTiles">
+            <summary>
+            Array of tiles that the resource or improvement can spawn upon
+            </summary>
+            <remarks>
+            Tiles are represented by their index. Zero being the first in the tile array.
+            </remarks>
+        </member>
+        <member name="F:CivGrid.HexRule.possibleFeatures">
+            <summary>
+            Array of Features that the resource or improvement can spawn upon
+            </summary>
+        </member>
+        <member name="M:CivGrid.HexRule.#ctor(System.Int32[],CivGrid.Feature[])">
+            <summary>
+            Constructor for this class.
+            </summary>
+            <param name="possibleTiles">Index position of tiles that we can spawn on</param>
+            <param name="possibleFeatures">Features that we can spawn on</param>
+        </member>
+        <member name="T:CivGrid.RuleTest">
+            <summary>
+            Contains testing logic for HexRules.
+            </summary>
+        </member>
+        <member name="M:CivGrid.RuleTest.Test(CivGrid.HexInfo,CivGrid.HexRule,CivGrid.TileManager)">
+            <summary>
+            Checks all rules in the rule list.
+            </summary>
+            <param name="hex">Hex to compare the rules upon</param>
+            <param name="rule">Rules to check</param>
+            <param name="tileManager">The scene tile manager</param>
+            <returns>If the hex passed the tests</returns>
+        </member>
+        <member name="M:CivGrid.RuleTest.TestRule(CivGrid.HexInfo,CivGrid.Tile)">
+            <summary>
+            Check if the hex's tile type is the provided tile
+            </summary>
+            <param name="hex">Hex to compare to the tile</param>
+            <param name="tile">Tile to compare to the hex</param>
+            <returns></returns>
+        </member>
+        <member name="M:CivGrid.RuleTest.TestRule(CivGrid.HexInfo,CivGrid.Feature)">
+            <summary>
+            Check if the hex's feature type is the provided feature
+            </summary>
+            <param name="hex">Hex to compare to the feature</param>
+            <param name="feature">Feature to compare to the hex</param>
+            <returns></returns>
+        </member>
+        <member name="T:CivGrid.HexInfo">
+            <summary>
+            Contains all hexagon data and methods.
+            Generates it's localMesh and uploads this to the chunk.
+            Generates it's UV data depending on constraints.
+            </summary>
+        </member>
+        <member name="F:CivGrid.HexInfo.localPosition">
+            <summary>
+            The position of this hexagon local to the parent chunk.
+            </summary>
+            <remarks>
+            This is the local position with the origin being the chunk. Therefore, if the chunk is located
+            at (10,10,10) in world space and the hexagon is located at (12,12,12) in world space. This values would
+            contain (2,2,2).
+            </remarks>
+        </member>
+        <member name="F:CivGrid.HexInfo.worldPosition">
+            <summary>
+            The position of the hexagon in world space.
+            </summary>
+        </member>
+        <member name="F:CivGrid.HexInfo.isSelected">
+            <summary>
+            Ignore this field block; used for testing a sample game.
+            </summary>
+        </member>
+        <member name="F:CivGrid.HexInfo.terrainType">
+            <summary>
+            The type of terrain that this hexagon represents.
+            </summary>
+            <remarks>
+            Since this is represented by a class that is generated from user data, differation is possible.
+            </remarks>
+        </member>
+        <member name="F:CivGrid.HexInfo.terrainFeature">
+            <summary>
+            The type of terrain feature that this hexagon includes.
+            </summary>
+            <remarks>
+            Since this is represented by an <see cref="T:System.Enum"/>, it is considered failsafe.
+            </remarks>
+        </member>
+        <member name="F:CivGrid.HexInfo.parentChunk">
+            <summary>
+            The chunk that this hexagon is within.
+            </summary>
+        </member>
+        <member name="F:CivGrid.HexInfo.currentRectLocation">
+            <summary>
+            The current location of the texture that the hexagon is using.
+            </summary>
+        </member>
+        <member name="F:CivGrid.HexInfo.defaultRectLocation">
+            <summary>
+            The location of the base terrain texture.
+            </summary>
+            <remarks>
+            This value should not be changed, as it holds the location to pull the default terrain
+            texture from.
+            </remarks>
+            <example>
+            If the <see cref="F:CivGrid.HexInfo.terrainType"/> is set to a <see cref="T:CivGrid.Tile"/> with the name of "Grass", this value
+            will hold the location of the selected grass texture in the terrain atlas.
+            </example>
+        </member>
+        <member name="F:CivGrid.HexInfo.localMesh">
+            <summary>
+            The mesh of this hexagon.
+            </summary>
+            <remarks>
+            This mesh is used in the parent chunk to represent this hexagon in the chunk mesh.
+            </remarks>
+        </member>
+        <member name="F:CivGrid.HexInfo.currentResource">
+            <summary>
+            The current resource on this hexagon.
+            </summary>
+            <remarks>
+            This holds a reference to the global resource. All changes to this <see cref="T:CivGrid.Resource"/> will be reflected in
+            other hexagon sharing the resource.
+            </remarks>
+        </member>
+        <member name="F:CivGrid.HexInfo.resourceLocations">
+            <summary>
+            The locations of each resource mesh.
+            </summary>
+        </member>
+        <member name="F:CivGrid.HexInfo.rObject">
+            <summary>
+            The GameObject that holds the resource meshes for this hexagon.
+            </summary>
+        </member>
+        <member name="F:CivGrid.HexInfo.currentImprovement">
+            <summary>
+            The current improvement on this hexagon.
+            </summary>
+            <remarks>
+            This holds a reference to the global improvement. All changes to this <see cref="T:CivGrid.Improvement"/> will be reflected in
+            other hexagon sharing the impovement.
+            </remarks>
+        </member>
+        <member name="F:CivGrid.HexInfo.iObject">
+            <summary>
+            The GameObject that holds the improvement meshes for this hexagon.
+            </summary>
+        </member>
+        <member name="M:CivGrid.HexInfo.Start">
+            <summary>
+            This is the setup called from HexChunk when it's ready for us to generate our meshes.
+            </summary>
+            <example>
+            The following code will start hex operations on a new hex provided that the hexagon has a valid parent chunk and world manager.
+            <code>
+            class HexTest : MonoBehaviour
+            {
+                HexInfo hex;
+                
+                void Start()
+                {
+                    hex = new HexInfo();
+                    
+                    hex.Start();
+                }
+            }
+            </code>
+            </example>
+        </member>
+        <member name="M:CivGrid.HexInfo.ApplyChanges">
+             <summary>
+             Applies any changes on this hex to it's parent chunk.
+             </summary>
+             <remarks>
+             This method must be called to apply any changes to a hexagon's <see cref="F:CivGrid.HexInfo.localMesh"/>. Without calling
+             this method the changes won't be seen in the chunk mesh.
+             </remarks>
+             <example>
+             The following code changes the very middle hexagon in the map to show its resource texture.
+             <code>
+             using System;
+             using UnityEngine;
+             using CivGrid;
+            
+             class ExampleClass : MonoBehaviour
+             {
+                WorldManager worldManager;
+            
+                public void Start()
+                {
+                    //cache and find the world manager
+                    worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
+            
+                    //gets the very middle hexagon in the map
+                    HexChunk chunk = worldManager.hexChunks[worldManager.hexChunks.GetLength(0) / 2, worldManager.hexChunks.GetLength(1) / 2];
+                    HexInfo hex = chunk.hexArray[chunk.hexArray.GetLength(0) / 2, chunk.hexArray.GetLength(1) / 2];
+            
+                    //change the hexes texture to the resource version
+                    hex.ChangeTextureToResource();
+            
+                    //update the chunk mesh to apply the changes
+                    hex.ApplyChanges();
+                }
+             }
+            
+             </code>
+             </example>
+        </member>
+        <member name="M:CivGrid.HexInfo.ChangeTextureToResource">
+             <summary>
+             Switches this hexagon's UV data to display it's resource texture.
+             </summary>
+             <example>
+             The following code changes this hexagon to show its resource texture if a resource and a resource tile
+             texture is present.
+             <code>
+             using System;
+             using UnityEngine;
+             using CivGrid;
+            
+             public class ExampleClass : MonoBehaviour
+             {
+               WorldManager worldManager;
+            
+                void Start()
+                {
+                    worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
+            
+                    worldManager.hexChunks[0, 0].hexArray[0, 0].ChangeTextureToResource();
+                }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="M:CivGrid.HexInfo.ChangeTextureToImprovement">
+             <summary>
+             Switches this hexagon's UV data to display it's improvement texture.
+             </summary>
+             <example>
+             The following code changes this hexagon to show its improvement texture if a improvement and a improvement tile texture
+             is present.
+             <code>
+             using System;
+             using UnityEngine;
+             using CivGrid;
+            
+             public class ExampleClass : MonoBehaviour
+             {
+               WorldManager worldManager;
+            
+                void Start()
+                {
+                    worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
+            
+                    worldManager.hexChunks[0, 0].hexArray[0, 0].ChangeTextureToImprovement();
+                }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="M:CivGrid.HexInfo.ChangeTextureToNormalTile">
+             <summary>
+             Switches this hexagon's UV data to display it's normal base texture.
+             </summary>
+             <example>
+             The following code changes this hexagon to show its normal texture.
+             <code>
+             using System;
+             using UnityEngine;
+             using CivGrid;
+            
+             public class ExampleClass : MonoBehaviour
+             {
+               WorldManager worldManager;
+            
+                void Start()
+                {
+                    worldManager = GameObject.FindObjectOfType&lt;WorldManager&gt;();
+            
+                    worldManager.hexChunks[0, 0].hexArray[0, 0].ChangeTextureToNormalTile();
+                }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="M:CivGrid.HexInfo.MeshSetup">
+            <summary>
+            Generate a mesh, normals, and UV data according to the tile type.
+            </summary>
+        </member>
+        <member name="M:CivGrid.HexInfo.AssignUVToDefaultTile">
+            <summary>
+            Assigns the flat hexagon's UV data to the tile type.
+            </summary>
+        </member>
+        <member name="M:CivGrid.HexInfo.AssignUVToTile(UnityEngine.Rect)">
+            <summary>
+            Assigns the flat hexagon's UV data to provided location on the texture atlas.
+            </summary>
+            <param name="rectArea">The location of the texture in the texture atlas</param>
+        </member>
+        <member name="M:CivGrid.HexInfo.AssignPresetUVToDefaultTile(UnityEngine.Vector2[])">
+            <summary>
+            Assign the UV maps for a hexagon with a feature to the default base tile texture .
+            </summary>
+            <param name="rawUV">UV map locations for (0,0) sector of texture atlas</param>
+        </member>
+        <member name="M:CivGrid.HexInfo.AssignPresetUVToTile(UnityEngine.Mesh,UnityEngine.Rect)">
+            <summary>
+            Assign the UV maps for a hexagon with a feature to the provided location on the texture atlas.
+            </summary>
+            <param name="mesh">Mesh to edit UV data from</param>
+            <param name="rectArea">Location of the texture on the texture atlas</param>
+        </member>
+        <member name="P:CivGrid.HexInfo.AxialGridPosition">
+            <summary>
+            The coordinates of the hexagon in axial grid format.
+            </summary>
+            <remarks>
+            This is simply a lighter version of <see cref="P:CivGrid.HexInfo.CubeGridPosition"/>, made possible by the fact, x + y + z = 0.
+            With this equation we can include only the (x,y) cordinates and assume
+            </remarks>
+        </member>
+        <member name="P:CivGrid.HexInfo.CubeGridPosition">
+            <summary>
+            The coordinates of the hexagon in cube grid format.
+            </summary>
+            <remarks>
+            This is simply the complete version of the grid location. You can use <see cref="P:CivGrid.HexInfo.AxialGridPosition"/> and imply
+            the "z" location with the rule of x + y + z = 0.
+            </remarks>
+        </member>
+        <member name="T:CivGrid.NoiseGenerator">
+            <summary>
+            Makes and cleans noise for world generation
+            </summary>
+        </member>
+        <member name="M:CivGrid.NoiseGenerator.PerlinNoise(System.Int32,System.Int32,System.Single)">
+            <summary>
+            A perlin noise generator
+            </summary>
+            <param name="xSize">Amount of tiles in the x-axis of the map </param>
+            <param name="ySize">Amount of tiles in the y-axis of the map </param>
+            <param name="noiseScale">Scale of the noise </param>
+            <returns> TileMap in Texture2D format </returns>
+        </member>
+        <member name="M:CivGrid.NoiseGenerator.SmoothPerlinNoise(System.Int32,System.Int32,System.Single,System.Int32)">
+            <summary>
+            An inverted version of perlin noise with ocean smoothing
+            </summary>
+            <param name="xSize">Amount of tiles in the x-axis of the map</param>
+            <param name="ySize">Amount of tiles in the y-axis of the map</param>
+            <param name="noiseScale">Scale of the noise</param>
+            <param name="smoothingCutoff">Amount of tiles needed to remain water/ground</param>
+            <returns>A TileMap in Texture2D format</returns>
+        </member>
+        <member name="M:CivGrid.NoiseGenerator.CleanWater(UnityEngine.Texture2D,System.Single,System.Int32)">
+            <summary>
+            Smooths perlin noise to generate more realistic and smooth terrain
+            </summary>
+            <param name="texture">Texture to smooth</param>
+            <param name="noiseScale">Noise scale you used to generate the texture</param>
+            <param name="smoothingCutoff">The number of like tiles surronding a pixel needed in order for it to remain the original tupe</param>
+        </member>
+        <member name="M:CivGrid.NoiseGenerator.StabalizeFloat(System.Single)">
+            <summary>
+            Uses internal logic to round floats to usable values(0,0.5,0.8,1)
+            </summary>
+            <param name="f">float to round</param>
+            <returns>The rounded float</returns>
+        </member>
+        <member name="M:CivGrid.NoiseGenerator.RandomOverlay(UnityEngine.Texture2D,System.Single,System.Single,System.Single,System.Single,System.Single,System.Boolean,System.Boolean)">
+            <summary>
+            Overlays a texture with perlin noise; formated for mountain generation
+            </summary>
+            <param name="texture">Texture to add perlin noise onto</param>
+            <param name="position">Pixel position to read the perlin noise from</param>
+            <param name="noiseScale">Controls amount of possible change from pixel-to-pixel</param>
+            <param name="noiseSize">Scales the value of the noise pixel</param>
+            <param name="finalSize">Scales the value of the final pixel</param>
+            <param name="maxHeight">Maximum height the final pixel can be</param>
+            <param name="ignoreBlack">Avoids adding noise to fully black pixels of the source texture</param>
+            <param name="noiseFalloff">Whether or not to use smooth noise falloff</param>
+            <returns></returns>
+        </member>
+        <member name="T:CivGrid.CivGridUtility">
+            <summary>
+            Helper class for basic utility methods.
+            </summary>
+        </member>
+        <member name="M:CivGrid.CivGridUtility.GetSurrondingPixels(UnityEngine.Texture2D,System.Int32,System.Int32)">
+             <summary>
+             Get the surronding pixels of the referenced pixel location.
+             </summary>
+             <param name="tex">Texture where the pixel is located</param>
+             <param name="x">"X" cords of the pixel</param>
+             <param name="y">"Y" cords of the pixel</param>
+             <returns>The eight surronding pixels</returns>
+             <example>
+             The following code retrieves the pixels surrounding the given pixel.
+             <code>
+             class GetPixels : MonoBehaviour
+             {
+                public Texture2D texture;
+                public Vector2 pixelLocation;
+            
+                float[] surroundingPixels;
+            
+                void Start()
+                {
+                   surroundingPixels = CivGridUtility.GetSurrondingPixels(texture, (int)pixelLocation.x, (int)pixelLocation.y);
+            
+                    for (int i = 0; i &lt; surroundingPixels.Length; i++)
+                    {
+                        Debug.Log("Pixel " + i + ": " + surroundingPixels[i]);
+                    }
+                }
+             }
+             </code>
+             </example>
+             <remarks>
+             This method only returns the <b>r</b> channel of the pixel. It does not return the full Color struct. This method is
+             written for internal use, and a more general method that returns a Color struct can easily be constructed by viewing
+             the source for this method.
+             </remarks>
+        </member>
+        <member name="M:CivGrid.CivGridUtility.ToSingleArray``1(``0[0:,0:],``0[]@)">
+             <summary>
+             Converts a two-dimensional array into a single array
+             </summary>
+             <param name="doubleArray">The two-dimensional array of type T to convert into a single array</param>
+             <param name="singleArray">The converted array</param>
+             <typeparam name="T">The type of the arrays</typeparam>
+             <example>
+             <code>
+             class ArraySizing : MonoBehaviour
+             {
+                float[,] randomValues2D = new float[,] { { 0, 1 }, { 2, 3 }, { 4, 5 } };
+               float[] randomValues1D;
+            
+                void Start()
+                {
+                    CivGridUtility.ToSingleArray&lt;float&gt;(randomValues2D, out randomValues1D);
+                }
+                //Output:
+                //randomValues1D = { 0, 1, 2, 3, 4, 5 };
+             }
+             </code>
+             </example>
+        </member>
+        <member name="M:CivGrid.CivGridUtility.ToSingleArray``1(``0[0:,0:])">
+             <summary>
+             Converts a two-dimensional array into a single array
+             </summary>
+             <param name="doubleArray">The two-dimensional array of CombineInstance to convert into a single array</param>
+             <typeparam name="T">The type of the array</typeparam>
+             <returns>The converted array</returns>
+             <example>
+             <code>
+             class ArraySizing : MonoBehaviour
+             {
+               float[,] randomValues2D = new float[,] { { 0, 1 }, { 2, 3 }, { 4, 5 } };
+               float[] randomValues1D;
+            
+                void Start()
+                {
+                    randomValues1D = CivGridUtility.ToSingleArray&lt;float&gt;(randomValues2D);
+                }
+                //Output:
+                //randomValues1D = { 0, 1, 2, 3, 4, 5 };
+             }
+             </code>
+             </example>
+        </member>
+        <member name="M:CivGrid.CivGridUtility.Resize2DArray``1(``0[0:,0:],System.Int32,System.Int32)">
+             <summary>
+             Upsizes or downsizes an array to a new size.
+             </summary>
+             <typeparam name="T">Type of object in the array</typeparam>
+             <param name="original">The orginal 2D array to resize</param>
+             <param name="rows">The number of rows that should be in the new array</param>
+             <param name="cols">The number of columns that should be in the new array</param>
+             <returns>A new resized array holding all of the original values</returns>
+             <example>
+             The following code take a two-dimensional array and enlargens it to hold more, while keeping
+             the orignal values intact.
+             <code>
+             class ArraySizing : MonoBehaviour
+             {
+               float[,] randomValues2D = new float[3,2] { { 0, 1 }, { 2, 3 }, { 4, 5 } };
+            
+                void Start()
+                {
+                    Debug.Log("Array Size Before: " + randomValues2D.Length);
+                    randomValues2D = CivGridUtility.Resize2DArray&lt;float&gt;(randomValues2D, 5, 2);
+                    Debug.Log("Array Size After: " + randomValues2D.Length);
+                }
+                //Output:
+                //randomValues2D = { { 0, 1 }, { 2, 3 }, { 4, 5 }, { 0, 0 }, { 0, 0 } };
+                //Array Size Before: 6
+                //Array Size After: 10
+             }
+             </code>
+             </example>
+        </member>
+        <member name="T:CivGrid.ExtensionMethods">
+            <summary>
+            Extends arrays of TileItem, ResourceItem, and ImprovementItem to act similar to a dictionary.
+            Extends strings to cast to enums.
+            </summary>
+        </member>
+        <member name="M:CivGrid.ExtensionMethods.TryGetValue(CivGrid.TileItem[],CivGrid.Tile,UnityEngine.Rect@)">
+            <summary>
+            Attempts to return the texture atlas location of this Improvement from the array based on a key.
+            </summary>
+            <param name="list">The array to get the value from</param>
+            <param name="key">The key to search for a match within the array</param>
+            <param name="location">A out reference of the Rect location of this Tile within the texture atlas</param>
+            <returns>If the key was found in the array</returns>
+        </member>
+        <member name="M:CivGrid.ExtensionMethods.TryGetValue(CivGrid.ResourceItem[],CivGrid.Resource,UnityEngine.Rect@)">
+            <summary>
+            Attempts to return the texture atlas location of this Improvement from the array based on a key.
+            </summary>
+            <param name="list">The array to get the value from</param>
+            <param name="key">The key to search for a match within the array</param>
+            <param name="location">A out reference of the Rect location of this Resource within the texture atlas</param>
+            <returns>If the key was found in the array</returns>
+        </member>
+        <member name="M:CivGrid.ExtensionMethods.TryGetValue(CivGrid.ImprovementItem[],CivGrid.Improvement,UnityEngine.Rect@)">
+            <summary>
+            Attempts to return the texture atlas location of this Improvement from the array based on a key.
+            </summary>
+            <param name="list">The array to get the value from</param>
+            <param name="key">The key to search for a match within the array</param>
+            <param name="location">A out reference of the Rect location of this Improvement within the texture atlas</param>
+            <returns>If the key was found in the array</returns>
+        </member>
+        <member name="M:CivGrid.ExtensionMethods.ContainsKey(System.Collections.Generic.List{CivGrid.TileItem},CivGrid.Tile)">
+            <summary>
+            Checks if a key exists in the list.
+            </summary>
+            <param name="list">The list to check if the key exists within</param>
+            <param name="key">The key to look for within this array</param>
+            <returns>If the key was found</returns>
+        </member>
+        <member name="M:CivGrid.ExtensionMethods.ContainsKey(CivGrid.TileItem[],CivGrid.Tile)">
+            <summary>
+            Checks if a key exists in the array.
+            </summary>
+            <param name="list">The list to check if the key exists within</param>
+            <param name="key">The key to look for within this array</param>
+            <returns>If the key was found</returns>
+        </member>
+        <member name="M:CivGrid.ExtensionMethods.ContainsKey(System.Collections.Generic.List{CivGrid.ResourceItem},CivGrid.Resource)">
+            <summary>
+            Checks if a key exists in the array.
+            </summary>
+            <param name="list">The list to check if the key exists within</param>
+            <param name="key">The key to look for within this array</param>
+            <returns>If the key was found</returns>
+        </member>
+        <member name="M:CivGrid.ExtensionMethods.ContainsKey(CivGrid.ResourceItem[],CivGrid.Resource)">
+            <summary>
+            Checks if a key exists in the array.
+            </summary>
+            <param name="list">The list to check if the key exists within</param>
+            <param name="key">The key to look for within this array</param>
+            <returns>If the key was found</returns>
+        </member>
+        <member name="M:CivGrid.ExtensionMethods.ContainsKey(System.Collections.Generic.List{CivGrid.ImprovementItem},CivGrid.Improvement)">
+            <summary>
+            Checks if a key exists in the array.
+            </summary>
+            <param name="list">The list to check if the key exists within</param>
+            <param name="key">The key to look for within this array</param>
+            <returns>If the key was found</returns>
+        </member>
+        <member name="M:CivGrid.ExtensionMethods.ContainsKey(CivGrid.ImprovementItem[],CivGrid.Improvement)">
+            <summary>
+            Checks if a key exists in the array.
+            </summary>
+            <param name="list">The list to check if the key exists within</param>
+            <param name="key">The key to look for within this array</param>
+            <returns>If the key was found</returns>
+        </member>
+        <member name="M:CivGrid.ExtensionMethods.Add(System.Collections.Generic.List{CivGrid.TileItem},CivGrid.Tile,UnityEngine.Rect)">
+            <summary>
+            Adds a new entry of a key and matching value to this array.
+            </summary>
+            <param name="list">List to add the tile to</param>
+            <param name="tileToAdd">Tile to add as the key</param>
+            <param name="rectToAdd">Rect to add as the value</param>
+        </member>
+        <member name="M:CivGrid.ExtensionMethods.Add(System.Collections.Generic.List{CivGrid.ResourceItem},CivGrid.Resource,UnityEngine.Rect)">
+            <summary>
+            Adds a new entry of a key and matching value to this array.
+            </summary>
+            <param name="list">List to add the resource to</param>
+            <param name="resourceToAdd">Resource to add as the key</param>
+            <param name="rectToAdd">Rect to add as the value</param>
+        </member>
+        <member name="M:CivGrid.ExtensionMethods.Add(System.Collections.Generic.List{CivGrid.ImprovementItem},CivGrid.Improvement,UnityEngine.Rect)">
+            <summary>
+            Adds a new entry of a key and matching value to this array.
+            </summary>
+            <param name="list">List to add the improvement to</param>
+            <param name="improvementToAdd">Improvement to add as the key</param>
+            <param name="rectToAdd">Rect to add as the value</param>s
+        </member>
+        <member name="M:CivGrid.ExtensionMethods.ConvertToEnum``1(System.String)">
+            <summary>
+            Converts a base string into the enum type given.
+            </summary>
+            <typeparam name="T">Enum to cast into</typeparam>
+            <param name="value">base string to cast</param>
+            <returns>The enum value from the given string</returns>
+        </member>
+    </members>
+</doc>
