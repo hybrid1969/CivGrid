@@ -608,8 +608,10 @@ namespace CivGrid.Editors
         public bool tIsShore;
         public bool tIsOcean;
         public bool tIsMountain;
-        public float tTopLat;
-        public float tBottomLat;
+        public float tTopLongitude;
+        public float tBottomLongitude;
+        public float tLeftLatitude;
+        public float tRightLatitude;
 
         TileManager tileManager;
 
@@ -643,13 +645,15 @@ namespace CivGrid.Editors
                 tIsMountain = EditorGUILayout.Toggle("Is Mountain:", tIsMountain);
                 if (tIsShore == false && tIsOcean == false && tIsMountain == false)
                 {
-                    tTopLat = EditorGUILayout.FloatField("Top Lattitude:", tTopLat);
-                    tBottomLat = EditorGUILayout.FloatField("Bottom Lattitude:", tBottomLat);
+                    tTopLongitude = EditorGUILayout.FloatField("Top Longitude:", tTopLongitude);
+                    tBottomLongitude = EditorGUILayout.FloatField("Bottom Longitude:", tBottomLongitude);
+                    tLeftLatitude = EditorGUILayout.FloatField("Left Latitude", tLeftLatitude);
+                    tRightLatitude = EditorGUILayout.FloatField("Right Latitude", tRightLatitude);
                 }
                 else
                 {
-                    tTopLat = 0;
-                    tBottomLat = 0;
+                    tTopLongitude = 0;
+                    tBottomLongitude = 0;
                 }
 
                 GUILayout.EndScrollView();
@@ -658,7 +662,7 @@ namespace CivGrid.Editors
 
                 if (GUILayout.Button("Create"))
                 {
-                    CreateTile(tName, tIsShore, tIsOcean, tIsMountain, tTopLat, tBottomLat);
+                    CreateTile(tName, tIsShore, tIsOcean, tIsMountain, tTopLongitude, tBottomLongitude, tLeftLatitude, tRightLatitude);
                     EditorUtility.UnloadUnusedAssets();
                     Resources.UnloadUnusedAssets();
                     this.Close();
@@ -682,13 +686,13 @@ namespace CivGrid.Editors
                 tile.isMountain = EditorGUILayout.Toggle("Is Mountain:", tile.isMountain);
                 if (tile.isShore == false && tile.isOcean == false && tile.isMountain == false)
                 {
-                    tile.topLat = EditorGUILayout.FloatField("Top Lattitude:", tile.topLat);
-                    tile.bottomLat = EditorGUILayout.FloatField("Bottom Lattitude:", tile.bottomLat);
+                    tile.topLongitude = EditorGUILayout.FloatField("Top Lattitude:", tile.topLongitude);
+                    tile.bottomLongitude = EditorGUILayout.FloatField("Bottom Lattitude:", tile.bottomLongitude);
                 }
                 else
                 {
-                    tile.topLat = 0;
-                    tile.bottomLat = 0;
+                    tile.topLongitude = 0;
+                    tile.bottomLongitude = 0;
                 }
 
                 GUILayout.EndScrollView();
@@ -704,9 +708,9 @@ namespace CivGrid.Editors
             }
         }
 
-        private void CreateTile(string name, bool isShore, bool isOcean, bool isMountain, float topLat, float bottomLat)
+        private void CreateTile(string name, bool isShore, bool isOcean, bool isMountain, float topLongitude, float bottomLongitude, float leftLatitude, float rightLatitude)
         {
-            tileManager.AddTile(new Tile(name, isShore, isOcean, isMountain, bottomLat, topLat));
+            tileManager.AddTile(new Tile(name, isShore, isOcean, isMountain, bottomLongitude, topLongitude, leftLatitude, rightLatitude));
         }
     }
 
@@ -861,11 +865,11 @@ namespace CivGrid.Editors
             else
             {
                 internalAtlasDimension = terrainAtlasSize;
-                textures = CivGridUtility.Resize2DArray<Texture2D>(textures, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
-                tempTileType = CivGridUtility.Resize2DArray<int>(tempTileType, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
-                tempResourceType = CivGridUtility.Resize2DArray<int>(tempResourceType, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
-                tempImprovementType = CivGridUtility.Resize2DArray<int>(tempImprovementType, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
-                catagory = CivGridUtility.Resize2DArray<TypeofEditorTile>(catagory, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
+                textures = Utility.Resize2DArray<Texture2D>(textures, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
+                tempTileType = Utility.Resize2DArray<int>(tempTileType, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
+                tempResourceType = Utility.Resize2DArray<int>(tempResourceType, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
+                tempImprovementType = Utility.Resize2DArray<int>(tempImprovementType, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
+                catagory = Utility.Resize2DArray<TypeofEditorTile>(catagory, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
             }
         }
 
@@ -889,7 +893,7 @@ namespace CivGrid.Editors
         {
 
             Rect[] rectAreas;
-            Texture2D returnTexture = TexturePacker.AtlasTextures(CivGridUtility.ToSingleArray<Texture2D>(textures), 2048, out rectAreas);
+            Texture2D returnTexture = TexturePacker.AtlasTextures(Utility.ToSingleArray<Texture2D>(textures), 2048, out rectAreas);
 
             int lengthOfArraysX = catagory.GetLength(0); 
             int lengthOfArraysY = catagory.GetLength(1); 
@@ -913,7 +917,7 @@ namespace CivGrid.Editors
                 }
             }
 
-            CivGridFileUtility.SaveTexture(returnTexture, loc, "TerrainAtlas", false);
+            FileUtility.SaveTexture(returnTexture, loc, "TerrainAtlas", false);
             worldManager.textureAtlas.terrainAtlas = (Texture2D)AssetDatabase.LoadAssetAtPath(editedLoc + "/TerrainAtlas.png", typeof(Texture2D));
             worldManager.textureAtlas.tileLocations = (TileItem[])tileLocations.ToArray().Clone();
             worldManager.textureAtlas.resourceLocations = (ResourceItem[])resourceLocations.ToArray().Clone();

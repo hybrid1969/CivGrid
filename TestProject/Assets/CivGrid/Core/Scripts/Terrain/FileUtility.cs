@@ -14,7 +14,7 @@ namespace CivGrid
     /// <summary>
     /// Saves and loads numerious data types.
     /// </summary>
-    public static class CivGridFileUtility
+    public static class FileUtility
     {
         /// <summary>
         /// Saves the provided Texture2D to a the file name in the application path.
@@ -169,7 +169,7 @@ namespace CivGrid
                 writer.WriteAttributeString("hexRadiusSize", worldManager.hexRadiusSize.ToString());
 
 
-                CivGridFileUtility.SaveTexture(worldManager.mountainMap, "Base_Mountain_Map", false);
+                FileUtility.SaveTexture(worldManager.mountainMap, "Base_Mountain_Map", false);
 
                 writer.WriteEndElement();
                 #endregion
@@ -188,8 +188,8 @@ namespace CivGrid
                     writer.WriteStartElement("NewTile");
 
                     writer.WriteAttributeString("name", tileManager.tiles[i].name);
-                    writer.WriteAttributeString("bottomLat", XmlConvert.ToString(tileManager.tiles[i].bottomLat));
-                    writer.WriteAttributeString("topLat", XmlConvert.ToString(tileManager.tiles[i].topLat));
+                    writer.WriteAttributeString("bottomLongitude", XmlConvert.ToString(tileManager.tiles[i].bottomLongitude));
+                    writer.WriteAttributeString("topLongitude", XmlConvert.ToString(tileManager.tiles[i].topLongitude));
                     writer.WriteAttributeString("isShore", XmlConvert.ToString(tileManager.tiles[i].isShore));
                     writer.WriteAttributeString("isOcean", XmlConvert.ToString(tileManager.tiles[i].isOcean));
                     writer.WriteAttributeString("isMountain", XmlConvert.ToString(tileManager.tiles[i].isMountain));
@@ -404,7 +404,7 @@ namespace CivGrid
                                 worldManager.mapSize = new Vector2(XmlConvert.ToInt32(reader["mapSizeX"]), XmlConvert.ToInt32(reader["mapSizeY"]));
                                 worldManager.chunkSize = XmlConvert.ToInt32(reader["chunkSize"]);
                                 worldManager.hexRadiusSize = (float)XmlConvert.ToDouble(reader["hexRadiusSize"]);
-                                worldManager.mountainMap = CivGridFileUtility.LoadTexture("Base_Mountain_Map");
+                                worldManager.mountainMap = FileUtility.LoadTexture("Base_Mountain_Map");
                                 break;
                             case "CivGridCamera":
 
@@ -445,7 +445,7 @@ namespace CivGrid
                                 break;
                             case "NewTile":
                                 Debug.Log("adding Tile: " + reader["name"]);
-                                tileManager.AddTile(new Tile(reader["name"], XmlConvert.ToBoolean(reader["isShore"]), XmlConvert.ToBoolean(reader["isOcean"]), XmlConvert.ToBoolean(reader["isMountain"]), (float)XmlConvert.ToDouble(reader["bottomLat"]), (float)XmlConvert.ToDouble(reader["topLat"])));
+                                tileManager.AddTile(new Tile(reader["name"], XmlConvert.ToBoolean(reader["isShore"]), XmlConvert.ToBoolean(reader["isOcean"]), XmlConvert.ToBoolean(reader["isMountain"]), (float)XmlConvert.ToDouble(reader["bottomLongitude"]), (float)XmlConvert.ToDouble(reader["topLongitude"])));
                                 break;
                             #endregion
                             #region ResourceManager

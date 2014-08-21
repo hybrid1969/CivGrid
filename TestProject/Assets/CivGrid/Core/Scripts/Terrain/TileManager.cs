@@ -273,11 +273,12 @@ namespace CivGrid
         }
 
         /// <summary>
-        /// Finds a tile for a provided lattitude.
+        /// Finds a tile for a provided latitude.
         /// </summary>
-        /// <param name="lat">The lattitude of the tile you want</param>
-        /// <returns>The tile that should be assign at the given lattitude</returns>
-        public Tile GetTileFromLattitude(float lat)
+        /// <param name="latitude">The latitude of the tile you want</param>
+        /// <param name="longitude">The longitude of the tile you want</param>
+        /// <returns>The tile that should be assign at the given latitude and longitude</returns>
+        public Tile GetTileFromLattitudeAndLongitude(float latitude, float longitude)
         {
             //loop through all tiles
             for (int i = 0; i < internalTiles.Length; i++)
@@ -286,8 +287,10 @@ namespace CivGrid
                 if ((internalTiles[i].isMountain == false && internalTiles[i].isOcean == false && internalTiles[i].isShore == false))
                 {
                     //if it doesnt not fit within the lattitude clamp continue to the next tile, otherwise return this tile
-                    if (lat < internalTiles[i].bottomLat) { continue; }
-                    if (lat > internalTiles[i].topLat) { continue; }
+                    if (longitude < internalTiles[i].bottomLongitude) { continue; }
+                    if (longitude > internalTiles[i].topLongitude) { continue; }
+                    if (latitude < internalTiles[i].leftLatitude) { continue; }
+                    if (latitude > internalTiles[i].rightLatitude) { continue; }
                     else
                     {
                         return internalTiles[i];
@@ -295,7 +298,7 @@ namespace CivGrid
                 }
             }
             //tile not found
-            Debug.LogError("Couldn't find tile for this lattitude: " + lat);
+            Debug.LogError("Couldn't find tile for this lattitude: " + latitude + " and this longitude: " + longitude);
             return null;
         }
     }
@@ -311,13 +314,21 @@ namespace CivGrid
         /// </summary>
         public string name = "None";
         /// <summary>
-        /// The bottom lattitude of where this tile can be assigned
+        /// The bottom longitude of where this tile can be assigned
         /// </summary>
-        public float bottomLat;
+        public float bottomLongitude;
         /// <summary>
-        /// The top lattitude of where this tile can be assigned
+        /// The top longitude of where this tile can be assigned
         /// </summary>
-        public float topLat;
+        public float topLongitude;
+        /// <summary>
+        /// The leftmost latitude of where this tile can be assigned
+        /// </summary>
+        public float leftLatitude;
+        /// <summary>
+        /// The rightmost latitude of where this tile can be assigned
+        /// </summary>
+        public float rightLatitude;
         /// <summary>
         /// Is an ocean tile
         /// </summary>
@@ -335,13 +346,13 @@ namespace CivGrid
         /// Constructor for this class.
         /// </summary>
         /// <param name="name">Name of the tile</param>
-        /// <param name="bottomLat">Bottom lattitude clamp</param>
-        /// <param name="topLat">"Top lattitude clamp</param>
+        /// <param name="bottomLongitude">Bottom lattitude clamp</param>
+        /// <param name="topLongitude">"Top lattitude clamp</param>
         public Tile(string name, float bottomLat, float topLat)
         {
             this.name = name;
-            this.bottomLat = bottomLat;
-            this.topLat = topLat;
+            this.bottomLongitude = bottomLat;
+            this.topLongitude = topLat;
         }
 
         /// <summary>
@@ -351,16 +362,18 @@ namespace CivGrid
         /// <param name="isShore">Is a shore tile</param>
         /// <param name="isOcean">Is an ocean tile</param>
         /// <param name="isMountain">Is a mountain tile</param>
-        /// <param name="bottomLat">Bottom lattitude clamp</param>
-        /// <param name="topLat">Top lattitude clamp</param>
-        public Tile(string name, bool isShore, bool isOcean, bool isMountain, float bottomLat, float topLat)
+        /// <param name="bottomLongitude">Bottom longitude clamp</param>
+        /// <param name="topLongitude">Top longitude clamp</param>
+        public Tile(string name, bool isShore, bool isOcean, bool isMountain, float bottomLongitude, float topLongitude, float leftLatitude, float rightLatitude)
         {
             this.name = name;
             this.isShore = isShore;
             this.isOcean = isOcean;
             this.isMountain = isMountain;
-            this.bottomLat = bottomLat;
-            this.topLat = topLat;
+            this.bottomLongitude = bottomLongitude;
+            this.topLongitude = topLongitude;
+            this.leftLatitude = leftLatitude;
+            this.rightLatitude = rightLatitude;
         }
 
         /// <summary>

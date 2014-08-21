@@ -316,7 +316,7 @@ namespace CivGrid
             CombineInstance[] final;
 
             //conver to single array
-            CivGridUtility.ToSingleArray<CombineInstance>(combine, out final);
+            Utility.ToSingleArray<CombineInstance>(combine, out final);
 
             //set the chunk's mesh to the combined mesh of all the hexagon's in this chunk
             filter.mesh.CombineMeshes(final);

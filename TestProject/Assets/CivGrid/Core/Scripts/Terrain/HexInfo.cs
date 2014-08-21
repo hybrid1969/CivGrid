@@ -6,6 +6,13 @@ using CivGrid.SampleResources;
 
 namespace CivGrid
 {
+    internal enum EdgeType
+    {
+        WaterEdge,
+        LandEdge,
+        None
+    }
+
     /// <summary>
     /// Contains all hexagon data and methods.
     /// Generates it's localMesh and uploads this to the chunk.
@@ -74,7 +81,6 @@ namespace CivGrid
         /// will hold the location of the selected grass texture in the terrain atlas.
         /// </example>
         public Rect defaultRectLocation;
-        private Vector2[] baseFeatureUV;
         internal Vector3 hexExt;
         internal Vector3 hexCenter;
         /// <summary>
@@ -266,7 +272,7 @@ namespace CivGrid
                 else if (terrainFeature == Feature.Hill || terrainFeature == Feature.Mountain)
                 {
                     worldTextureAtlas.resourceLocations.TryGetValue(currentResource, out currentRectLocation);
-                    AssignPresetUVToTile(localMesh, currentRectLocation);
+                    AssignUVToDefaultTile();
                 }
 
                 //regenerate chunk to incorperate our changes
@@ -313,7 +319,7 @@ namespace CivGrid
                 else if (terrainFeature == Feature.Hill || terrainFeature == Feature.Mountain)
                 {
                     worldTextureAtlas.improvementLocations.TryGetValue(currentImprovement, out currentRectLocation);
-                    AssignPresetUVToTile(localMesh, currentRectLocation);
+                    AssignUVToDefaultTile();
                 }
 
                 //regenerate chunk to incorperate our changes
@@ -357,7 +363,7 @@ namespace CivGrid
                 //assign feature UV data
                 else if (terrainFeature == Feature.Hill || terrainFeature == Feature.Mountain)
                 {
-                    AssignPresetUVToDefaultTile(baseFeatureUV);
+                    AssignUVToDefaultTile();
                 }
 
                 //regenerate chunk to incorperate our changes
@@ -375,7 +381,7 @@ namespace CivGrid
 
             #region Flat
             //if we are generating a flat regular hexagon
-            if (terrainFeature == Feature.Flat)
+            if (parentChunk.worldManager.levelOfDetail == 0 || terrainType.isShore || terrainType.isOcean)
             {
                 //pull mesh data from WorldManager
                 localMesh.vertices = parentChunk.worldManager.flatHexagonSharedMesh.vertices;
@@ -388,133 +394,74 @@ namespace CivGrid
                 //assign tile texture
                 AssignUVToDefaultTile();
             }
-            #endregion
-            #region Feature
-            //if we are generating a hexagon with a feature
-            else if (terrainFeature == Feature.Mountain || terrainFeature == Feature.Hill)
+            else
             {
-                Vector3[] vertices;
+                Texture2D localMountainTexture;
 
-                //pull base mountain height map
-                Texture2D localMountainTexture = new Texture2D(parentChunk.worldManager.mountainMap.width, parentChunk.worldManager.mountainMap.height);
-                
-                //overlay the base mountain height map with random noise with intesity depending on wether the feature is a hill or mountain
+                localMesh.vertices = parentChunk.worldManager.flatHexagonSharedMesh.vertices;
+                localMesh.triangles = parentChunk.worldManager.flatHexagonSharedMesh.triangles;
+                localMesh.uv = parentChunk.worldManager.flatHexagonSharedMesh.uv;
+
                 if (terrainFeature == Feature.Mountain)
                 {
-                    //large overlay
                     localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.2f, 0.5f), Random.Range(0.3f, 0.6f), 2, true, false);
                 }
                 else if (terrainFeature == Feature.Hill)
                 {
-                    //small overlay
-                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.75f, 1f), Random.Range(0.4f, 0.7f), 2, true, true);
+                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.75f, 1f), Random.Range(0.4f, 0.7f), 2, true, false);
+                }
+                else
+                {
+                    localMountainTexture = NoiseGenerator.RandomOverlay(new Texture2D(parentChunk.worldManager.mountainMap.width, parentChunk.worldManager.mountainMap.height), Random.Range(-100f, 100f), 0.8f, 0.2f, 0.15f, 0.5f, false, false);
                 }
 
-                //feature values
-                int width = Mathf.Min(localMountainTexture.width, 255);
-                int height = Mathf.Min(localMountainTexture.height, 255);
-                int y = 0;
-                int x = 0;
-
-                // Build vertices
-                vertices = new Vector3[height * width];
-                Vector4[] tangents = new Vector4[height * width];
-
-                //scale values
-                Vector2 uvScale = new Vector2(1.0f / width, 1.0f / height);
-                Vector3 sizeScale = new Vector3(parentChunk.hexSize.x / (width * 0.9f), parentChunk.worldManager.mountainScaleY, parentChunk.hexSize.z / (height * 0.9f));
-                
-                //raw UV covering 1:1
-                Vector2[] rawUV = new Vector2[height * width];
-
-                //generates vertices for this hexagon
-                for (y = 0; y < height; y++)
+                Vector3[] vertices = localMesh.vertices;
+                for (int i = 0; i < vertices.Length; i++)
                 {
-                    for (x = 0; x < width; x++)
+                    EdgeType edgeType = GetVertexEdgeType(i);
+                    //not an edge
+                    if (edgeType == EdgeType.None)
                     {
-                        //grab pixel height data from the texture created and scale it.
-                        float pixelHeight;
-                        if (terrainFeature == Feature.Hill)
-                        {
-                            pixelHeight = localMountainTexture.GetPixel(x, y).grayscale / 2;
-                        }
-                        else if (terrainFeature == Feature.Mountain)
-                        {
-                            pixelHeight = localMountainTexture.GetPixel(x, y).grayscale * 3;
-                        }
+                        float pixelHeight = localMountainTexture.GetPixelBilinear(localMesh.uv[i].x, localMesh.uv[i].y).grayscale;
+                        if (terrainFeature == Feature.Mountain) { pixelHeight *= 1.5f; vertices[i].Set(vertices[i].x, vertices[i].y + (pixelHeight - (parentChunk.worldManager.mountainScaleY / 100)), vertices[i].z); }
+                        if (terrainFeature == Feature.Hill) { vertices[i].Set(vertices[i].x, vertices[i].y + (pixelHeight - (parentChunk.worldManager.mountainScaleY / 100)), vertices[i].z); }
+                        //flat
                         else
                         {
-                            pixelHeight = localMountainTexture.GetPixel(x, y).grayscale;
+                            vertices[i].Set(vertices[i].x, vertices[i].y + pixelHeight + (pixelHeight / 3), vertices[i].z);
                         }
-
-                        //position vertex
-                        Vector3 vertex = new Vector3(x, pixelHeight - (parentChunk.worldManager.mountainScaleY / 100), y);
-                        //scale vertex
-                        vertices[y * width + x] = Vector3.Scale(sizeScale, vertex);
-                        //uv map the vertex
-                        rawUV[y * width + x] = Vector2.Scale(uvScale, new Vector2(vertex.x, vertex.z));
-
-                        // Calculate tangent vector: a vector that goes from previous vertex
-                        // to next along X direction. We need tangents if we intend to
-                        // use bumpmap shaders on the mesh.
-                        Vector3 vertexL = new Vector3(x - 1, localMountainTexture.GetPixel(x - 1, y).grayscale, y);
-                        Vector3 vertexR = new Vector3(x + 1, localMountainTexture.GetPixel(x + 1, y).grayscale, y);
-                        Vector3 tan = Vector3.Scale(sizeScale, vertexR - vertexL).normalized;
-                        tangents[y * width + x] = new Vector4(tan.x, tan.y, tan.z, -1.0f);
                     }
-                }
-                //assign our base feature UV to the generated 1:1 data
-                baseFeatureUV = rawUV;
-
-                // Assign them to the mesh
-                localMesh.vertices = vertices;
-                localMesh.RecalculateBounds();
-
-                //Move verts to compensate for mesh creation differences
-                Vector3 moveVector;
-                moveVector = new Vector3(localMesh.bounds.size.x / 2, 0, localMesh.bounds.size.z / 2);
-                Vector3[] tempVerts = localMesh.vertices;
-
-                for (var i = 0; i < localMesh.vertexCount; i++)
-                {
-                    tempVerts[i] -= moveVector;
-                }
-                localMesh.vertices = tempVerts;
-
-                // Build triangle indices: 3 indices into vertex array for each triangle
-                int[] triangles = new int[vertices.Length * 6];
-                int index = 0;
-                for (y = 0; y < height - 1; y++)
-                {
-                    for (x = 0; x < width - 1; x++)
+                    //hex next to this edge is a land tile
+                    else if(edgeType == EdgeType.LandEdge)
                     {
-                        // For each grid cell output two triangles
-                        triangles[index++] = (y * width) + x;
-                        triangles[index++] = ((y + 1) * width) + x;
-                        triangles[index++] = (y * width) + x + 1;
-
-                        triangles[index++] = ((y + 1) * width) + x;
-                        triangles[index++] = ((y + 1) * width) + x + 1;
-                        triangles[index++] = (y * width) + x + 1;
+                        //raise to land border
+                    }
+                    //hex next to this is a water tile do nothing
+                    else
+                    {
+                        continue;
                     }
                 }
+                localMesh.vertices = vertices;
 
-                // And assign them to the mesh
-                localMesh.triangles = triangles;
 
-                // Auto-calculate vertex normals from the mesh
+                //recalculate normals to play nicely with lighting
                 localMesh.RecalculateNormals();
 
-                // Assign tangents after recalculating normals
-                localMesh.tangents = tangents;
-
-                //assign new hex extenets according to the collider
-                hexExt = localMesh.bounds.extents;
-
-                //assign the tile texture
-                AssignPresetUVToDefaultTile(rawUV);
+                //assign tile texture
+                AssignUVToDefaultTile();
             }
             #endregion
+        }
+
+        private EdgeType GetVertexEdgeType(int index)
+        {
+            for(int i = 0; i < parentChunk.worldManager.edgeVertices.Length; i++)
+            {
+                if(index == parentChunk.worldManager.edgeVertices[i])
+                { return EdgeType.WaterEdge; }
+            }
+            return EdgeType.None;
         }
 
         /// <summary>
@@ -578,62 +525,62 @@ namespace CivGrid
             localMesh.uv = UV;
         }
 
-        /// <summary>
-        /// Assign the UV maps for a hexagon with a feature to the default base tile texture .
-        /// </summary>
-        /// <param name="rawUV">UV map locations for (0,0) sector of texture atlas</param>
-        private void AssignPresetUVToDefaultTile(Vector2[] rawUV)
-        {
-            Vector2[] UV;
+        ///// <summary>
+        ///// Assign the UV maps for a hexagon with a feature to the default base tile texture .
+        ///// </summary>
+        ///// <param name="rawUV">UV map locations for (0,0) sector of texture atlas</param>
+        //private void AssignPresetUVToDefaultTile(Vector2[] rawUV)
+        //{
+        //    Vector2[] UV;
 
-            //if we are NOT loading a map
-            if (parentChunk.worldManager.generateNewValues == true)
-            {
-                //if defaultRectLocation is not null
-                if (defaultRectLocation == new Rect())
-                {
-                    //get the postion of the texture on the texture atlas
-                    parentChunk.worldManager.textureAtlas.tileLocations.TryGetValue(terrainType, out currentRectLocation);
-                    //cache location
-                    defaultRectLocation = currentRectLocation;
-                }
-                //use cached location
-                else { currentRectLocation = defaultRectLocation; }
-            }
+        //    //if we are NOT loading a map
+        //    if (parentChunk.worldManager.generateNewValues == true)
+        //    {
+        //        //if defaultRectLocation is not null
+        //        if (defaultRectLocation == new Rect())
+        //        {
+        //            //get the postion of the texture on the texture atlas
+        //            parentChunk.worldManager.textureAtlas.tileLocations.TryGetValue(terrainType, out currentRectLocation);
+        //            //cache location
+        //            defaultRectLocation = currentRectLocation;
+        //        }
+        //        //use cached location
+        //        else { currentRectLocation = defaultRectLocation; }
+        //    }
 
-            //temp UV data
-            UV = new Vector2[localMesh.vertexCount];
+        //    //temp UV data
+        //    UV = new Vector2[localMesh.vertexCount];
 
-            //shift base 1:1 UV map to the scale and location of the texture on the texture atlas
-            for (int i = 0; i < localMesh.vertexCount; i++)
-            {
-                UV[i] = new Vector2(rawUV[i].x * currentRectLocation.width + currentRectLocation.x, rawUV[i].y * currentRectLocation.height + currentRectLocation.y);
-            }
+        //    //shift base 1:1 UV map to the scale and location of the texture on the texture atlas
+        //    for (int i = 0; i < localMesh.vertexCount; i++)
+        //    {
+        //        UV[i] = new Vector2(rawUV[i].x * currentRectLocation.width + currentRectLocation.x, rawUV[i].y * currentRectLocation.height + currentRectLocation.y);
+        //    }
 
-            //assign the created UV data
-            localMesh.uv = UV;
-        }
+        //    //assign the created UV data
+        //    localMesh.uv = UV;
+        //}
 
-        /// <summary>
-        /// Assign the UV maps for a hexagon with a feature to the provided location on the texture atlas.
-        /// </summary>
-        /// <param name="mesh">Mesh to edit UV data from</param>
-        /// <param name="rectArea">Location of the texture on the texture atlas</param>
-        private void AssignPresetUVToTile(Mesh mesh, Rect rectArea)
-        {
-            Vector2[] UV;
+        ///// <summary>
+        ///// Assign the UV maps for a hexagon with a feature to the provided location on the texture atlas.
+        ///// </summary>
+        ///// <param name="mesh">Mesh to edit UV data from</param>
+        ///// <param name="rectArea">Location of the texture on the texture atlas</param>
+        //private void AssignPresetUVToTile(Mesh mesh, Rect rectArea)
+        //{
+        //    Vector2[] UV;
 
-            //temp UV data
-            UV = new Vector2[mesh.vertexCount];
+        //    //temp UV data
+        //    UV = new Vector2[mesh.vertexCount];
 
-            //shift base 1:1 UV map to the scale and location of the texture on the texture atlas
-            for (int i = 0; i < mesh.vertexCount; i++)
-            {
-                UV[i] = new Vector2(mesh.uv[i].x * rectArea.width + rectArea.x, mesh.uv[i].y * rectArea.height + rectArea.y);
-            }
+        //    //shift base 1:1 UV map to the scale and location of the texture on the texture atlas
+        //    for (int i = 0; i < mesh.vertexCount; i++)
+        //    {
+        //        UV[i] = new Vector2(mesh.uv[i].x * rectArea.width + rectArea.x, mesh.uv[i].y * rectArea.height + rectArea.y);
+        //    }
 
-            //assign the created UV data
-            localMesh.uv = UV;
-        }
+        //    //assign the created UV data
+        //    localMesh.uv = UV;
+        //}
     }
 }

@@ -21,6 +21,8 @@ namespace CivGrid.Editors
         }
 
         bool done;
+        bool longOpen = false;
+        bool latOpen = false;
         public override void OnInspectorGUI()
         {
             if (done == false)
@@ -75,8 +77,20 @@ namespace CivGrid.Editors
                         tile.isMountain = EditorGUILayout.Toggle("Is Mountain:", tile.isMountain);
                         if (tile.isShore == false && tile.isOcean == false && tile.isMountain == false)
                         {
-                            tile.topLat = EditorGUILayout.FloatField("Top Lattitude:", tile.topLat);
-                            tile.bottomLat = EditorGUILayout.FloatField("Bottom Lattitude:", tile.bottomLat);
+                            EditorGUI.indentLevel++;
+                            longOpen = EditorGUILayout.Foldout(longOpen, "Longitude Clamps:");
+                            if (longOpen)
+                            {
+                                tile.topLongitude = EditorGUILayout.FloatField("Top Longitude:", tile.topLongitude);
+                                tile.bottomLongitude = EditorGUILayout.FloatField("Bottom Longitude:", tile.bottomLongitude);
+                            }
+                            latOpen = EditorGUILayout.Foldout(latOpen, "Latitude Clamps:");
+                            if (latOpen)
+                            {
+                                tile.leftLatitude = EditorGUILayout.FloatField("Left Latitude:", tile.leftLatitude);
+                                tile.rightLatitude = EditorGUILayout.FloatField("Right Latitude:", tile.rightLatitude);
+                            }
+                            EditorGUI.indentLevel--;
                         }
                     }
                 }

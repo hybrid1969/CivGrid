@@ -94,7 +94,7 @@ namespace CivGrid
                 for (int y = 0; y < texture.height; y++)
                 {
                     //get the pixels around this pixel
-                    float[] surrondingTiles = CivGridUtility.GetSurrondingPixels(texture, x, y);
+                    float[] surrondingTiles = Utility.GetSurrondingPixels(texture, x, y);
 
                     //WATER
                     if (texture.GetPixel(x, y).r == 0)

@@ -36,7 +36,7 @@ namespace CivGrid.SampleResources
 
                 if (GUI.Button(new Rect((Screen.width / 2) - 50f, (Screen.height / 2) + 75f, 100f, 50f), "Save Game"))
                 {
-                    CivGridFileUtility.SaveTerrain(saveName);
+                    FileUtility.SaveTerrain(saveName);
                     if (savedGames.Contains(saveName) == false)
                     {
                         savedGames.Add(saveName);

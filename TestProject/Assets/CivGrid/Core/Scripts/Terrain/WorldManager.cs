@@ -153,9 +153,14 @@ namespace CivGrid
         /// A cached flat hexagon mesh
         /// </summary>
         public Mesh flatHexagonSharedMesh;
+
+        /// <summary>
+        /// Vertices in <see cref="flatHexagonSharedMesh"/> that are on the edge
+        /// </summary>
+        public int[] edgeVertices;
+
         private bool doneGenerating;
         internal CivGridCamera civGridCamera;
-        //public Color borderColor;
 
         //World Values
         private Texture2D tileMap;
@@ -187,6 +192,11 @@ namespace CivGrid
         /// The radius of the hexagon
         /// </summary>
         public float hexRadiusSize;
+
+        /// <summary>
+        /// If hexagons should be high in detail.
+        /// </summary>
+        public int levelOfDetail = 1;
 
         //world setup
         /// <summary>
@@ -256,7 +266,7 @@ namespace CivGrid
             {
                 //LoadAndGenerateMap("terrainTest");
                 GenerateNewMap(true);
-                CivGridFileUtility.SaveTerrain("terrainTest");
+                FileUtility.SaveTerrain("terrainTest");
             }
             else { civGridCamera.enabled = false; }
         }
@@ -308,7 +318,7 @@ namespace CivGrid
         {
             generateNewValues = false;
             string savedMapLocation = Application.dataPath + "/../" +  name;
-            CivGridFileUtility.LoadTerrain(savedMapLocation);
+            FileUtility.LoadTerrain(savedMapLocation);
             resourceManager.InitiateResourceTexturesOnHexs();
         }
 
@@ -318,7 +328,7 @@ namespace CivGrid
         /// <param name="name">Name of the save</param>
         public void SaveMap(string name)
         {
-            CivGridFileUtility.SaveTerrain(name);
+            FileUtility.SaveTerrain(name);
         }
 
         /// <summary>
@@ -403,62 +413,71 @@ namespace CivGrid
             //reset all rotation
             inst.transform.rotation = Quaternion.identity;
 
-
-            Vector3[] vertices;
-            int[] triangles;
-            Vector2[] uv;
-
-            #region verts
-
-            float floorLevel = 0;
-            //positions vertices of the hexagon to make a normal hexagon
-            vertices = new Vector3[]
-            {
-                /*0*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(3+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(3+0.5)/6)))),
-                /*1*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(2+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(2+0.5)/6)))),
-                /*2*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(1+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(1+0.5)/6)))),
-                /*3*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(0+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(0+0.5)/6)))),
-                /*4*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(5+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(5+0.5)/6)))),
-                /*5*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(4+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(4+0.5)/6))))
-            };
-
-            #endregion
-
-            #region triangles
-
-            //triangles connecting the verts
-            triangles = new int[] 
-            {
-                1,5,0,
-                1,4,5,
-                1,2,4,
-                2,3,4
-            };
-
-            #endregion
-
-            #region uv
-            //uv mappping
-            uv = new Vector2[]
-            {
-                new Vector2(0.05f,0.25f),
-                new Vector2(0.05f,0.75f),
-                new Vector2(0.5f,0.95f),
-                new Vector2(0.95f,0.75f),
-                new Vector2(0.95f,0.25f),
-                new Vector2(0.5f,0.05f),
-            };
-            #endregion
-
-            #region finalize
             //create new mesh to hold the data for the flat hexagon
             flatHexagonSharedMesh = new Mesh();
-            //assign verts
-            flatHexagonSharedMesh.vertices = vertices;
-            //assign triangles
-            flatHexagonSharedMesh.triangles = triangles;
-            //assign uv
-            flatHexagonSharedMesh.uv = uv;
+
+            if (levelOfDetail > 0)
+            {
+                flatHexagonSharedMesh = MeshLoader.LoadMesh(@"C:\Users\Landon\Desktop\CivGridRepository\Hexagon_1.obj");
+            }
+            else
+            {
+                Vector3[] vertices;
+                int[] triangles;
+                Vector2[] uv;
+
+                #region verts
+
+                float floorLevel = 0;
+                //positions vertices of the hexagon to make a normal hexagon
+                vertices = new Vector3[]
+                {
+                    /*0*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(3+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(3+0.5)/6)))),
+                    /*1*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(2+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(2+0.5)/6)))),
+                    /*2*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(1+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(1+0.5)/6)))),
+                    /*3*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(0+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(0+0.5)/6)))),
+                    /*4*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(5+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(5+0.5)/6)))),
+                    /*5*/new Vector3((hexRadiusSize * Mathf.Cos((float)(2*Mathf.PI*(4+0.5)/6))), floorLevel, (hexRadiusSize * Mathf.Sin((float)(2*Mathf.PI*(4+0.5)/6))))
+                };
+
+                #endregion
+
+                #region triangles
+
+                //triangles connecting the verts
+                triangles = new int[] 
+                {
+                    1,5,0,
+                    1,4,5,
+                    1,2,4,
+                    2,3,4
+                };
+
+                #endregion
+
+                #region uv
+                //uv mappping
+                uv = new Vector2[]
+                {
+                    new Vector2(0.05f,0.25f),
+                    new Vector2(0.05f,0.75f),
+                    new Vector2(0.5f,0.95f),
+                    new Vector2(0.95f,0.75f),
+                    new Vector2(0.95f,0.25f),
+                    new Vector2(0.5f,0.05f),
+                };
+                #endregion
+
+                //assign verts
+                flatHexagonSharedMesh.vertices = vertices;
+                //assign triangles
+                flatHexagonSharedMesh.triangles = triangles;
+                //assign uv
+                flatHexagonSharedMesh.uv = uv;
+
+            }
+
+            #region finalize
             //set temp gameObject's mesh to the flat hexagon mesh
             inst.GetComponent<MeshFilter>().mesh = flatHexagonSharedMesh;
             //make object play nicely with lighting
@@ -473,6 +492,8 @@ namespace CivGrid
             hexSize = new Vector3(inst.gameObject.collider.bounds.size.x, inst.gameObject.collider.bounds.size.y, inst.gameObject.collider.bounds.size.z);
             //calculate the center of the flat hexagon
             hexCenter = new Vector3(inst.gameObject.collider.bounds.center.x, inst.gameObject.collider.bounds.center.y, inst.gameObject.collider.bounds.center.z);
+            //calculate edge vertices
+            edgeVertices = MeshUtility.FindEdgeVertices(flatHexagonSharedMesh);
             //destroy the temp object that we used to calculate the flat hexagon's size
             Destroy(inst);
         }
@@ -560,10 +581,14 @@ namespace CivGrid
         internal Tile PickTileType(int x, int h)
         {
             //temp no influence from rainfall values
-            float latitude = Mathf.Abs((mapSize.y / 2) - h) / (mapSize.y / 2);//1 == snow (top) 0 == eqautor
+            float latitude = Mathf.Abs((mapSize.y / 2) - x) / (mapSize.x / 2);
+            float longitude = Mathf.Abs((mapSize.x / 2) - h) / (mapSize.y / 2);
             //add more results
             latitude *= (1 + UnityEngine.Random.Range(-0.2f, 0.2f));
+            longitude *= (1 + UnityEngine.Random.Range(-0.2f, 0.2f));
             latitude = Mathf.Clamp(latitude, 0f, 1f);
+            longitude = Mathf.Clamp(longitude, 0f, 1f);
+
             Tile tile;
 
             if (tileMap.GetPixel(x, h).r == 0)
@@ -579,7 +604,7 @@ namespace CivGrid
             }
             else
             {
-                tile = tileManager.GetTileFromLattitude(latitude);
+                tile = tileManager.GetTileFromLattitudeAndLongitude(latitude, longitude);
             }
 
             return (tile);
@@ -587,7 +612,7 @@ namespace CivGrid
 
         private bool CheckIfCoast(int x, int y)
         {
-            float[] surrondingPixels = CivGridUtility.GetSurrondingPixels(tileMap, x, y);
+            float[] surrondingPixels = Utility.GetSurrondingPixels(tileMap, x, y);
 
             int numberWater = 0;
             for (int i = 0; i < 8; i++)
@@ -813,7 +838,7 @@ namespace CivGrid
             }
             else
             {
-                CivGridUtility.ToSingleArray<HexChunk>(hexChunks, out chunkArray); return chunkArray;
+                Utility.ToSingleArray<HexChunk>(hexChunks, out chunkArray); return chunkArray;
             }
         }
 
