@@ -53,7 +53,7 @@ namespace CivGrid.SampleResources
 
         void SpawnUnit(GameObject obj, Vector2 hexLoc)
         {
-            HexInfo hex = worldManager.GetHexFromAxialPosition(hexLoc);
+            HexInfo hex = worldManager.GetHexFromAxialCoordinates(hexLoc);
 
             GameObject unit = (GameObject)Instantiate(obj, hex.worldPosition, Quaternion.identity);
 
@@ -78,11 +78,6 @@ namespace CivGrid.SampleResources
             if (type == "Death")
             {
                 print(message);
-            }
-
-            if (type == "World Done")
-            {
-                StartSpawning();
             }
         }
 

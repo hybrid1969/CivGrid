@@ -211,30 +211,71 @@ namespace CivGrid
 
     public static class MeshUtility
     {
-        /// Builds an array of edges that connect to only one triangle.
-        /// In other words, the outline of the mesh
-        private static Edge[] BuildManifoldEdges(Mesh mesh)
+    
+     /// <summary>
+     /// Builds an array of edges that connect to only one triangle.
+     /// In other words, the outline of the mesh
+     /// </summary>
+     /// <param name="mesh">Mesh to outline</param>
+     /// <returns>Array of <see cref="Edge"/></returns>
+   
+        public static Edge[] BuildManifoldEdges(Mesh mesh)
         {
             // Build a edge list for all unique edges in the mesh
             Edge[] edges = BuildEdges(mesh.vertexCount, mesh.triangles);
 
             // We only want edges that connect to a single triangle
-            ArrayList culledEdges = new ArrayList();
+            List<Edge> culledEdges = new List<Edge>();
             foreach (Edge edge in edges)
             {
+                edge.direction = DetermineEdgeDirection(edge);
                 if (edge.faceIndex[0] == edge.faceIndex[1])
                 {
                     culledEdges.Add(edge);
                 }
             }
 
-            return culledEdges.ToArray(typeof(Edge)) as Edge[];
+            return culledEdges.ToArray();
         }
 
-        public static int[] FindEdgeVertices(Mesh mesh)
+        private static EdgeDirection DetermineEdgeDirection(Edge edge)
+        {
+            WorldManager worldManager = GameObject.FindObjectOfType<WorldManager>();
+            Vector3[] verts = worldManager.flatHexagonSharedMesh.vertices;
+            
+            //bottom
+            if(verts[edge.vertexIndex[0]].y < 0.33f || verts[edge.vertexIndex[1]].y < 0.33f)
+            {
+                if(verts[edge.vertexIndex[0]].x < 0.5f || verts[edge.vertexIndex[1]].x < 0.5f)
+                {
+                    return EdgeDirection.BottomLeft;
+                }
+                else { return EdgeDirection.BottomRight; }
+            }
+            //top
+            if(verts[edge.vertexIndex[0]].y > 0.66f || verts[edge.vertexIndex[1]].y < 0.66f)
+            {
+                if (verts[edge.vertexIndex[0]].x < 0.5f || verts[edge.vertexIndex[1]].x < 0.5f)
+                {
+                    return EdgeDirection.TopLeft;
+                }
+                else { return EdgeDirection.TopRight; }
+            }
+            //middle
+            else
+            {
+                if (verts[edge.vertexIndex[0]].x < 0.5f || verts[edge.vertexIndex[1]].x < 0.5f)
+                {
+                    return EdgeDirection.Left;
+                }
+                else { return EdgeDirection.Right; }
+            }
+        }
+
+        public static int[] FindEdgeVertices(Mesh mesh, out Edge[] edges)
         {
             List<int> edgeVertices = new List<int>();
-            Edge[] edges = BuildManifoldEdges(mesh);
+            edges = BuildManifoldEdges(mesh);
 
             foreach(Edge edge in edges)
             {
@@ -370,13 +411,24 @@ namespace CivGrid
         }
     }
 
+
+    internal enum EdgeDirection
+    {
+        BottomLeft,
+        BottomRight,
+        Left,
+        Right,
+        TopLeft,
+        TopRight
+    }
     public class Edge
     {
-        // The indiex to each vertex
+        // The index to each vertex
         public int[] vertexIndex = new int[2];
+        internal EdgeDirection direction;
         // The index into the face.
         // (faceindex[0] == faceindex[1] means the edge connects to only one triangle)
-        public int[] faceIndex = new int[2];
+        internal int[] faceIndex = new int[2];
     }
 
     /// <summary>

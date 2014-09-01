@@ -8,4 +8,5 @@ C:\Users\Landon\Desktop\CivGridRepository\TestProject\Temp\bin\Debug\nunit.frame
 C:\Users\Landon\Desktop\CivGridRepository\TestProject\Temp\bin\Debug\Unity.DataContract.dll
 C:\Users\Landon\Desktop\CivGridRepository\TestProject\Temp\bin\Debug\ICSharpCode.NRefactory.dll
 C:\Users\Landon\Desktop\CivGridRepository\TestProject\obj\Debug\Assembly-CSharp.pdb
-C:\Users\Landon\Desktop\CivGridRepository\TestProject\obj\Debug\Assembly-CSharp-vs.csprojResolveAssemblyReference.cache
+C:\Users\Landon\Desktop\CivGridRepository\TestProject\Temp\bin\Debug\Assembly-CSharp.dll.CodeAnalysisLog.xml
+C:\Users\Landon\Desktop\CivGridRepository\TestProject\Temp\bin\Debug\Assembly-CSharp.dll.lastcodeanalysissucceeded

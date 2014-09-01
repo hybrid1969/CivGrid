@@ -43,6 +43,27 @@ namespace CivGrid
         private new BoxCollider collider;
 
         /// <summary>
+        /// Generated heightmap for the flat hexagons in this chunk.
+        /// </summary>
+        public Texture2D flatHeightMap;
+
+        /// <summary>
+        /// Starts chunk operations of spawning the hexagons and then chunking them
+        /// </summary>
+        internal void Begin()
+        {
+            flatHeightMap = NoiseGenerator.PerlinNoise((int)chunkSize.x * (int)Mathf.Sqrt(worldManager.flatHexagonSharedMesh.vertexCount), (int)chunkSize.y * (int)Mathf.Sqrt(worldManager.flatHexagonSharedMesh.vertexCount), 0.1f);
+
+            //begin making hexagons
+            GenerateChunk();
+
+            if (worldManager.generateNewValues == true)
+            {
+                StartHexGeneration();
+            }
+        }
+
+        /// <summary>
         /// Sets the amount of hexagons in the chunk.
         /// </summary>
         /// <param name="x">Amount of hexagons in "x" axis</param>
@@ -127,19 +148,29 @@ namespace CivGrid
             worldArrayPosition.x = x + (chunkSize.x * chunkLocation.x);
             worldArrayPosition.y = y + (chunkSize.y * chunkLocation.y);
 
-
-            hex.CubeGridPosition = new Vector3(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f), worldArrayPosition.y, -(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f) + worldArrayPosition.y));
+            hex.chunkArrayPosition = new Vector2(x, y);
+            //set cube position of hex;
+            hex.CubeCoordinates = new Vector3(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f), worldArrayPosition.y, -(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f) + worldArrayPosition.y));
             //set local position of hex; this is the hex cord position local to the chunk
             hex.localPosition = new Vector3(x * ((worldManager.hexExt.x * 2)), 0, (y * worldManager.hexExt.z) * 1.5f);
             //set world position of hex; this is the hex cord position local to the world
             hex.worldPosition = new Vector3(hex.localPosition.x + (chunkLocation.x * (chunkSize.x * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((chunkLocation.y * (chunkSize.y * hexSize.z)) * (.75f)));
+            //if hex is on the edge of the chunk
+            hex.onEdge = DetermineChunkEdge(x, y);
+
+            if (worldManager.generateNodeLocations)
+            {
+                //generate pathfinding node
+                worldManager.nodeLocations[(int)worldArrayPosition.x, (int)worldArrayPosition.y] = hex.worldPosition;
+            }
+
 
             //not loading world
             if (worldManager.generateNewValues)
             {
                 //pick out the correct feature and tile
-                hex.terrainFeature = worldManager.PickFeatureType((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
-                hex.terrainType = worldManager.PickTileType((int)worldArrayPosition.x, (int)worldArrayPosition.y);
+                hex.terrainFeature = worldManager.PickFeatureType((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(x, y));
+                hex.terrainType = worldManager.GenerateTileType((int)worldArrayPosition.x, (int)worldArrayPosition.y);
             }
             //pass down base value
             hex.hexExt = worldManager.hexExt;
@@ -165,15 +196,15 @@ namespace CivGrid
             worldArrayPosition.x = x + (chunkSize.x * chunkLocation.x);
             worldArrayPosition.y = y + (chunkSize.y * chunkLocation.y);
 
-            hex.CubeGridPosition = new Vector3(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f), worldArrayPosition.y, -(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f) + worldArrayPosition.y));
+            hex.CubeCoordinates = new Vector3(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f), worldArrayPosition.y, -(worldArrayPosition.x - Mathf.Round((worldArrayPosition.y / 2) + .1f) + worldArrayPosition.y));
             //set local position of hex; this is the hex cord position local to the chunk
             hex.localPosition = new Vector3((x * (worldManager.hexExt.x * 2) + worldManager.hexExt.x), 0, (y * worldManager.hexExt.z) * 1.5f);
             //set world position of hex; this is the hex cord position local to the world
             hex.worldPosition = new Vector3(hex.localPosition.x + (chunkLocation.x * (chunkSize.x * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((chunkLocation.y * (chunkSize.y * hexSize.z)) * (.75f)));
 
             //Set Hex values
-            hex.terrainFeature = worldManager.PickFeatureType((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(hex, x, y));
-            hex.terrainType = worldManager.PickTileType((int)worldArrayPosition.x, (int)worldArrayPosition.y);
+            hex.terrainFeature = worldManager.PickFeatureType((int)worldArrayPosition.x, (int)worldArrayPosition.y, DetermineWorldEdge(x, y));
+            hex.terrainType = worldManager.GenerateTileType((int)worldArrayPosition.x, (int)worldArrayPosition.y);
             hex.hexExt = worldManager.hexExt;
             hex.hexCenter = worldManager.hexCenter;
             hex.resourceManager = worldManager.resourceManager;
@@ -183,54 +214,48 @@ namespace CivGrid
         /// <summary>
         /// Determine if this hexagon is on the world edge
         /// </summary>
-        /// <param name="hex">Hexagon to check</param>
         /// <param name="x">Width location of hex within chunk</param>
         /// <param name="y">Height location of hex within chunk</param>
         /// <returns>If the hex is on the world edge</returns>
-        private bool DetermineWorldEdge(HexInfo hex, int x, int y)
+        private bool DetermineWorldEdge(int x, int y)
         {
             //check if hex is in a chunk on the horizontal sides
             if (chunkLocation.x == 0 || chunkLocation.x == ((worldManager.mapSize.x / worldManager.chunkSize) - 1))
             {
-                //checks if hex is on the horizontal edge of a horizontal edge chunk
-                if (x == (chunkSize.x - 1) || x == 0)
-                {
-                    return true;
-                }
+                return DetermineChunkEdge(x, y);
             }
 
             //check if hex is in a chunk on the vertical sides
             if (chunkLocation.y == 0 || chunkLocation.y == ((worldManager.mapSize.y / worldManager.chunkSize) - 1))
             {
-                //checks if hex is on the vettical edge of a vertical edge chunk
-                if (y == (chunkSize.y - 1) || y == 0)
-                {
-                    return true;
-                }
+                return DetermineChunkEdge(x, y);
             }
 
             //not an edge hex
             return false;
         }
 
-        /// <summary>
-        /// Starts chunk operations of spawning the hexagons and then chunking them
-        /// </summary>
-        internal void Begin()
+        internal bool DetermineChunkEdge(int x, int y)
         {
-            //begin making hexagons
-            GenerateChunk();
-
-            if (worldManager.generateNewValues == true)
+            //checks if hex is on the horizontal edge of a horizontal edge chunk
+            if (x == (chunkSize.x - 1) || x == 0)
             {
-                StartHex();
+                return true;
             }
+
+            //checks if hex is on the vettical edge of a vertical edge chunk
+            if (y == (chunkSize.y - 1) || y == 0)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
         /// Starts hex operations.
         /// </summary>
-        internal void StartHex()
+        internal void StartHexGeneration()
         {
             //cycle through all hexagons
             for (int x = 0; x < chunkSize.x; x++)

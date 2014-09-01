@@ -78,7 +78,7 @@ namespace CivGrid
             if (i.meshToSpawn != null)
             {
                 float y = (hex.worldPosition.y + hex.hexExt.y) - ((hex.hexExt.y) / 5f); if (y == 0) { y -= ((hex.worldPosition.y + hex.hexExt.y) / Random.Range(4, 8)); }
-                GameObject holder = new GameObject(i.name + " at " + hex.AxialGridPosition, typeof(MeshFilter), typeof(MeshRenderer));
+                GameObject holder = new GameObject(i.name + " at " + hex.AxialCoordinates, typeof(MeshFilter), typeof(MeshRenderer));
                 holder.GetComponent<MeshFilter>().mesh = hex.currentImprovement.meshToSpawn;
                 holder.transform.position = new Vector3((hex.worldPosition.x + hex.hexCenter.x + Random.Range(-0.2f, 0.2f)), y, (hex.worldPosition.z + hex.hexCenter.z + Random.Range(-0.2f, 0.2f)));
                 holder.transform.rotation = Quaternion.identity;

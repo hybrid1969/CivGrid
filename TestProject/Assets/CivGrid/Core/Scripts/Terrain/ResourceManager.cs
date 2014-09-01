@@ -320,7 +320,7 @@ namespace CivGrid
                     }
 
                     //create gameobject to hold the resource meshes 
-                    GameObject holder = new GameObject(r.name + " at " + hex.AxialGridPosition, typeof(MeshFilter), typeof(MeshRenderer));
+                    GameObject holder = new GameObject(r.name + " at " + hex.AxialCoordinates, typeof(MeshFilter), typeof(MeshRenderer));
 
                     //set the gameobject position to the hex position
                     holder.transform.position = hex.worldPosition;

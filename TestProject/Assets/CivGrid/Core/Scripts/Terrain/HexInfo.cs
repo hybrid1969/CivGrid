@@ -36,6 +36,10 @@ namespace CivGrid
         /// The position of the hexagon in world space.
         /// </summary>
         public Vector3 worldPosition;
+        /// <summary>
+        /// The position of the hexagon in the parent chunk array.
+        /// </summary>
+        public Vector2 chunkArrayPosition;
 
         /// <summary>
         /// Ignore this field block; used for testing a sample game.
@@ -128,28 +132,45 @@ namespace CivGrid
         public GameObject iObject;
 
         /// <summary>
-        /// The coordinates of the hexagon in axial grid format.
+        /// If this hexagon is on the edge of the parent chunk
+        /// </summary>
+        public bool onEdge;
+
+        /// <summary>
+        /// The coordinates of the hexagon in axial coordinates.
         /// </summary>
         /// <remarks>
-        /// This is simply a lighter version of <see cref="CubeGridPosition"/>, made possible by the fact, x + y + z = 0.
+        /// This is simply a lighter version of <see cref="CubeCoordinates"/>, made possible by the fact, x + y + z = 0.
         /// With this equation we can include only the (x,y) cordinates and assume
         /// </remarks>
-        public Vector2 AxialGridPosition
+        public Vector2 AxialCoordinates
         {
-            get { return new Vector2(CubeGridPosition.x, CubeGridPosition.y); }
+            get { return new Vector2(CubeCoordinates.x, CubeCoordinates.y); }
         }
 
         /// <summary>
-        /// The coordinates of the hexagon in cube grid format.
+        /// The coordinates of the hexagon in cube coordinates.
         /// </summary>
         /// <remarks>
-        /// This is simply the complete version of the grid location. You can use <see cref="AxialGridPosition"/> and imply
+        /// This is simply the complete version of the grid location. You can use <see cref="AxialCoordinates"/> and imply
         /// the "z" location with the rule of x + y + z = 0.
         /// </remarks>
-        public Vector3 CubeGridPosition
+        public Vector3 CubeCoordinates
         {
             get { return gridPosition; }
             set { gridPosition = value; }
+        }
+
+        /// <summary>
+        /// The coordinates of the hexagon in odd-r offset coordinates.
+        /// </summary>
+        /// <remarks>
+        /// This is a different format of coordinates. Safe to use, however is not the most efficient method. <see cref="CubeCoordinates"/> is used internally
+        /// and all other formats are converted on demand.
+        /// </remarks>
+        public Vector3 OffsetCoordinates
+        {
+            get { return new Vector3(CubeCoordinates.x + (CubeCoordinates.z - ((int)CubeCoordinates.z&1)) /2, CubeCoordinates.z);}
         }
 
         /// <summary>
@@ -379,7 +400,6 @@ namespace CivGrid
             //create new mesh to start fresh
             localMesh = new Mesh();
 
-            #region Flat
             //if we are generating a flat regular hexagon
             if (parentChunk.worldManager.levelOfDetail == 0 || terrainType.isShore || terrainType.isOcean)
             {
@@ -404,15 +424,15 @@ namespace CivGrid
 
                 if (terrainFeature == Feature.Mountain)
                 {
-                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.2f, 0.5f), Random.Range(0.3f, 0.6f), 2, true, false);
+                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainHeightMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.2f, 0.5f), Random.Range(0.3f, 0.6f), 2, true, false);
                 }
                 else if (terrainFeature == Feature.Hill)
                 {
-                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.75f, 1f), Random.Range(0.4f, 0.7f), 2, true, false);
+                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainHeightMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.75f, 1f), Random.Range(0.4f, 0.7f), 2, true, false);
                 }
                 else
                 {
-                    localMountainTexture = NoiseGenerator.RandomOverlay(new Texture2D(parentChunk.worldManager.mountainMap.width, parentChunk.worldManager.mountainMap.height), Random.Range(-100f, 100f), 0.8f, 0.2f, 0.15f, 0.5f, false, false);
+                    localMountainTexture = parentChunk.flatHeightMap;
                 }
 
                 Vector3[] vertices = localMesh.vertices;
@@ -428,13 +448,15 @@ namespace CivGrid
                         //flat
                         else
                         {
-                            vertices[i].Set(vertices[i].x, vertices[i].y + pixelHeight + (pixelHeight / 3), vertices[i].z);
+                            pixelHeight = localMountainTexture.GetPixelBilinear(localMesh.uv[i].x + (chunkArrayPosition.x * localMesh.uv[i].x), localMesh.uv[i].y + (chunkArrayPosition.y * localMesh.uv[i].y)).grayscale;
+                            vertices[i].Set(vertices[i].x, vertices[i].y + pixelHeight/10, vertices[i].z);
                         }
                     }
                     //hex next to this edge is a land tile
                     else if(edgeType == EdgeType.LandEdge)
                     {
-                        //raise to land border
+                        Debug.Log("land edge");
+                        vertices[i].Set(vertices[i].x, 0.1f, vertices[i].z);
                     }
                     //hex next to this is a water tile do nothing
                     else
@@ -451,17 +473,60 @@ namespace CivGrid
                 //assign tile texture
                 AssignUVToDefaultTile();
             }
-            #endregion
         }
 
-        private EdgeType GetVertexEdgeType(int index)
+        private EdgeType GetVertexEdgeType(int vertexIndex)
         {
-            for(int i = 0; i < parentChunk.worldManager.edgeVertices.Length; i++)
+            Edge edge = GetEdgeFromVertex(vertexIndex);
+            if (edge != null)
             {
-                if(index == parentChunk.worldManager.edgeVertices[i])
-                { return EdgeType.WaterEdge; }
+                HexInfo adjacentHex = GetHexFromEdgeDirection(this, edge.direction);
+                if (adjacentHex != null)
+                {
+                    if (adjacentHex.terrainType.isOcean == true || adjacentHex.terrainType.isShore == true) { return EdgeType.WaterEdge; }
+                    else { return EdgeType.LandEdge; }
+                }
             }
             return EdgeType.None;
+        }
+
+        private Edge GetEdgeFromVertex(int index)
+        {
+            for(int i = 0; i < parentChunk.worldManager.edges.Length; i++)
+            {
+                if (parentChunk.worldManager.edges[i].vertexIndex[0] == index) { return parentChunk.worldManager.edges[i]; }
+                if (parentChunk.worldManager.edges[i].vertexIndex[1] == index) { return parentChunk.worldManager.edges[i]; }
+            }
+            return null;
+        }
+
+        private HexInfo GetHexFromEdgeDirection(HexInfo startHex, EdgeDirection direction)
+        {
+            if (parentChunk.DetermineChunkEdge((int)startHex.chunkArrayPosition.x, (int)startHex.chunkArrayPosition.y))
+            {
+                Debug.Log("chunk edge");
+                return null;
+            }
+            else
+            {
+                switch (direction)
+                {
+                    case EdgeDirection.BottomLeft:
+                        return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x, startHex.AxialCoordinates.y - 1));
+                    case EdgeDirection.BottomRight:
+                        return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x + 1, startHex.AxialCoordinates.y - 1));
+                    case EdgeDirection.Left:
+                        return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x - 1, startHex.AxialCoordinates.y));
+                    case EdgeDirection.Right:
+                        return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x + 1, startHex.AxialCoordinates.y));
+                    case EdgeDirection.TopLeft:
+                        return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x - 1, startHex.AxialCoordinates.y + 1));
+                    case EdgeDirection.TopRight:
+                        return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x, startHex.AxialCoordinates.y + 1));
+                }
+            }
+            Debug.LogError("Hex not given for edge direction");
+            return null;
         }
 
         /// <summary>
@@ -524,63 +589,5 @@ namespace CivGrid
             //assign the created UV data
             localMesh.uv = UV;
         }
-
-        ///// <summary>
-        ///// Assign the UV maps for a hexagon with a feature to the default base tile texture .
-        ///// </summary>
-        ///// <param name="rawUV">UV map locations for (0,0) sector of texture atlas</param>
-        //private void AssignPresetUVToDefaultTile(Vector2[] rawUV)
-        //{
-        //    Vector2[] UV;
-
-        //    //if we are NOT loading a map
-        //    if (parentChunk.worldManager.generateNewValues == true)
-        //    {
-        //        //if defaultRectLocation is not null
-        //        if (defaultRectLocation == new Rect())
-        //        {
-        //            //get the postion of the texture on the texture atlas
-        //            parentChunk.worldManager.textureAtlas.tileLocations.TryGetValue(terrainType, out currentRectLocation);
-        //            //cache location
-        //            defaultRectLocation = currentRectLocation;
-        //        }
-        //        //use cached location
-        //        else { currentRectLocation = defaultRectLocation; }
-        //    }
-
-        //    //temp UV data
-        //    UV = new Vector2[localMesh.vertexCount];
-
-        //    //shift base 1:1 UV map to the scale and location of the texture on the texture atlas
-        //    for (int i = 0; i < localMesh.vertexCount; i++)
-        //    {
-        //        UV[i] = new Vector2(rawUV[i].x * currentRectLocation.width + currentRectLocation.x, rawUV[i].y * currentRectLocation.height + currentRectLocation.y);
-        //    }
-
-        //    //assign the created UV data
-        //    localMesh.uv = UV;
-        //}
-
-        ///// <summary>
-        ///// Assign the UV maps for a hexagon with a feature to the provided location on the texture atlas.
-        ///// </summary>
-        ///// <param name="mesh">Mesh to edit UV data from</param>
-        ///// <param name="rectArea">Location of the texture on the texture atlas</param>
-        //private void AssignPresetUVToTile(Mesh mesh, Rect rectArea)
-        //{
-        //    Vector2[] UV;
-
-        //    //temp UV data
-        //    UV = new Vector2[mesh.vertexCount];
-
-        //    //shift base 1:1 UV map to the scale and location of the texture on the texture atlas
-        //    for (int i = 0; i < mesh.vertexCount; i++)
-        //    {
-        //        UV[i] = new Vector2(mesh.uv[i].x * rectArea.width + rectArea.x, mesh.uv[i].y * rectArea.height + rectArea.y);
-        //    }
-
-        //    //assign the created UV data
-        //    localMesh.uv = UV;
-        //}
     }
 }

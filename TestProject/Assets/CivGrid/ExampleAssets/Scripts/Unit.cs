@@ -86,7 +86,7 @@ namespace CivGrid.SampleResources
 
                                     if (movesNeeded <= movesLeft)
                                     {
-                                        print("Moving to tile: " + hex.AxialGridPosition);
+                                        print("Moving to tile: " + hex.AxialCoordinates);
                                         //actually move the unit
                                         Move(currentLocation, hex, true);
                                         movesLeft -= movesNeeded;
@@ -135,7 +135,7 @@ namespace CivGrid.SampleResources
             if (quickMove)
             {
                 //find our obj reference to the needed grid
-                GameObject hex = GameObject.Find("HexTile " + toTile.AxialGridPosition);
+                GameObject hex = GameObject.Find("HexTile " + toTile.AxialCoordinates);
                 //tell old tile we are no longer on it
                 fromTile.currentUnit = null;
                 //move unit

@@ -10,5 +10,6 @@ C:\Users\Landon\Desktop\CivGridRepository\TestProject\Temp\bin\Debug\Unity.DataC
 C:\Users\Landon\Desktop\CivGridRepository\TestProject\Temp\bin\Debug\ICSharpCode.NRefactory.dll
 C:\Users\Landon\Desktop\CivGridRepository\TestProject\obj\Debug\Assembly-CSharp-Editor.dll
 C:\Users\Landon\Desktop\CivGridRepository\TestProject\obj\Debug\Assembly-CSharp-Editor.pdb
+C:\Users\Landon\Desktop\CivGridRepository\TestProject\Temp\bin\Debug\Assembly-CSharp-Editor.dll.CodeAnalysisLog.xml
+C:\Users\Landon\Desktop\CivGridRepository\TestProject\Temp\bin\Debug\Assembly-CSharp-Editor.dll.lastcodeanalysissucceeded
 C:\Users\Landon\Desktop\CivGridRepository\TestProject\Temp\bin\Debug\Assembly-CSharp.pdb
-C:\Users\Landon\Desktop\CivGridRepository\TestProject\Temp\bin\Debug\Assembly-CSharp.xml

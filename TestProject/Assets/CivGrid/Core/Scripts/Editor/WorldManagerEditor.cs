@@ -19,11 +19,16 @@ namespace CivGrid.Editors
 
         public override void OnInspectorGUI()
         {
-            GUILayout.Label("World Settings", EditorStyles.boldLabel);
+            EditorGUILayout.SelectableLabel("World Settings", EditorStyles.boldLabel);
+            
+            EditorGUI.indentLevel++;
 
             worldManager.generateOnStart = EditorGUILayout.Toggle("Generate World On Startup", worldManager.generateOnStart);
             worldManager.useCivGridCamera = EditorGUILayout.Toggle("Use Default CivGrid Camera", worldManager.useCivGridCamera);
+            worldManager.generateNodeLocations = EditorGUILayout.Toggle("Generate Pathfinding Node Locations", worldManager.generateNodeLocations);
             worldManager.useWorldTypeValues = EditorGUILayout.Toggle("Use Preset World Values", worldManager.useWorldTypeValues);
+
+            EditorGUILayout.Separator();
 
             if (worldManager.useWorldTypeValues == false)
             {
@@ -34,7 +39,13 @@ namespace CivGrid.Editors
                 worldManager.worldType = (WorldType)EditorGUILayout.EnumPopup("World Type", worldManager.worldType);
             }
 
-            GUILayout.Label("Size Settings", EditorStyles.boldLabel);
+            EditorGUI.indentLevel--;
+
+            EditorGUILayout.Separator();
+
+            EditorGUILayout.SelectableLabel("Map Size", EditorStyles.boldLabel);
+
+            EditorGUI.indentLevel++;
 
             worldManager.mapSize = EditorGUILayout.Vector2Field("Map Size", worldManager.mapSize);
             worldManager.chunkSize = EditorGUILayout.IntField("Chunk Size", worldManager.chunkSize);
@@ -46,17 +57,16 @@ namespace CivGrid.Editors
 
             worldManager.hexRadiusSize = EditorGUILayout.FloatField("Hex Radius Size", worldManager.hexRadiusSize);
 
-            GUILayout.Label("Mountain Settings", EditorStyles.boldLabel);
+            EditorGUI.indentLevel--;
 
-            worldManager.mountainScaleY = EditorGUILayout.FloatField("Mountain Scale Y", worldManager.mountainScaleY);
-            worldManager.mountainMap = (Texture2D)EditorGUILayout.ObjectField("Base Mountain Heightmap", worldManager.mountainMap, typeof(Texture2D), false);
+            EditorGUILayout.SelectableLabel("Tile Settings", EditorStyles.boldLabel);
 
-            //base.OnInspectorGUI();
-        }
+            EditorGUI.indentLevel++;
+            EditorGUILayout.SelectableLabel("Mountain Settings", EditorStyles.boldLabel);
+            worldManager.mountainScaleY = EditorGUILayout.FloatField("Vertical Size", worldManager.mountainScaleY);
+            worldManager.mountainHeightMap = (Texture2D)EditorGUILayout.ObjectField("Base Heightmap", worldManager.mountainHeightMap, typeof(Texture2D), false);
+            EditorGUI.indentLevel--;
 
-        protected override void OnHeaderGUI()
-        {
-            EditorGUILayout.SelectableLabel("LOL");
         }
     }
 }

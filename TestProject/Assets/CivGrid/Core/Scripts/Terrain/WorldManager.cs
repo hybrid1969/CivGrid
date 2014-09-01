@@ -155,8 +155,9 @@ namespace CivGrid
         public Mesh flatHexagonSharedMesh;
 
         /// <summary>
-        /// Vertices in <see cref="flatHexagonSharedMesh"/> that are on the edge
+        /// Array of <see cref="Edge"/>s in the base mesh
         /// </summary>
+        public Edge[] edges;
         public int[] edgeVertices;
 
         private bool doneGenerating;
@@ -212,18 +213,20 @@ namespace CivGrid
         /// Whether or not to use the built in world type values or custom user ones
         /// </summary>
         public bool useWorldTypeValues;
-        //public bool showBorder;
 
-        //Hill and mountains
         /// <summary>
         /// The base heightmap for mountains
         /// </summary>
         [SerializeField]
-        public Texture2D mountainMap;
+        public Texture2D mountainHeightMap;
         /// <summary>
         /// Amount to scale the mountain heightmap upon
         /// </summary>
         public float mountainScaleY;
+
+        //pathfinding
+        public bool generateNodeLocations = true;
+        public Vector3[,] nodeLocations;
 
 
         //managers
@@ -262,6 +265,12 @@ namespace CivGrid
             improvementManager = GetComponent<ImprovementManager>();
             tileManager = GetComponent<TileManager>();
             civGridCamera = GameObject.FindObjectOfType<CivGridCamera>();
+
+            if (generateNodeLocations)
+            {
+                nodeLocations = new Vector3[(int)mapSize.x, (int)mapSize.y];
+            }
+
             if (generateOnStart == true)
             {
                 //LoadAndGenerateMap("terrainTest");
@@ -416,9 +425,13 @@ namespace CivGrid
             //create new mesh to hold the data for the flat hexagon
             flatHexagonSharedMesh = new Mesh();
 
+            string location = Application.dataPath.Remove(Application.dataPath.Length - 6);
             if (levelOfDetail > 0)
             {
-                flatHexagonSharedMesh = MeshLoader.LoadMesh(@"C:\Users\Landon\Desktop\CivGridRepository\Hexagon_1.obj");
+                if (levelOfDetail == 1)
+                { flatHexagonSharedMesh = MeshLoader.LoadMesh(location + @"\Hexagon_1.obj"); }
+                if (levelOfDetail == 2)
+                { flatHexagonSharedMesh = MeshLoader.LoadMesh(location + @"\Hexagon_2.obj"); }
             }
             else
             {
@@ -474,8 +487,9 @@ namespace CivGrid
                 flatHexagonSharedMesh.triangles = triangles;
                 //assign uv
                 flatHexagonSharedMesh.uv = uv;
-
             }
+
+            edgeVertices = MeshUtility.FindEdgeVertices(flatHexagonSharedMesh, out edges);
 
             #region finalize
             //set temp gameObject's mesh to the flat hexagon mesh
@@ -484,7 +498,6 @@ namespace CivGrid
             inst.GetComponent<MeshFilter>().mesh.RecalculateNormals();
             //set mesh collider's mesh to the flat hexagon
             inst.GetComponent<MeshCollider>().sharedMesh = flatHexagonSharedMesh;
-            #endregion
 
             //calculate the extents of the flat hexagon
             hexExt = new Vector3(inst.gameObject.collider.bounds.extents.x, inst.gameObject.collider.bounds.extents.y, inst.gameObject.collider.bounds.extents.z);
@@ -493,9 +506,9 @@ namespace CivGrid
             //calculate the center of the flat hexagon
             hexCenter = new Vector3(inst.gameObject.collider.bounds.center.x, inst.gameObject.collider.bounds.center.y, inst.gameObject.collider.bounds.center.z);
             //calculate edge vertices
-            edgeVertices = MeshUtility.FindEdgeVertices(flatHexagonSharedMesh);
             //destroy the temp object that we used to calculate the flat hexagon's size
             Destroy(inst);
+            #endregion
         }
 
         /// <summary>
@@ -569,7 +582,6 @@ namespace CivGrid
                 //begin chunk operations since we are done with value generation
                 chunk.Begin();
             }
-            //GameManager.worldEvent.Invoke("World Done", null);
         }
 
         /// <summary>
@@ -578,7 +590,7 @@ namespace CivGrid
         /// <param name="x">The x cords of the tile</param>
         /// <param name="h">The h(height) cord of the tile</param>
         /// <returns>An int corresponding to the biome it should be within</returns>
-        internal Tile PickTileType(int x, int h)
+        internal Tile GenerateTileType(int x, int h)
         {
             //temp no influence from rainfall values
             float latitude = Mathf.Abs((mapSize.y / 2) - x) / (mapSize.x / 2);
@@ -610,29 +622,6 @@ namespace CivGrid
             return (tile);
         }
 
-        private bool CheckIfCoast(int x, int y)
-        {
-            float[] surrondingPixels = Utility.GetSurrondingPixels(tileMap, x, y);
-
-            int numberWater = 0;
-            for (int i = 0; i < 8; i++)
-            {
-                if (surrondingPixels[i] < 0.5f)
-                {
-                    numberWater++;
-                }
-            }
-
-            if (numberWater < 8)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         /// <summary>
         /// Determines the tile's <see cref="Feature"/> type from the world map.
         /// </summary>
@@ -662,6 +651,29 @@ namespace CivGrid
                 returnVal = Feature.Flat;
             }
             return returnVal;
+        }
+
+        private bool CheckIfCoast(int x, int y)
+        {
+            float[] surrondingPixels = Utility.GetSurrondingPixels(tileMap, x, y);
+
+            int numberWater = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                if (surrondingPixels[i] < 0.5f)
+                {
+                    numberWater++;
+                }
+            }
+
+            if (numberWater < 8)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         void Update()
@@ -698,6 +710,7 @@ namespace CivGrid
         }
 
 
+        #region GetHex
         /// <summary>
         /// Get a hexagon from a world position.
         /// </summary>
@@ -730,14 +743,13 @@ namespace CivGrid
         /// Get a hexagon from a world position; This is faster than not giving a chunk.
         /// </summary>
         /// <param name="worldPosition">The position of the needed hexagon</param>
-        /// <param name="originalchunk">The chunk that contains the hexagon</param>
+        /// <param name="originalChunk">The chunk that contains the hexagon</param>
         /// <returns>The hexagon at the nearest position within the provided chunk</returns>
-        public HexInfo GetHexFromWorldPosition(Vector3 worldPosition, HexChunk originalchunk)
+        public HexInfo GetHexFromWorldPosition(Vector3 worldPosition, HexChunk originalChunk)
         {
-            //print(worldPosition);
             HexInfo hexToReturn = null;
 
-            HexChunk[] possibleChunks = FindPossibleChunks(originalchunk);
+            HexChunk[] possibleChunks = FindPossibleChunks(originalChunk);
 
             float minDistance = 100;
 
@@ -759,30 +771,98 @@ namespace CivGrid
         }
 
         /// <summary>
-        /// Get a hexagon from a axial position.
+        /// Get a hexagon from axial coordinates.
         /// </summary>
-        /// <param name="position">Axial position to look for</param>
-        /// <returns>The hexagon at the nearest position</returns>
-        public HexInfo GetHexFromAxialPosition(Vector2 position)
+        /// <param name="axialCoordinates">Axial coordinates of the needed hexagon</param>
+        /// <returns>The hexagon with the requested axial coordinates</returns>
+        public HexInfo GetHexFromAxialCoordinates(Vector2 axialCoordinates)
         {
+
             foreach (HexChunk chunk in hexChunks)
             {
                 foreach (HexInfo hex in chunk.hexArray)
                 {
-                    if (hex.AxialGridPosition == position) { return hex; }
+                    if (hex.AxialCoordinates == axialCoordinates) { return hex; }
                 }
             }
             return null;
         }
 
-
-        //testing
-        Vector3 hitLocation;
-        void OnSceneGUI()
+        /// <summary>
+        /// Get a hexagon from axial coordinates; This is faster than not giving a chunk.
+        /// </summary>
+        /// <param name="axialCoordinates">Axial coordinates of the needed hexagon</param>
+        /// <param name="originalChunk">The chunk that contains the hexagon</param>
+        /// <returns>The hexagon with the requested axial coordinates within the provided chunk</returns>
+        public HexInfo GetHexFromAxialCoordinates(Vector2 axialCoordinates, HexChunk originalChunk)
         {
-            Debug.Log("lol");
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawSphere(hitLocation, 5f);
+            HexChunk[] possibleChunks = FindPossibleChunks(originalChunk);
+
+            foreach (HexChunk chunk in possibleChunks)
+            {
+                foreach (HexInfo hex in chunk.hexArray)
+                {
+                    if (hex.AxialCoordinates == axialCoordinates) { return hex; }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get a hexagon from cube coordinates.
+        /// </summary>
+        /// <param name="cubeCoordinates">Cube coordinates of the needed hexagon</param>
+        /// <returns>The hexagon with the requested cube coordinates</returns>
+        public HexInfo GetHexFromCubeCoordinates(Vector3 cubeCoordinates)
+        {
+            foreach (HexChunk chunk in hexChunks)
+            {
+                foreach (HexInfo hex in chunk.hexArray)
+                {
+                    if (hex.CubeCoordinates == cubeCoordinates) { return hex; }
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Get a hexagon from cube coordinates.
+        /// </summary>
+        /// <param name="cubeCoordinates">Cube  coordinates of the needed hexagon</param>
+        /// <param name="originalChunk">The chunk that contains the hexagon</param>
+        /// <returns>The hexagon with the requested cube coordinates</returns>
+        public HexInfo GetHexFromCubeCoordinates(Vector3 cubeCoordinates, HexChunk originalChunk)
+        {
+            HexChunk[] possibleChunks = FindPossibleChunks(originalChunk);
+
+            foreach (HexChunk chunk in possibleChunks)
+            {
+                foreach (HexInfo hex in chunk.hexArray)
+                {
+                    if (hex.CubeCoordinates == cubeCoordinates) { return hex; }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get a hexagon from offset coordinates.
+        /// </summary>
+        /// <param name="position">Offset coordinates of the needed hexagon</param>
+        /// <returns>The hexagon with the requested cube coordinates</returns>
+        public HexInfo GetHexFromOffsetCoordinates(Vector2 position)
+        {
+
+            int chunkX = Mathf.FloorToInt(position.x / chunkSize);
+            int chunkY = Mathf.FloorToInt(position.y / chunkSize);
+
+            HexChunk chunk = hexChunks[chunkX, chunkY];
+            HexInfo hex = chunk.hexArray[(int)position.x - (chunkX * chunkSize), (int)position.y - (chunkY * chunkSize)];
+
+            return hex;
+
         }
 
 
@@ -795,7 +875,6 @@ namespace CivGrid
             Ray ray1 = civGridCamera.GetCamera(0).ScreenPointToRay(mousePos);
             if (Physics.Raycast(ray1, out chunkHit, 100f))
             {
-                hitLocation = chunkHit.point;
                 HexChunk chunkHexIsLocatedIn = chunkHit.collider.gameObject.GetComponent<HexChunk>();
                 if (chunkHit.collider != null)
                 {
@@ -807,7 +886,6 @@ namespace CivGrid
                 Ray ray2 = civGridCamera.GetCamera(1).ScreenPointToRay(mousePos);
                 if (Physics.Raycast(ray2, out chunkHit, 100f))
                 {
-                    hitLocation = chunkHit.point;
                     HexChunk chunkHexIsLocatedIn = chunkHit.collider.gameObject.GetComponent<HexChunk>();
                     if (chunkHit.collider != null)
                     {
@@ -818,6 +896,7 @@ namespace CivGrid
 
             return null;
         }
+        #endregion
 
         private HexChunk[] FindPossibleChunks(HexChunk chunk)
         {

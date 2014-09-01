@@ -169,7 +169,7 @@ namespace CivGrid
                 writer.WriteAttributeString("hexRadiusSize", worldManager.hexRadiusSize.ToString());
 
 
-                FileUtility.SaveTexture(worldManager.mountainMap, "Base_Mountain_Map", false);
+                FileUtility.SaveTexture(worldManager.mountainHeightMap, "Base_Mountain_Map", false);
 
                 writer.WriteEndElement();
                 #endregion
@@ -404,7 +404,7 @@ namespace CivGrid
                                 worldManager.mapSize = new Vector2(XmlConvert.ToInt32(reader["mapSizeX"]), XmlConvert.ToInt32(reader["mapSizeY"]));
                                 worldManager.chunkSize = XmlConvert.ToInt32(reader["chunkSize"]);
                                 worldManager.hexRadiusSize = (float)XmlConvert.ToDouble(reader["hexRadiusSize"]);
-                                worldManager.mountainMap = FileUtility.LoadTexture("Base_Mountain_Map");
+                                worldManager.mountainHeightMap = FileUtility.LoadTexture("Base_Mountain_Map");
                                 break;
                             case "CivGridCamera":
 
@@ -494,7 +494,7 @@ namespace CivGrid
 
             foreach(HexChunk chunk in worldManager.hexChunks)
             {
-                chunk.StartHex();
+                chunk.StartHexGeneration();
                 foreach(HexInfo hex in chunk.hexArray)
                 {
                     if (hex.currentResource.name != "None")
