@@ -194,6 +194,7 @@ namespace CivGrid
         /// </example>
         public void Start()
         {
+
             //set tile type to the mountain tile if the feature is a mountain and the type exists
             if (terrainFeature == Feature.Mountain) { Tile mountain = parentChunk.worldManager.tileManager.TryGetMountain(); if (mountain != null) {  terrainType = mountain; } }
 
@@ -438,9 +439,11 @@ namespace CivGrid
                 Vector3[] vertices = localMesh.vertices;
                 for (int i = 0; i < vertices.Length; i++)
                 {
-                    EdgeType edgeType = GetVertexEdgeType(i);
-                    //not an edge
-                    if (edgeType == EdgeType.None)
+                    if(VertexIsEdge(i))
+                    {
+                        vertices[i].Set(vertices[i].x, 0f, vertices[i].z);
+                    }
+                    else
                     {
                         float pixelHeight = localMountainTexture.GetPixelBilinear(localMesh.uv[i].x, localMesh.uv[i].y).grayscale;
                         if (terrainFeature == Feature.Mountain) { pixelHeight *= 1.5f; vertices[i].Set(vertices[i].x, vertices[i].y + (pixelHeight - (parentChunk.worldManager.mountainScaleY / 100)), vertices[i].z); }
@@ -449,20 +452,39 @@ namespace CivGrid
                         else
                         {
                             pixelHeight = localMountainTexture.GetPixelBilinear(localMesh.uv[i].x + (chunkArrayPosition.x * localMesh.uv[i].x), localMesh.uv[i].y + (chunkArrayPosition.y * localMesh.uv[i].y)).grayscale;
-                            vertices[i].Set(vertices[i].x, vertices[i].y + pixelHeight/10, vertices[i].z);
+                            vertices[i].Set(vertices[i].x, vertices[i].y + pixelHeight / 10, vertices[i].z);
                         }
                     }
-                    //hex next to this edge is a land tile
-                    else if(edgeType == EdgeType.LandEdge)
-                    {
-                        Debug.Log("land edge");
-                        vertices[i].Set(vertices[i].x, 0.1f, vertices[i].z);
-                    }
-                    //hex next to this is a water tile do nothing
-                    else
-                    {
-                        continue;
-                    }
+                    //EdgeType edgeType = GetVertexEdgeType(i);
+                    ////not an edge
+                    //if (edgeType == EdgeType.None)
+                    //{
+                    //    float pixelHeight = localMountainTexture.GetPixelBilinear(localMesh.uv[i].x, localMesh.uv[i].y).grayscale;
+                    //    if (terrainFeature == Feature.Mountain) { pixelHeight *= 1.5f; vertices[i].Set(vertices[i].x, vertices[i].y + (pixelHeight - (parentChunk.worldManager.mountainScaleY / 100)), vertices[i].z); }
+                    //    if (terrainFeature == Feature.Hill) { vertices[i].Set(vertices[i].x, vertices[i].y + (pixelHeight - (parentChunk.worldManager.mountainScaleY / 100)), vertices[i].z); }
+                    //    //flat
+                    //    else
+                    //    {
+                    //        pixelHeight = localMountainTexture.GetPixelBilinear(localMesh.uv[i].x + (chunkArrayPosition.x * localMesh.uv[i].x), localMesh.uv[i].y + (chunkArrayPosition.y * localMesh.uv[i].y)).grayscale;
+                    //        vertices[i].Set(vertices[i].x, vertices[i].y + pixelHeight/10, vertices[i].z);
+                    //    }
+                    //}
+                    ////hex next to this edge is a land tile
+                    //else if(edgeType == EdgeType.LandEdge)
+                    //{
+                    //    Debug.Log("land edge");
+                    //    vertices[i].Set(vertices[i].x, 0.1f, vertices[i].z);
+                    //}
+                    ////hex next to this is a water tile do nothing
+                    //else if(edgeType == EdgeType.WaterEdge)
+                    //{
+                    //    Debug.Log("water edge");
+                    //    vertices[i].Set(vertices[i].x, 0.1f, vertices[i].z);
+                    //}
+                    //else
+                    //{
+                    //    Debug.LogError("Logic Error; Unreachable code reached.");
+                    //}
                 }
                 localMesh.vertices = vertices;
 
@@ -473,61 +495,72 @@ namespace CivGrid
                 //assign tile texture
                 AssignUVToDefaultTile();
             }
+
         }
 
-        private EdgeType GetVertexEdgeType(int vertexIndex)
+        private bool VertexIsEdge(int vertexIndex)
         {
-            Edge edge = GetEdgeFromVertex(vertexIndex);
-            if (edge != null)
+            for (int i = 0; i < parentChunk.worldManager.edgeVertices.Length; i++)
             {
-                HexInfo adjacentHex = GetHexFromEdgeDirection(this, edge.direction);
-                if (adjacentHex != null)
-                {
-                    if (adjacentHex.terrainType.isOcean == true || adjacentHex.terrainType.isShore == true) { return EdgeType.WaterEdge; }
-                    else { return EdgeType.LandEdge; }
-                }
+                if (parentChunk.worldManager.edgeVertices[i] == vertexIndex) { return true; }
             }
-            return EdgeType.None;
+            return false;
         }
 
-        private Edge GetEdgeFromVertex(int index)
-        {
-            for(int i = 0; i < parentChunk.worldManager.edges.Length; i++)
-            {
-                if (parentChunk.worldManager.edges[i].vertexIndex[0] == index) { return parentChunk.worldManager.edges[i]; }
-                if (parentChunk.worldManager.edges[i].vertexIndex[1] == index) { return parentChunk.worldManager.edges[i]; }
-            }
-            return null;
-        }
+        //private EdgeType GetVertexEdgeType(int vertexIndex)
+        //{
+        //    Edge edge = GetEdgeFromVertex(vertexIndex);
+        //    if (edge != null)
+        //    {
+        //        edge.adjacentHex = GetHexFromEdgeDirection(this, edge.direction);
 
-        private HexInfo GetHexFromEdgeDirection(HexInfo startHex, EdgeDirection direction)
-        {
-            if (parentChunk.DetermineChunkEdge((int)startHex.chunkArrayPosition.x, (int)startHex.chunkArrayPosition.y))
-            {
-                Debug.Log("chunk edge");
-                return null;
-            }
-            else
-            {
-                switch (direction)
-                {
-                    case EdgeDirection.BottomLeft:
-                        return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x, startHex.AxialCoordinates.y - 1));
-                    case EdgeDirection.BottomRight:
-                        return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x + 1, startHex.AxialCoordinates.y - 1));
-                    case EdgeDirection.Left:
-                        return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x - 1, startHex.AxialCoordinates.y));
-                    case EdgeDirection.Right:
-                        return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x + 1, startHex.AxialCoordinates.y));
-                    case EdgeDirection.TopLeft:
-                        return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x - 1, startHex.AxialCoordinates.y + 1));
-                    case EdgeDirection.TopRight:
-                        return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x, startHex.AxialCoordinates.y + 1));
-                }
-            }
-            Debug.LogError("Hex not given for edge direction");
-            return null;
-        }
+        //        if (edge.adjacentHex != null)
+        //        {
+        //            Debug.Log("found adjacent hex");
+        //            if (edge.adjacentHex.terrainType.isOcean == true || edge.adjacentHex.terrainType.isShore == true) { Debug.Log("water edge"); return EdgeType.WaterEdge; }
+        //            else { Debug.Log("land edge"); return EdgeType.LandEdge; }
+        //        }
+        //    }
+        //    return EdgeType.None;
+        //}
+
+        //private Edge GetEdgeFromVertex(int index)
+        //{
+        //    for(int i = 0; i < parentChunk.worldManager.edges.Length; i++)
+        //    {
+        //        if (parentChunk.worldManager.edges[i].vertexIndex[0] == index) { return parentChunk.worldManager.edges[i]; }
+        //        if (parentChunk.worldManager.edges[i].vertexIndex[1] == index) { return parentChunk.worldManager.edges[i]; }
+        //    }
+        //    return null;
+        //}
+
+        //private HexInfo GetHexFromEdgeDirection(HexInfo startHex, EdgeDirection direction)
+        //{
+        //    if (startHex.onEdge)
+        //    {
+        //        return null;
+        //    }
+        //    else
+        //    {
+        //        switch (direction)
+        //        {
+        //            case EdgeDirection.BottomLeft:
+        //                return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x, startHex.AxialCoordinates.y - 1));
+        //            case EdgeDirection.BottomRight:
+        //                return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x + 1, startHex.AxialCoordinates.y - 1));
+        //            case EdgeDirection.Left:
+        //                return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x - 1, startHex.AxialCoordinates.y));
+        //            case EdgeDirection.Right:
+        //                return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x + 1, startHex.AxialCoordinates.y));
+        //            case EdgeDirection.TopLeft:
+        //                return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x - 1, startHex.AxialCoordinates.y + 1));
+        //            case EdgeDirection.TopRight:
+        //                return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x, startHex.AxialCoordinates.y + 1));
+        //        }
+        //    }
+        //    //unreachable
+        //    return null;
+        //}
 
         /// <summary>
         /// Assigns the flat hexagon's UV data to the tile type.

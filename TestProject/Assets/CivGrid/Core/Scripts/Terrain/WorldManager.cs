@@ -195,9 +195,9 @@ namespace CivGrid
         public float hexRadiusSize;
 
         /// <summary>
-        /// If hexagons should be high in detail.
+        /// The level of detail of a hexagon
         /// </summary>
-        public int levelOfDetail = 1;
+        public int levelOfDetail;
 
         //world setup
         /// <summary>

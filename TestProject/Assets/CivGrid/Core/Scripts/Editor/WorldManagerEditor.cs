@@ -59,12 +59,19 @@ namespace CivGrid.Editors
 
             EditorGUI.indentLevel--;
 
+
             EditorGUILayout.SelectableLabel("Tile Settings", EditorStyles.boldLabel);
 
             EditorGUI.indentLevel++;
+            worldManager.levelOfDetail = EditorGUILayout.IntSlider("Level of Detail", worldManager.levelOfDetail, 0, 2);
+            EditorGUI.indentLevel--;
+
+            EditorGUI.indentLevel++;
             EditorGUILayout.SelectableLabel("Mountain Settings", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
             worldManager.mountainScaleY = EditorGUILayout.FloatField("Vertical Size", worldManager.mountainScaleY);
             worldManager.mountainHeightMap = (Texture2D)EditorGUILayout.ObjectField("Base Heightmap", worldManager.mountainHeightMap, typeof(Texture2D), false);
+            EditorGUI.indentLevel--;
             EditorGUI.indentLevel--;
 
         }
