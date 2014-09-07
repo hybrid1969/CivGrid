@@ -137,6 +137,11 @@ namespace CivGrid
         public bool onEdge;
 
         /// <summary>
+        /// Bordering hexagons of this hexagon.
+        /// </summary>
+        public HexInfo[] neighbors;
+
+        /// <summary>
         /// The coordinates of the hexagon in axial coordinates.
         /// </summary>
         /// <remarks>
@@ -200,6 +205,8 @@ namespace CivGrid
 
             //get the texture atlas from world manager
             worldTextureAtlas = parentChunk.worldManager.textureAtlas;
+
+            parentChunk.worldManager.axialToHexDictionary.Add(AxialCoordinates, this);
 
             //generate local mesh
             MeshSetup();
@@ -398,8 +405,20 @@ namespace CivGrid
         /// </summary>
         public void MeshSetup()
         {
-            //create new mesh to start fresh
-            localMesh = new Mesh();
+
+            //cache neighbors of this hexagon
+            neighbors = parentChunk.worldManager.GetNeighboursOfHex(this);
+            Debug.Log("My Axial Position: " + AxialCoordinates);
+            for (int i = 0; i < 6; i++)
+            {
+                if (neighbors[i] != null)
+                {
+                    Debug.Log("Neighbor: " + neighbors[i].AxialCoordinates);
+                }
+            }
+
+                //create new mesh to start fresh
+                localMesh = new Mesh();
 
             //if we are generating a flat regular hexagon
             if (parentChunk.worldManager.levelOfDetail == 0 || terrainType.isShore || terrainType.isOcean)
@@ -441,7 +460,20 @@ namespace CivGrid
                 {
                     if(VertexIsEdge(i))
                     {
-                        vertices[i].Set(vertices[i].x, 0f, vertices[i].z);
+                        if (onEdge == false)
+                        {
+                            Edge edge = GetEdgeFromVertex(i);
+                            edge.adjacentHex = GetAdjacentHexFromEdgeDirection(edge.direction);
+                        }
+
+                        //if (edge.adjacentHex.terrainType.isOcean == true || edge.adjacentHex.terrainType.isShore == true)
+                        {
+                            vertices[i].Set(vertices[i].x, 0f, vertices[i].z);
+                        }
+                        //else
+                        //{
+                        //    vertices[i].Set(vertices[i].x, 0.1f, vertices[i].z);
+                       // }
                     }
                     else
                     {
@@ -524,43 +556,27 @@ namespace CivGrid
         //    return EdgeType.None;
         //}
 
-        //private Edge GetEdgeFromVertex(int index)
-        //{
-        //    for(int i = 0; i < parentChunk.worldManager.edges.Length; i++)
-        //    {
-        //        if (parentChunk.worldManager.edges[i].vertexIndex[0] == index) { return parentChunk.worldManager.edges[i]; }
-        //        if (parentChunk.worldManager.edges[i].vertexIndex[1] == index) { return parentChunk.worldManager.edges[i]; }
-        //    }
-        //    return null;
-        //}
+        private Edge GetEdgeFromVertex(int index)
+        {
+            for (int i = 0; i < parentChunk.worldManager.edges.Length; i++)
+            {
+                if (parentChunk.worldManager.edges[i].vertexIndex[0] == index) { return parentChunk.worldManager.edges[i]; }
+                if (parentChunk.worldManager.edges[i].vertexIndex[1] == index) { return parentChunk.worldManager.edges[i]; }
+            }
+            return null;
+        }
 
-        //private HexInfo GetHexFromEdgeDirection(HexInfo startHex, EdgeDirection direction)
-        //{
-        //    if (startHex.onEdge)
-        //    {
-        //        return null;
-        //    }
-        //    else
-        //    {
-        //        switch (direction)
-        //        {
-        //            case EdgeDirection.BottomLeft:
-        //                return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x, startHex.AxialCoordinates.y - 1));
-        //            case EdgeDirection.BottomRight:
-        //                return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x + 1, startHex.AxialCoordinates.y - 1));
-        //            case EdgeDirection.Left:
-        //                return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x - 1, startHex.AxialCoordinates.y));
-        //            case EdgeDirection.Right:
-        //                return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x + 1, startHex.AxialCoordinates.y));
-        //            case EdgeDirection.TopLeft:
-        //                return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x - 1, startHex.AxialCoordinates.y + 1));
-        //            case EdgeDirection.TopRight:
-        //                return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(startHex.AxialCoordinates.x, startHex.AxialCoordinates.y + 1));
-        //        }
-        //    }
-        //    //unreachable
-        //    return null;
-        //}
+        private HexInfo GetAdjacentHexFromEdgeDirection(Vector2 direction)
+        {
+            if (onEdge)
+            {
+                return null;
+            }
+            else
+            {
+                return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(AxialCoordinates.x + direction.x, AxialCoordinates.y + direction.y));
+            }
+        }
 
         /// <summary>
         /// Assigns the flat hexagon's UV data to the tile type.

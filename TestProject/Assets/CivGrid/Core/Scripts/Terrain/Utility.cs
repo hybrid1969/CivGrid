@@ -228,7 +228,7 @@ namespace CivGrid
             List<Edge> culledEdges = new List<Edge>();
             foreach (Edge edge in edges)
             {
-                edge.direction = DetermineEdgeDirection(edge);
+                edge.edgeDirection = DetermineEdgeDirection(edge, out edge.direction);
                 if (edge.faceIndex[0] == edge.faceIndex[1])
                 {
                     culledEdges.Add(edge);
@@ -238,7 +238,7 @@ namespace CivGrid
             return culledEdges.ToArray();
         }
 
-        private static EdgeDirection DetermineEdgeDirection(Edge edge)
+        private static EdgeDirection DetermineEdgeDirection(Edge edge, out Vector2 direction)
         {
             WorldManager worldManager = GameObject.FindObjectOfType<WorldManager>();
             Vector3[] verts = worldManager.flatHexagonSharedMesh.vertices;
@@ -248,27 +248,30 @@ namespace CivGrid
             {
                 if(verts[edge.vertexIndex[0]].x < 0.5f || verts[edge.vertexIndex[1]].x < 0.5f)
                 {
+                    direction = new Vector2(0, -1);
                     return EdgeDirection.BottomLeft;
                 }
-                else { return EdgeDirection.BottomRight; }
+                else { direction = new Vector2(1,-1); return EdgeDirection.BottomRight; }
             }
             //top
-            if(verts[edge.vertexIndex[0]].y > 0.66f || verts[edge.vertexIndex[1]].y < 0.66f)
+            if(verts[edge.vertexIndex[0]].y > 0.66f || verts[edge.vertexIndex[1]].y > 0.66f)
             {
-                if (verts[edge.vertexIndex[0]].x < 0.5f || verts[edge.vertexIndex[1]].x < 0.5f)
+                if (verts[edge.vertexIndex[0]].x < 0.5 || verts[edge.vertexIndex[1]].x < 0.5f)
                 {
+                    direction = new Vector2(-1,1);
                     return EdgeDirection.TopLeft;
                 }
-                else { return EdgeDirection.TopRight; }
+                else { direction = new Vector2(0,1); return EdgeDirection.TopRight; }
             }
             //middle
             else
             {
                 if (verts[edge.vertexIndex[0]].x < 0.5f || verts[edge.vertexIndex[1]].x < 0.5f)
                 {
+                    direction = new Vector2(-1,0);
                     return EdgeDirection.Left;
                 }
-                else { return EdgeDirection.Right; }
+                else { direction = new Vector2(1,0); return EdgeDirection.Right; }
             }
         }
 
@@ -425,7 +428,8 @@ namespace CivGrid
     {
         // The index to each vertex
         public int[] vertexIndex = new int[2];
-        internal EdgeDirection direction;
+        internal EdgeDirection edgeDirection;
+        internal Vector2 direction;
         internal HexInfo adjacentHex;
         // The index into the face.
         // (faceindex[0] == faceindex[1] means the edge connects to only one triangle)

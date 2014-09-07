@@ -27,20 +27,20 @@ namespace CivGrid
     /// </item>
     /// </list>
     /// </remarks>
-    public enum Feature 
-    { 
+    public enum Feature
+    {
         /// <summary>
         /// A completly flat hexagon with no change in the vertical axis.
         /// </summary>
-        Flat = 0, 
+        Flat = 0,
         /// <summary>
         /// A hill with vertical noise.
         /// </summary>
-        Hill = 1, 
+        Hill = 1,
         /// <summary>
         /// A large pointed mountain with vertical noise.
         /// </summary>
-        Mountain = 3 
+        Mountain = 3
     }
 
     /// <summary>
@@ -77,32 +77,32 @@ namespace CivGrid
     /// </item>
     /// </list>
     /// </remarks>
-    public enum WorldType 
-    { 
+    public enum WorldType
+    {
         /// <summary>
         /// A very random map with many very small noisy island. No large landmasses, with a high ratio of water.
         /// </summary>
-        Diced, 
+        Diced,
         /// <summary>
         /// A world like ours. A few large land masses with numerous smaller islands. Fair amount of both water and land.
         /// </summary>
-        Continents, 
+        Continents,
         /// <summary>
         /// An extremely large landmass with a few smaller islands offshore. A large amount of land.
         /// </summary>
-        Pangaea, 
+        Pangaea,
         /// <summary>
         /// Long snakey islands throughout. No large landmasses, with a high ratio of water.
         /// </summary>
-        Strings, 
+        Strings,
         /// <summary>
         /// Many small islands. Islands are larger and more regular than with Diced. No large landmasses, with a high ratio of water.
         /// </summary>
-        SmallIslands, 
+        SmallIslands,
         /// <summary>
         /// A fair amount of medium sized landmasses. Medium landmasses, with a somewhat high ratio of water.
         /// </summary>
-        LargeIslands 
+        LargeIslands
     }
 
     /// <summary>
@@ -115,6 +115,27 @@ namespace CivGrid
     public class WorldManager : MonoBehaviour
     {
         #region fields
+
+        private int[][][] offsetNeighbors = new int[][][]
+        {
+
+            new int[][]
+            {
+
+                new int[]{+1, 0}, new int[]{0, -1}, new int[]{-1, -1},
+                new int[]{-1, 0}, new int[]{-1, +1}, new int[]{0, +1}
+
+            },
+
+            new int[][]
+            {
+
+                new int[]{+1, 0}, new int[]{+1, -1}, new int[]{0, -1},
+                new int[]{-1, 0}, new int[]{0, +1}, new int[]{+1, +1}
+
+            },
+
+        };
 
         //Moving
         //internal Vector3 currentHex;
@@ -228,6 +249,9 @@ namespace CivGrid
         public bool generateNodeLocations = true;
         public Vector3[,] nodeLocations;
 
+        //hashtable
+        public Dictionary<Vector2, HexInfo> axialToHexDictionary;
+
 
         //managers
         internal ResourceManager resourceManager;
@@ -256,6 +280,29 @@ namespace CivGrid
         public static OnMouseOverHex onMouseOverHex;
         #endregion
 
+        public HexInfo[] GetNeighboursOfHex(HexInfo centreTile)
+        {
+            int[] d;
+
+            HexInfo[] neighbours = new HexInfo[6];
+            Vector2 neighbourOffsetGridPos = new Vector2(0, 0);
+
+            int parity = (int)centreTile.OffsetCoordinates.y & 1;
+
+            for (int i = 0; i < 6; i++)
+            {
+
+                d = offsetNeighbors[parity][i];
+
+                neighbourOffsetGridPos.x = centreTile.OffsetCoordinates.x + d[0];
+                neighbourOffsetGridPos.y = centreTile.OffsetCoordinates.y + d[1];
+
+                neighbours[i] = GetHexFromOffsetCoordinates(neighbourOffsetGridPos);
+
+            }
+            return neighbours;
+        }
+
         /// <summary>
         /// Sets up values for world generation.
         /// </summary>
@@ -265,6 +312,7 @@ namespace CivGrid
             improvementManager = GetComponent<ImprovementManager>();
             tileManager = GetComponent<TileManager>();
             civGridCamera = GameObject.FindObjectOfType<CivGridCamera>();
+            axialToHexDictionary = new Dictionary<Vector2, HexInfo>();
 
             if (generateNodeLocations)
             {
@@ -326,7 +374,7 @@ namespace CivGrid
         public void LoadAndGenerateMap(string name)
         {
             generateNewValues = false;
-            string savedMapLocation = Application.dataPath + "/../" +  name;
+            string savedMapLocation = Application.dataPath + "/../" + name;
             FileUtility.LoadTerrain(savedMapLocation);
             resourceManager.InitiateResourceTexturesOnHexs();
         }
@@ -570,7 +618,7 @@ namespace CivGrid
                     //set the number of hexagons for the chunk to generate
                     hexChunks[x, z].SetSize(chunkSize, chunkSize);
                     //the sector location of the chunk
-                    hexChunks[x, z].chunkLocation = new Vector2(x,z);
+                    hexChunks[x, z].chunkLocation = new Vector2(x, z);
                     //assign the world manager(this)
                     hexChunks[x, z].worldManager = this;
                 }
@@ -771,42 +819,16 @@ namespace CivGrid
         }
 
         /// <summary>
-        /// Get a hexagon from axial coordinates.
-        /// </summary>
-        /// <param name="axialCoordinates">Axial coordinates of the needed hexagon</param>
-        /// <returns>The hexagon with the requested axial coordinates</returns>
-        public HexInfo GetHexFromAxialCoordinates(Vector2 axialCoordinates)
-        {
-
-            foreach (HexChunk chunk in hexChunks)
-            {
-                foreach (HexInfo hex in chunk.hexArray)
-                {
-                    if (hex.AxialCoordinates == axialCoordinates) { return hex; }
-                }
-            }
-            return null;
-        }
-
-        /// <summary>
         /// Get a hexagon from axial coordinates; This is faster than not giving a chunk.
         /// </summary>
         /// <param name="axialCoordinates">Axial coordinates of the needed hexagon</param>
-        /// <param name="originalChunk">The chunk that contains the hexagon</param>
         /// <returns>The hexagon with the requested axial coordinates within the provided chunk</returns>
-        public HexInfo GetHexFromAxialCoordinates(Vector2 axialCoordinates, HexChunk originalChunk)
+        public HexInfo GetHexFromAxialCoordinates(Vector2 axialCoordinates)
         {
-            HexChunk[] possibleChunks = FindPossibleChunks(originalChunk);
+            HexInfo returnHex;
+            axialToHexDictionary.TryGetValue(axialCoordinates, out returnHex);
 
-            foreach (HexChunk chunk in possibleChunks)
-            {
-                foreach (HexInfo hex in chunk.hexArray)
-                {
-                    if (hex.AxialCoordinates == axialCoordinates) { return hex; }
-                }
-            }
-
-            return null;
+            return returnHex;
         }
 
         /// <summary>
@@ -816,54 +838,23 @@ namespace CivGrid
         /// <returns>The hexagon with the requested cube coordinates</returns>
         public HexInfo GetHexFromCubeCoordinates(Vector3 cubeCoordinates)
         {
-            foreach (HexChunk chunk in hexChunks)
-            {
-                foreach (HexInfo hex in chunk.hexArray)
-                {
-                    if (hex.CubeCoordinates == cubeCoordinates) { return hex; }
-                }
-            }
-            return null;
+            return GetHexFromAxialCoordinates(new Vector2(cubeCoordinates.x, cubeCoordinates.z));
         }
 
-        /// <summary>
-        /// Get a hexagon from cube coordinates.
-        /// </summary>
-        /// <param name="cubeCoordinates">Cube  coordinates of the needed hexagon</param>
-        /// <param name="originalChunk">The chunk that contains the hexagon</param>
-        /// <returns>The hexagon with the requested cube coordinates</returns>
-        public HexInfo GetHexFromCubeCoordinates(Vector3 cubeCoordinates, HexChunk originalChunk)
-        {
-            HexChunk[] possibleChunks = FindPossibleChunks(originalChunk);
-
-            foreach (HexChunk chunk in possibleChunks)
-            {
-                foreach (HexInfo hex in chunk.hexArray)
-                {
-                    if (hex.CubeCoordinates == cubeCoordinates) { return hex; }
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Get a hexagon from offset coordinates.
-        /// </summary>
-        /// <param name="position">Offset coordinates of the needed hexagon</param>
-        /// <returns>The hexagon with the requested cube coordinates</returns>
         public HexInfo GetHexFromOffsetCoordinates(Vector2 position)
         {
+            int x, z;
 
-            int chunkX = Mathf.FloorToInt(position.x / chunkSize);
-            int chunkY = Mathf.FloorToInt(position.y / chunkSize);
+            int q = (int)position.x;
+            int r = (int)position.y;
 
-            HexChunk chunk = hexChunks[chunkX, chunkY];
-            HexInfo hex = chunk.hexArray[(int)position.x - (chunkX * chunkSize), (int)position.y - (chunkY * chunkSize)];
+            x = q - (r + (r & 1)) / 2;
+            z = r;
 
-            return hex;
-
+            return GetHexFromAxialCoordinates(new Vector2(x,z));
         }
+         
+         
 
 
         /// <summary>
