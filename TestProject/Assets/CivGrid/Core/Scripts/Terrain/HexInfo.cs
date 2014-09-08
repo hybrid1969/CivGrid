@@ -207,6 +207,7 @@ namespace CivGrid
             worldTextureAtlas = parentChunk.worldManager.textureAtlas;
 
             parentChunk.worldManager.axialToHexDictionary.Add(AxialCoordinates, this);
+            Debug.Log(AxialCoordinates);
 
             //generate local mesh
             MeshSetup();
