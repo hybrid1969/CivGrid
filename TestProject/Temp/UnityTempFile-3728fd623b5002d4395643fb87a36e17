@@ -43,7 +43,7 @@
 Assets/CivGrid/Core/Scripts/Editor/CivGridEditor.cs
 Assets/CivGrid/Core/Scripts/Editor/ImprovementManagerEditor.cs
 Assets/CivGrid/Core/Scripts/Editor/ResourceManagerEditor.cs
-Assets/CivGrid/Core/Scripts/Editor/TIleManagerEditor.cs
+Assets/CivGrid/Core/Scripts/Editor/TileManagerEditor.cs
 Assets/CivGrid/Core/Scripts/Editor/WorldManagerEditor.cs
 -r:"C:/Program Files (x86)/Unity/Editor/Data/Mono\lib/mono/2.0\System.Runtime.Serialization.dll"
 -r:"C:/Program Files (x86)/Unity/Editor/Data/Mono\lib/mono/2.0\System.Xml.Linq.dll"

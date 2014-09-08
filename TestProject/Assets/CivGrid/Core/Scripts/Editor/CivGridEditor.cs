@@ -752,6 +752,9 @@ namespace CivGrid.Editors
             resourceManager = GameObject.FindObjectOfType<ResourceManager>();
             tileManager = GameObject.FindObjectOfType<TileManager>();
 
+            terrainAtlasSize = new Vector2(Mathf.CeilToInt(tileManager.tileNames.Length / 2f), 2);
+            AssignAtlasSize(true);
+
             if (worldManager == null || improvementManager == null)
             {
                 Debug.LogError("Need to have WorldManager and ImprovementManager in current scene");
@@ -760,7 +763,6 @@ namespace CivGrid.Editors
             tileManager.UpdateTileNames();
             resourceManager.UpdateResourceNames();
             improvementManager.UpdateImprovementNames();
-
         }
 
         Vector2 scrollPosition = new Vector2();
@@ -789,6 +791,10 @@ namespace CivGrid.Editors
             }
 
             scrollPosition = GUILayout.BeginScrollView(scrollPosition);
+
+            int tileIndex = -1;
+            int resourceIndex = -1;
+            int improvementIndex = -1;
             for (int y = 0; y < internalAtlasDimension.y; y++)
             {
                 //start new row
@@ -801,18 +807,33 @@ namespace CivGrid.Editors
                     catagory[x, y] = (TypeofEditorTile)EditorGUILayout.EnumPopup("Type:", catagory[x, y], GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
                     if (catagory[x, y] == TypeofEditorTile.Terrain && (tileManager.tiles != null && tileManager.tiles.Count > 0))
                     {
+                        if(tileIndex < (tileManager.tileNames.Length-1))
+                        {
+                            tileIndex++;
+                            tempTileType[x, y] = tileIndex;
+                        }
                         tempTileType[x, y] = (int)EditorGUILayout.Popup("Tile Type:", tempTileType[x, y], tileManager.tileNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
                         tempResourceType[x,y] = 0;
                         tempImprovementType[x,y] = 0;
                     }
                     else if (catagory[x, y] == TypeofEditorTile.Resource && (resourceManager.resources != null && resourceManager.resources.Count > 0))
                     {
+                        if (resourceIndex < (resourceManager.resourceNames.Length - 1))
+                        {
+                            resourceIndex++;
+                            tempResourceType[x, y] = resourceIndex;
+                        }
                         tempResourceType[x, y] = (int)EditorGUILayout.Popup("Resource Type:", tempResourceType[x, y], resourceManager.resourceNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
                         tempTileType[x, y] = 0;
                         tempImprovementType[x,y] = 0;
                     }
                     else if (catagory[x, y] == TypeofEditorTile.Improvement && (improvementManager.improvements != null && improvementManager.improvements.Count > 0))
                     {
+                        if (improvementIndex < (improvementManager.improvementNames.Length - 1))
+                        {
+                            improvementIndex++;
+                            tempImprovementType[x, y] = improvementIndex;
+                        }
                         tempImprovementType[x, y] = (int)EditorGUILayout.Popup("Improvement Type:", tempImprovementType[x, y], improvementManager.improvementNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
                         tempTileType[x,y] = 0;
                         tempResourceType[x, y] = 0;
