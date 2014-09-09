@@ -278,6 +278,25 @@ namespace CivGrid
                 }
             }
 
+            //cycle through all hexagons for late start
+            for (int x = 0; x < chunkSize.x; x++)
+            {
+                for (int z = 0; z < chunkSize.y; z++)
+                {
+                    //check if this hexagon is null; if so throw an error
+                    if (hexArray[x, z] != null)
+                    {
+                        //start hex operations(pulling down the mesh)
+                        hexArray[x, z].LateStart();
+                    }
+                    else
+                    {
+                        //throw error if the hexagon is null in memory
+                        Debug.LogError("null hexagon found in memory: " + x + " " + z);
+                    }
+                }
+            }
+
             //combine all the hexagon's meshes in this chunk into one mesh
             RegenerateMesh();
         }

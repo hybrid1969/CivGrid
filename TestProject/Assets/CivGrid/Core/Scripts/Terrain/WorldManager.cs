@@ -299,6 +299,7 @@ namespace CivGrid
 
                 neighbours[i] = GetHexFromOffsetCoordinates(neighbourOffsetGridPos);
 
+                Debug.Log("Offset Coordinate for hex: " + centreTile.OffsetCoordinates + " , " + neighbourOffsetGridPos);
             }
             return neighbours;
         }
@@ -819,7 +820,7 @@ namespace CivGrid
         }
 
         /// <summary>
-        /// Get a hexagon from axial coordinates; This is faster than not giving a chunk.
+        /// Get a hexagon from axial coordinates
         /// </summary>
         /// <param name="axialCoordinates">Axial coordinates of the needed hexagon</param>
         /// <returns>The hexagon with the requested axial coordinates within the provided chunk</returns>
@@ -851,7 +852,9 @@ namespace CivGrid
             x = q - (r + (r & 1)) / 2;
             z = r;
 
-            return GetHexFromAxialCoordinates(new Vector2(x,z));
+            HexInfo tempHex = GetHexFromAxialCoordinates(new Vector2(x, z));
+
+            return tempHex;
         }
          
          

@@ -173,9 +173,9 @@ namespace CivGrid
         /// This is a different format of coordinates. Safe to use, however is not the most efficient method. <see cref="CubeCoordinates"/> is used internally
         /// and all other formats are converted on demand.
         /// </remarks>
-        public Vector3 OffsetCoordinates
+        public Vector2 OffsetCoordinates
         {
-            get { return new Vector3(CubeCoordinates.x + (CubeCoordinates.z - ((int)CubeCoordinates.z&1)) /2, CubeCoordinates.z);}
+            get { return new Vector2(CubeCoordinates.x + (CubeCoordinates.z - ((int)CubeCoordinates.z&1)) /2, CubeCoordinates.z);}
         }
 
         /// <summary>
@@ -207,7 +207,6 @@ namespace CivGrid
             worldTextureAtlas = parentChunk.worldManager.textureAtlas;
 
             parentChunk.worldManager.axialToHexDictionary.Add(AxialCoordinates, this);
-            Debug.Log(AxialCoordinates);
 
             //generate local mesh
             MeshSetup();
@@ -218,6 +217,20 @@ namespace CivGrid
                 //check for resources and default to no improvement
                 currentImprovement = improvementManager.improvements[0];
                 resourceManager.CheckForResource(this);
+            }
+        }
+
+        public void LateStart()
+        {
+            //cache neighbors of this hexagon
+            neighbors = parentChunk.worldManager.GetNeighboursOfHex(this);
+            Debug.Log("My Offset Position: " + OffsetCoordinates + " Length: " + neighbors.Length + " Pos: " + worldPosition);
+            for (int i = 0; i < neighbors.Length; i++)
+            {
+                if (neighbors[i] != null)
+                {
+                    Debug.Log("Neighbor: " + neighbors[i].OffsetCoordinates);
+                }
             }
         }
 
@@ -407,19 +420,8 @@ namespace CivGrid
         public void MeshSetup()
         {
 
-            //cache neighbors of this hexagon
-            neighbors = parentChunk.worldManager.GetNeighboursOfHex(this);
-            Debug.Log("My Axial Position: " + AxialCoordinates);
-            for (int i = 0; i < 6; i++)
-            {
-                if (neighbors[i] != null)
-                {
-                    Debug.Log("Neighbor: " + neighbors[i].AxialCoordinates);
-                }
-            }
-
-                //create new mesh to start fresh
-                localMesh = new Mesh();
+            //create new mesh to start fresh
+            localMesh = new Mesh();
 
             //if we are generating a flat regular hexagon
             if (parentChunk.worldManager.levelOfDetail == 0 || terrainType.isShore || terrainType.isOcean)
