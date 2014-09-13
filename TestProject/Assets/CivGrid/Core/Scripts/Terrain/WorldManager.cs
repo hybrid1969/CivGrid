@@ -299,7 +299,7 @@ namespace CivGrid
 
                 neighbours[i] = GetHexFromOffsetCoordinates(neighbourOffsetGridPos);
 
-                Debug.Log("Offset Coordinate for hex: " + centreTile.OffsetCoordinates + " , " + neighbourOffsetGridPos);
+                //Debug.Log("Offset Coordinate for hex: " + centreTile.OffsetCoordinates + " , " + neighbourOffsetGridPos);
             }
             return neighbours;
         }
@@ -849,7 +849,8 @@ namespace CivGrid
             int q = (int)position.x;
             int r = (int)position.y;
 
-            x = q - (r + (r & 1)) / 2;
+            //x = q - (r + (r & 1)) / 2;
+            x = q - (r - (r & 1)) / 2;
             z = r;
 
             HexInfo tempHex = GetHexFromAxialCoordinates(new Vector2(x, z));

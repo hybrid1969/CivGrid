@@ -22,7 +22,9 @@ namespace CivGrid
     public class HexInfo
     {
         //positioning
-        private Vector3 gridPosition;//cube cordinates stored(x,y == axial)
+        private Vector3 cubeCoordinates;
+        private Vector2 axialCoordinates;
+        private Vector2 offsetCoordinates;
         /// <summary>
         /// The position of this hexagon local to the parent chunk.
         /// </summary>
@@ -142,18 +144,6 @@ namespace CivGrid
         public HexInfo[] neighbors;
 
         /// <summary>
-        /// The coordinates of the hexagon in axial coordinates.
-        /// </summary>
-        /// <remarks>
-        /// This is simply a lighter version of <see cref="CubeCoordinates"/>, made possible by the fact, x + y + z = 0.
-        /// With this equation we can include only the (x,y) cordinates and assume
-        /// </remarks>
-        public Vector2 AxialCoordinates
-        {
-            get { return new Vector2(CubeCoordinates.x, CubeCoordinates.y); }
-        }
-
-        /// <summary>
         /// The coordinates of the hexagon in cube coordinates.
         /// </summary>
         /// <remarks>
@@ -162,8 +152,24 @@ namespace CivGrid
         /// </remarks>
         public Vector3 CubeCoordinates
         {
-            get { return gridPosition; }
-            set { gridPosition = value; }
+            get { return cubeCoordinates; }
+            set { cubeCoordinates = value; }
+        }
+
+        /// <summary>
+        /// The coordinates of the hexagon in axial coordinates.
+        /// </summary>
+        /// <remarks>
+        /// This is simply a lighter version of <see cref="CubeCoordinates"/>, made possible by the fact, x + y + z = 0.
+        /// With this equation we can include only the (x,y) cordinates and assume
+        /// </remarks>
+        public Vector2 AxialCoordinates
+        {
+            get
+            {
+                if (axialCoordinates == new Vector2(0,0)) { axialCoordinates = new Vector2(CubeCoordinates.x, CubeCoordinates.y); }
+                return axialCoordinates;
+            }
         }
 
         /// <summary>
@@ -175,7 +181,11 @@ namespace CivGrid
         /// </remarks>
         public Vector2 OffsetCoordinates
         {
-            get { return new Vector2(CubeCoordinates.x + (CubeCoordinates.z - ((int)CubeCoordinates.z&1)) /2, CubeCoordinates.z);}
+            get
+            {
+                if (offsetCoordinates == new Vector2(0,0)) { offsetCoordinates = new Vector2(CubeCoordinates.x + (CubeCoordinates.z - ((int)CubeCoordinates.z & 1)) / 2, CubeCoordinates.z); }
+                return offsetCoordinates;
+            }
         }
 
         /// <summary>
@@ -224,12 +234,12 @@ namespace CivGrid
         {
             //cache neighbors of this hexagon
             neighbors = parentChunk.worldManager.GetNeighboursOfHex(this);
-            Debug.Log("My Offset Position: " + OffsetCoordinates + " Length: " + neighbors.Length + " Pos: " + worldPosition);
+            //Debug.Log("My Offset Position: " + OffsetCoordinates + " Length: " + neighbors.Length + " Pos: " + worldPosition);
             for (int i = 0; i < neighbors.Length; i++)
             {
                 if (neighbors[i] != null)
                 {
-                    Debug.Log("Neighbor: " + neighbors[i].OffsetCoordinates);
+                    //Debug.Log("Neighbor: " + neighbors[i].OffsetCoordinates);
                 }
             }
         }
@@ -490,36 +500,6 @@ namespace CivGrid
                             vertices[i].Set(vertices[i].x, vertices[i].y + pixelHeight / 10, vertices[i].z);
                         }
                     }
-                    //EdgeType edgeType = GetVertexEdgeType(i);
-                    ////not an edge
-                    //if (edgeType == EdgeType.None)
-                    //{
-                    //    float pixelHeight = localMountainTexture.GetPixelBilinear(localMesh.uv[i].x, localMesh.uv[i].y).grayscale;
-                    //    if (terrainFeature == Feature.Mountain) { pixelHeight *= 1.5f; vertices[i].Set(vertices[i].x, vertices[i].y + (pixelHeight - (parentChunk.worldManager.mountainScaleY / 100)), vertices[i].z); }
-                    //    if (terrainFeature == Feature.Hill) { vertices[i].Set(vertices[i].x, vertices[i].y + (pixelHeight - (parentChunk.worldManager.mountainScaleY / 100)), vertices[i].z); }
-                    //    //flat
-                    //    else
-                    //    {
-                    //        pixelHeight = localMountainTexture.GetPixelBilinear(localMesh.uv[i].x + (chunkArrayPosition.x * localMesh.uv[i].x), localMesh.uv[i].y + (chunkArrayPosition.y * localMesh.uv[i].y)).grayscale;
-                    //        vertices[i].Set(vertices[i].x, vertices[i].y + pixelHeight/10, vertices[i].z);
-                    //    }
-                    //}
-                    ////hex next to this edge is a land tile
-                    //else if(edgeType == EdgeType.LandEdge)
-                    //{
-                    //    Debug.Log("land edge");
-                    //    vertices[i].Set(vertices[i].x, 0.1f, vertices[i].z);
-                    //}
-                    ////hex next to this is a water tile do nothing
-                    //else if(edgeType == EdgeType.WaterEdge)
-                    //{
-                    //    Debug.Log("water edge");
-                    //    vertices[i].Set(vertices[i].x, 0.1f, vertices[i].z);
-                    //}
-                    //else
-                    //{
-                    //    Debug.LogError("Logic Error; Unreachable code reached.");
-                    //}
                 }
                 localMesh.vertices = vertices;
 
@@ -541,23 +521,6 @@ namespace CivGrid
             }
             return false;
         }
-
-        //private EdgeType GetVertexEdgeType(int vertexIndex)
-        //{
-        //    Edge edge = GetEdgeFromVertex(vertexIndex);
-        //    if (edge != null)
-        //    {
-        //        edge.adjacentHex = GetHexFromEdgeDirection(this, edge.direction);
-
-        //        if (edge.adjacentHex != null)
-        //        {
-        //            Debug.Log("found adjacent hex");
-        //            if (edge.adjacentHex.terrainType.isOcean == true || edge.adjacentHex.terrainType.isShore == true) { Debug.Log("water edge"); return EdgeType.WaterEdge; }
-        //            else { Debug.Log("land edge"); return EdgeType.LandEdge; }
-        //        }
-        //    }
-        //    return EdgeType.None;
-        //}
 
         private Edge GetEdgeFromVertex(int index)
         {

@@ -98,3 +98,8 @@ Version 0.6
 	+Massive code cleanup
 	+Moved all example logic out of WorldManager
 	+Worked on hill and mountain generation
+Version 0.7
+	+Corrected misnaming of latitude
+	+Added latitude/longitudes
+	+Cached all coordinate formats
+	+

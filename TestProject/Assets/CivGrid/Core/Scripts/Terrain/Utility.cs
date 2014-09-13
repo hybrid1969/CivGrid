@@ -66,15 +66,106 @@ namespace CivGrid
             //array of the surronding pixel values
             float[] returnArray = new float[8];
 
-            //get values from each surronding pixel
-            returnArray[0] = tex.GetPixel(x + 1, y).r;
-            returnArray[1] = tex.GetPixel(x + 1, y + 1).r;
-            returnArray[2] = tex.GetPixel(x, y + 1).r;
-            returnArray[3] = tex.GetPixel(x - 1, y + 1).r;
-            returnArray[4] = tex.GetPixel(x - 1, y).r;
-            returnArray[5] = tex.GetPixel(x - 1, y - 1).r;
-            returnArray[6] = tex.GetPixel(x, y - 1).r;
-            returnArray[7] = tex.GetPixel(x + 1, x - 1).r;
+
+            if (x == tex.width - 1)
+            {
+                returnArray[0] = tex.GetPixel(0, y).r;
+                returnArray[1] = tex.GetPixel(0, y + 1).r;
+                returnArray[2] = tex.GetPixel(x, y + 1).r;
+                returnArray[3] = tex.GetPixel(x - 1, y + 1).r;
+                returnArray[4] = tex.GetPixel(x - 1, y).r;
+                returnArray[5] = tex.GetPixel(x - 1, y - 1).r;
+                returnArray[6] = tex.GetPixel(x, y - 1).r;
+                returnArray[7] = tex.GetPixel(0, x - 1).r;
+            }
+            else if (x == 0)
+            {
+                returnArray[0] = tex.GetPixel(x + 1, y).r;
+                returnArray[1] = tex.GetPixel(x + 1, y + 1).r;
+                returnArray[2] = tex.GetPixel(x, y + 1).r;
+                returnArray[3] = tex.GetPixel(tex.width-1, y + 1).r;
+                returnArray[4] = tex.GetPixel(tex.width-1, y).r;
+                returnArray[5] = tex.GetPixel(tex.width-1, y - 1).r;
+                returnArray[6] = tex.GetPixel(x, y - 1).r;
+                returnArray[7] = tex.GetPixel(x + 1, x - 1).r;
+            }
+            else if (y == tex.height - 1)
+            {
+                returnArray[0] = tex.GetPixel(x + 1, y).r;
+                returnArray[1] = tex.GetPixel(x + 1, 0).r;
+                returnArray[2] = tex.GetPixel(x, 0).r;
+                returnArray[3] = tex.GetPixel(x - 1, 0).r;
+                returnArray[4] = tex.GetPixel(x - 1, y).r;
+                returnArray[5] = tex.GetPixel(x - 1, y - 1).r;
+                returnArray[6] = tex.GetPixel(x, y - 1).r;
+                returnArray[7] = tex.GetPixel(x + 1, x - 1).r;
+            }
+            else if (y == 0)
+            {
+                returnArray[0] = tex.GetPixel(x + 1, y).r;
+                returnArray[1] = tex.GetPixel(x + 1, y + 1).r;
+                returnArray[2] = tex.GetPixel(x, y + 1).r;
+                returnArray[3] = tex.GetPixel(x - 1, y + 1).r;
+                returnArray[4] = tex.GetPixel(x - 1, y).r;
+                returnArray[5] = tex.GetPixel(x - 1, tex.height-1).r;
+                returnArray[6] = tex.GetPixel(x, y - 1).r;
+                returnArray[7] = tex.GetPixel(x + 1, x - 1).r;
+            }
+            else if (x == tex.width - 1 && y == tex.height - 1)
+            {
+                returnArray[0] = tex.GetPixel(0, y).r;
+                returnArray[1] = tex.GetPixel(0, 0).r;
+                returnArray[2] = tex.GetPixel(x, 0).r;
+                returnArray[3] = tex.GetPixel(x - 1, 0).r;
+                returnArray[4] = tex.GetPixel(x - 1, y).r;
+                returnArray[5] = tex.GetPixel(x - 1, y - 1).r;
+                returnArray[6] = tex.GetPixel(x, y - 1).r;
+                returnArray[7] = tex.GetPixel(0, x - 1).r;
+            }
+            else if (x == tex.width - 1 && y == 0)
+            {
+                returnArray[0] = tex.GetPixel(0, y).r;
+                returnArray[1] = tex.GetPixel(0, y + 1).r;
+                returnArray[2] = tex.GetPixel(x, y + 1).r;
+                returnArray[3] = tex.GetPixel(x - 1, y + 1).r;
+                returnArray[4] = tex.GetPixel(x - 1, y).r;
+                returnArray[5] = tex.GetPixel(x - 1, tex.height-1).r;
+                returnArray[6] = tex.GetPixel(x, tex.height-1).r;
+                returnArray[7] = tex.GetPixel(0, x - 1).r;
+            }
+            else if (x == 0 && y == tex.height - 1)
+            {
+                returnArray[0] = tex.GetPixel(x + 1, y).r;
+                returnArray[1] = tex.GetPixel(x + 1, 0).r;
+                returnArray[2] = tex.GetPixel(x, y + 1).r;
+                returnArray[3] = tex.GetPixel(tex.width-1, 0).r;
+                returnArray[4] = tex.GetPixel(tex.width-1, y).r;
+                returnArray[5] = tex.GetPixel(tex.width-1, y - 1).r;
+                returnArray[6] = tex.GetPixel(x, y - 1).r;
+                returnArray[7] = tex.GetPixel(x + 1, x - 1).r;
+            }
+            else if (x == 0 && y == 0)
+            {
+                returnArray[0] = tex.GetPixel(x + 1, y).r;
+                returnArray[1] = tex.GetPixel(x + 1, y + 1).r;
+                returnArray[2] = tex.GetPixel(x, y + 1).r;
+                returnArray[3] = tex.GetPixel(tex.width - 1, y + 1).r;
+                returnArray[4] = tex.GetPixel(tex.width - 1, y).r;
+                returnArray[5] = tex.GetPixel(tex.width - 1, tex.height - 1).r;
+                returnArray[6] = tex.GetPixel(x, tex.height - 1).r;
+                returnArray[7] = tex.GetPixel(x + 1, x - 1).r;
+            }
+            else
+            {
+                returnArray[0] = tex.GetPixel(x + 1, y).r;
+                returnArray[1] = tex.GetPixel(x + 1, y + 1).r;
+                returnArray[2] = tex.GetPixel(x, y + 1).r;
+                returnArray[3] = tex.GetPixel(x - 1, y + 1).r;
+                returnArray[4] = tex.GetPixel(x - 1, y).r;
+                returnArray[5] = tex.GetPixel(x - 1, y - 1).r;
+                returnArray[6] = tex.GetPixel(x, y - 1).r;
+                returnArray[7] = tex.GetPixel(x + 1, x - 1).r;
+            }
 
             //return array of surronding pixel values
             return returnArray;
