@@ -319,9 +319,9 @@ namespace CivGrid
             List<Edge> culledEdges = new List<Edge>();
             foreach (Edge edge in edges)
             {
-                edge.edgeDirection = DetermineEdgeDirection(edge, out edge.direction);
                 if (edge.faceIndex[0] == edge.faceIndex[1])
                 {
+                    edge.edgeLocation = DetermineEdgeDirection(edge);
                     culledEdges.Add(edge);
                 }
             }
@@ -329,40 +329,102 @@ namespace CivGrid
             return culledEdges.ToArray();
         }
 
-        private static EdgeDirection DetermineEdgeDirection(Edge edge, out Vector2 direction)
+        private static EdgeLocation DetermineEdgeDirection(Edge edge)
         {
             WorldManager worldManager = GameObject.FindObjectOfType<WorldManager>();
             Vector3[] verts = worldManager.flatHexagonSharedMesh.vertices;
-            
-            //bottom
-            if(verts[edge.vertexIndex[0]].y < 0.33f || verts[edge.vertexIndex[1]].y < 0.33f)
+
+            ///
+            /// Points
+            ///
+
+            //extreme top
+            if (verts[edge.vertexIndex[0]].z > 0.98f || verts[edge.vertexIndex[1]].z > 0.98f)
             {
-                if(verts[edge.vertexIndex[0]].x < 0.5f || verts[edge.vertexIndex[1]].x < 0.5f)
+                //Debug.Log("Top; " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[0]]) + " " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[1]]));
+                return EdgeLocation.Top;
+            }
+            //extreme bottom
+            if (verts[edge.vertexIndex[0]].z < -0.98f || verts[edge.vertexIndex[1]].z < -0.98f)
+            {
+                //Debug.Log("Bottom; " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[0]]) + " " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[1]]));
+                return EdgeLocation.Bottom;
+            }
+            //bottom
+            if (Mathf.Approximately(verts[edge.vertexIndex[0]].z,-0.5f) || Mathf.Approximately(verts[edge.vertexIndex[1]].z,-0.5f))
+            {
+                //left corner
+                if(verts[edge.vertexIndex[0]].x <= -.85f || verts[edge.vertexIndex[1]].x <= -.85f)
                 {
-                    direction = new Vector2(0, -1);
-                    return EdgeDirection.BottomLeft;
+                    //Debug.Log("Bottom Left Corner; " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[0]]) + " " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[1]]));
+                    return EdgeLocation.BottomLeftCorner;
                 }
-                else { direction = new Vector2(1,-1); return EdgeDirection.BottomRight; }
+                //right corner
+                if (verts[edge.vertexIndex[0]].x >= .85f || verts[edge.vertexIndex[1]].x >= .85f)
+                {
+                    //Debug.Log("Bottom Right Corner; " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[0]]) + " " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[1]]));
+                    return EdgeLocation.BottomRightCorner;
+                }
             }
             //top
-            if(verts[edge.vertexIndex[0]].y > 0.66f || verts[edge.vertexIndex[1]].y > 0.66f)
+            if (Mathf.Approximately(verts[edge.vertexIndex[0]].z, 0.5f) || Mathf.Approximately(verts[edge.vertexIndex[1]].z, 0.5f))
             {
-                if (verts[edge.vertexIndex[0]].x < 0.5 || verts[edge.vertexIndex[1]].x < 0.5f)
+                //left corner
+                if (verts[edge.vertexIndex[0]].x <= -.85f || verts[edge.vertexIndex[1]].x <= -.85f)
                 {
-                    direction = new Vector2(-1,1);
-                    return EdgeDirection.TopLeft;
+                    //Debug.Log("Top Left Corner; " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[0]]) + " " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[1]]));
+                    return EdgeLocation.TopLeftCorner;
                 }
-                else { direction = new Vector2(0,1); return EdgeDirection.TopRight; }
+                //right corner
+                if (verts[edge.vertexIndex[0]].x >= .85f || verts[edge.vertexIndex[1]].x >= .85f)
+                {
+                    //Debug.Log("Top Right Corner; " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[0]]) + " " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[1]]));
+                    return EdgeLocation.TopRightCorner;
+                }
+            }
+
+            ///
+            /// Sides
+            ///
+
+            //bottom
+            if (verts[edge.vertexIndex[0]].z < -0.5f || verts[edge.vertexIndex[1]].z < -0.5f)
+            {
+                if (verts[edge.vertexIndex[0]].x < 0 || verts[edge.vertexIndex[1]].x < 0)
+                {
+                    //Debug.Log("Bottom Left; " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[0]]) + " " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[1]]));
+                    return EdgeLocation.BottomLeft;
+                }
+                else
+                {
+                    //Debug.Log("Bottom Right; " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[0]]) + " " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[1]])); 
+                    return EdgeLocation.BottomRight; }
+            }
+            //top
+            if (verts[edge.vertexIndex[0]].z > 0.5f || verts[edge.vertexIndex[1]].z > 0.5f)
+            {
+                if (verts[edge.vertexIndex[0]].x < 0 || verts[edge.vertexIndex[1]].x < 0)
+                {
+                    //Debug.Log("Top Left; " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[0]]) + " " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[1]]));
+                    return EdgeLocation.TopLeft;
+                }
+                else
+                {
+                    //Debug.Log("Top Right; " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[0]]) + " " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[1]])); 
+                    return EdgeLocation.TopRight; }
             }
             //middle
             else
             {
                 if (verts[edge.vertexIndex[0]].x < 0.5f || verts[edge.vertexIndex[1]].x < 0.5f)
                 {
-                    direction = new Vector2(-1,0);
-                    return EdgeDirection.Left;
+                    //Debug.Log("Left; " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[0]]) + " " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[1]]));
+                    return EdgeLocation.Left;
                 }
-                else { direction = new Vector2(1,0); return EdgeDirection.Right; }
+                else
+                {
+                    //Debug.Log("Right; " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[0]]) + " " + Camera.main.transform.TransformPoint(worldManager.flatHexagonSharedMesh.vertices[edge.vertexIndex[1]])); 
+                    return EdgeLocation.Right; }
             }
         }
 
@@ -506,8 +568,18 @@ namespace CivGrid
     }
 
 
-    internal enum EdgeDirection
+    internal enum EdgeLocation
     {
+        //exacts
+        Top,
+        Bottom,
+        TopRightCorner,
+        TopLeftCorner,
+        BottomRightCorner,
+        BottomLeftCorner,
+
+
+        //sides
         BottomLeft,
         BottomRight,
         Left,
@@ -519,8 +591,7 @@ namespace CivGrid
     {
         // The index to each vertex
         public int[] vertexIndex = new int[2];
-        internal EdgeDirection edgeDirection;
-        internal Vector2 direction;
+        internal EdgeLocation edgeLocation;
         internal HexInfo adjacentHex;
         // The index into the face.
         // (faceindex[0] == faceindex[1] means the edge connects to only one triangle)

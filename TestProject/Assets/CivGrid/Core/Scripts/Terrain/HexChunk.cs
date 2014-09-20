@@ -156,7 +156,7 @@ namespace CivGrid
             //set world position of hex; this is the hex cord position local to the world
             hex.worldPosition = new Vector3(hex.localPosition.x + (chunkLocation.x * (chunkSize.x * hexSize.x)), hex.localPosition.y, hex.localPosition.z + ((chunkLocation.y * (chunkSize.y * hexSize.z)) * (.75f)));
             //if hex is on the edge of the chunk
-            hex.onEdge = DetermineChunkEdge(x, y);
+            hex.onChunkEdge = DetermineChunkEdge(x, y);
 
             if (worldManager.generateNodeLocations)
             {
@@ -278,24 +278,24 @@ namespace CivGrid
                 }
             }
 
-            //cycle through all hexagons for late start
-            for (int x = 0; x < chunkSize.x; x++)
-            {
-                for (int z = 0; z < chunkSize.y; z++)
-                {
-                    //check if this hexagon is null; if so throw an error
-                    if (hexArray[x, z] != null)
-                    {
-                        //start hex operations(pulling down the mesh)
-                        hexArray[x, z].LateStart();
-                    }
-                    else
-                    {
-                        //throw error if the hexagon is null in memory
-                        Debug.LogError("null hexagon found in memory: " + x + " " + z);
-                    }
-                }
-            }
+            ////cycle through all hexagons for late start
+            //for (int x = 0; x < chunkSize.x; x++)
+            //{
+            //    for (int z = 0; z < chunkSize.y; z++)
+            //    {
+            //        //check if this hexagon is null; if so throw an error
+            //        if (hexArray[x, z] != null)
+            //        {
+            //            //start hex operations(pulling down the mesh)
+            //            hexArray[x, z].LateStart();
+            //        }
+            //        else
+            //        {
+            //            //throw error if the hexagon is null in memory
+            //            Debug.LogError("null hexagon found in memory: " + x + " " + z);
+            //        }
+            //    }
+            //}
 
             //combine all the hexagon's meshes in this chunk into one mesh
             RegenerateMesh();

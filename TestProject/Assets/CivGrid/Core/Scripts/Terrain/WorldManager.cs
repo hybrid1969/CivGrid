@@ -252,7 +252,6 @@ namespace CivGrid
         //hashtable
         public Dictionary<Vector2, HexInfo> axialToHexDictionary;
 
-
         //managers
         internal ResourceManager resourceManager;
         internal ImprovementManager improvementManager;
@@ -279,30 +278,6 @@ namespace CivGrid
         /// </summary>
         public static OnMouseOverHex onMouseOverHex;
         #endregion
-
-        public HexInfo[] GetNeighboursOfHex(HexInfo centreTile)
-        {
-            int[] d;
-
-            HexInfo[] neighbours = new HexInfo[6];
-            Vector2 neighbourOffsetGridPos = new Vector2(0, 0);
-
-            int parity = (int)centreTile.OffsetCoordinates.y & 1;
-
-            for (int i = 0; i < 6; i++)
-            {
-
-                d = offsetNeighbors[parity][i];
-
-                neighbourOffsetGridPos.x = centreTile.OffsetCoordinates.x + d[0];
-                neighbourOffsetGridPos.y = centreTile.OffsetCoordinates.y + d[1];
-
-                neighbours[i] = GetHexFromOffsetCoordinates(neighbourOffsetGridPos);
-
-                //Debug.Log("Offset Coordinate for hex: " + centreTile.OffsetCoordinates + " , " + neighbourOffsetGridPos);
-            }
-            return neighbours;
-        }
 
         /// <summary>
         /// Sets up values for world generation.
@@ -842,20 +817,39 @@ namespace CivGrid
             return GetHexFromAxialCoordinates(new Vector2(cubeCoordinates.x, cubeCoordinates.z));
         }
 
+        //public HexInfo GetHexFromOffsetCoordinates(Vector2 position)
+        //{
+        //    int x, z;
+
+        //    int q = (int)position.x;
+        //    int r = (int)position.y;
+
+        //    //x = q - (r + (r & 1)) / 2;
+        //    x = q - (r - (r & 1)) / 2;
+        //    z = r;
+
+        //    HexInfo tempHex = GetHexFromAxialCoordinates(new Vector2(x, z));
+
+        //    return tempHex;
+        //}
+
         public HexInfo GetHexFromOffsetCoordinates(Vector2 position)
         {
-            int x, z;
 
-            int q = (int)position.x;
-            int r = (int)position.y;
+            int hexChunksLengthX = hexChunks.GetLength(0) - 1;
+            int hexChunksLengthY = hexChunks.GetLength(1) - 1;
 
-            //x = q - (r + (r & 1)) / 2;
-            x = q - (r - (r & 1)) / 2;
-            z = r;
+            int chunkX = Mathf.FloorToInt(position.x / chunkSize);
+            int chunkY = Mathf.FloorToInt(position.y / chunkSize);
 
-            HexInfo tempHex = GetHexFromAxialCoordinates(new Vector2(x, z));
+            if (chunkX < 0 || chunkY < 0 || chunkX > hexChunksLengthX || chunkY > hexChunksLengthY)
+                return null;
 
-            return tempHex;
+            HexChunk chunk = hexChunks[chunkX, chunkY];
+            HexInfo hex = chunk.hexArray[(int)position.x - (chunkX * chunkSize), (int)position.y - (chunkY * chunkSize)];
+
+            return hex;
+
         }
          
          
@@ -892,6 +886,28 @@ namespace CivGrid
             return null;
         }
         #endregion
+
+        public HexInfo[] GetNeighboursOfHex(HexInfo centreTile)
+        {
+            int[] d;
+
+            HexInfo[] neighbours = new HexInfo[6];
+            Vector2 neighbourOffsetGridPos = new Vector2(0, 0);
+
+            int parity = (int)centreTile.OffsetCoordinates.y & 1;
+
+            for (int i = 0; i < 6; i++)
+            {
+
+                d = offsetNeighbors[parity][i];
+
+                neighbourOffsetGridPos.x = centreTile.OffsetCoordinates.x + d[0];
+                neighbourOffsetGridPos.y = centreTile.OffsetCoordinates.y + d[1];
+
+                neighbours[i] = GetHexFromOffsetCoordinates(neighbourOffsetGridPos);
+            }
+            return neighbours;
+        }
 
         private HexChunk[] FindPossibleChunks(HexChunk chunk)
         {

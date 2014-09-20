@@ -136,7 +136,7 @@ namespace CivGrid
         /// <summary>
         /// If this hexagon is on the edge of the parent chunk
         /// </summary>
-        public bool onEdge;
+        public bool onChunkEdge;
 
         /// <summary>
         /// Bordering hexagons of this hexagon.
@@ -181,11 +181,20 @@ namespace CivGrid
         /// </remarks>
         public Vector2 OffsetCoordinates
         {
+
             get
             {
-                if (offsetCoordinates == new Vector2(0,0)) { offsetCoordinates = new Vector2(CubeCoordinates.x + (CubeCoordinates.z - ((int)CubeCoordinates.z & 1)) / 2, CubeCoordinates.z); }
-                return offsetCoordinates;
+                if (offsetCoordinates == new Vector2(0, 0))
+                {
+                    int x = (int)cubeCoordinates.x;
+                    int y = (int)cubeCoordinates.y;
+                    offsetCoordinates = new Vector2(x + (y + (y & 1)) / 2, y);
+
+                    return offsetCoordinates;
+                }
+                else { return offsetCoordinates; }
             }
+
         }
 
         /// <summary>
@@ -218,6 +227,9 @@ namespace CivGrid
 
             parentChunk.worldManager.axialToHexDictionary.Add(AxialCoordinates, this);
 
+            //cache neighbors of this hexagon
+            neighbors = parentChunk.worldManager.GetNeighboursOfHex(this);
+
             //generate local mesh
             MeshSetup();
 
@@ -227,20 +239,6 @@ namespace CivGrid
                 //check for resources and default to no improvement
                 currentImprovement = improvementManager.improvements[0];
                 resourceManager.CheckForResource(this);
-            }
-        }
-
-        public void LateStart()
-        {
-            //cache neighbors of this hexagon
-            neighbors = parentChunk.worldManager.GetNeighboursOfHex(this);
-            //Debug.Log("My Offset Position: " + OffsetCoordinates + " Length: " + neighbors.Length + " Pos: " + worldPosition);
-            for (int i = 0; i < neighbors.Length; i++)
-            {
-                if (neighbors[i] != null)
-                {
-                    //Debug.Log("Neighbor: " + neighbors[i].OffsetCoordinates);
-                }
             }
         }
 
@@ -473,20 +471,22 @@ namespace CivGrid
                 {
                     if(VertexIsEdge(i))
                     {
-                        if (onEdge == false)
-                        {
-                            Edge edge = GetEdgeFromVertex(i);
-                            edge.adjacentHex = GetAdjacentHexFromEdgeDirection(edge.direction);
-                        }
-
-                        //if (edge.adjacentHex.terrainType.isOcean == true || edge.adjacentHex.terrainType.isShore == true)
-                        {
-                            vertices[i].Set(vertices[i].x, 0f, vertices[i].z);
-                        }
+                        //if (onChunkEdge == true)
+                        //{
+                        //    vertices[i].Set(vertices[i].x, 0f, vertices[i].z);
+                        //}
+                        ////not on the edge of the chunk
                         //else
                         //{
-                        //    vertices[i].Set(vertices[i].x, 0.1f, vertices[i].z);
-                       // }
+                            if(IsLandVertex(i))
+                            {
+                                vertices[i].Set(vertices[i].x, 0.1f, vertices[i].z);
+                            }
+                            else
+                            {
+                                vertices[i].Set(vertices[i].x, 0f, vertices[i].z);
+                            }
+                        //}
                     }
                     else
                     {
@@ -522,26 +522,110 @@ namespace CivGrid
             return false;
         }
 
-        private Edge GetEdgeFromVertex(int index)
+        private Edge[] GetAllEdgesFromVertex(int index)
         {
+            List<Edge> returnArray = new List<Edge>();
             for (int i = 0; i < parentChunk.worldManager.edges.Length; i++)
             {
-                if (parentChunk.worldManager.edges[i].vertexIndex[0] == index) { return parentChunk.worldManager.edges[i]; }
-                if (parentChunk.worldManager.edges[i].vertexIndex[1] == index) { return parentChunk.worldManager.edges[i]; }
+                if (parentChunk.worldManager.edges[i].vertexIndex[0] == index) { returnArray.Add(parentChunk.worldManager.edges[i]); }
+                if (parentChunk.worldManager.edges[i].vertexIndex[1] == index) { returnArray.Add(parentChunk.worldManager.edges[i]); }
             }
-            return null;
+            return returnArray.ToArray();
         }
 
-        private HexInfo GetAdjacentHexFromEdgeDirection(Vector2 direction)
+        private bool IsLandVertex(int vertexIndex)
         {
-            if (onEdge)
+            Edge[] containerEdges = GetAllEdgesFromVertex(vertexIndex);
+
+            containerEdges[0].adjacentHex = GetAdjacentHexFromEdgeDirection(containerEdges[0].edgeLocation);
+            containerEdges[1].adjacentHex = GetAdjacentHexFromEdgeDirection(containerEdges[1].edgeLocation);
+
+            if (containerEdges[0].adjacentHex != null || containerEdges[1].adjacentHex != null)
             {
-                return null;
+                if (containerEdges[0].adjacentHex != null)
+                {
+                    if (containerEdges[0].adjacentHex.terrainType.isOcean || containerEdges[0].adjacentHex.terrainType.isShore)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+                if (containerEdges[1].adjacentHex != null)
+                {
+                    if (containerEdges[1].adjacentHex.terrainType.isOcean || containerEdges[1].adjacentHex.terrainType.isShore)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
             }
             else
             {
-                return parentChunk.worldManager.GetHexFromAxialCoordinates(new Vector2(AxialCoordinates.x + direction.x, AxialCoordinates.y + direction.y));
+                return false;
             }
+            //never reached
+            return false;
+        }
+
+        private HexInfo DetermineSideToReturn(int first, int second)
+        {
+            if (neighbors[first] != null)
+            {
+                if (neighbors[first].terrainType.isOcean || neighbors[first].terrainType.isShore) { return neighbors[first]; }
+            }
+            if (neighbors[second] != null)
+            {
+                if (neighbors[second].terrainType.isOcean || neighbors[second].terrainType.isShore) { return neighbors[second]; }
+            }
+            return neighbors[first];
+        }
+
+        private HexInfo GetAdjacentHexFromEdgeDirection(EdgeLocation direction)
+        {
+            if (neighbors.Length == 6)
+            {
+                switch (direction)
+                {
+                    ///
+                    /// Points
+                    /// 
+                    case EdgeLocation.Top:
+                        return DetermineSideToReturn(4, 5);
+                    case EdgeLocation.Bottom:
+                        return DetermineSideToReturn(1, 2);
+                    case EdgeLocation.BottomLeftCorner:
+                        return DetermineSideToReturn(2, 3);
+                    case EdgeLocation.BottomRightCorner:
+                        return DetermineSideToReturn(0, 1);
+                    case EdgeLocation.TopLeftCorner:
+                        return DetermineSideToReturn(3, 4);
+                    case EdgeLocation.TopRightCorner:
+                        return DetermineSideToReturn(0, 5);
+                    ///
+                    /// Sides
+                    ///
+                    case EdgeLocation.Right:
+                        return neighbors[0];
+                    case EdgeLocation.BottomRight:
+                        return neighbors[1];
+                    case EdgeLocation.BottomLeft:
+                        return neighbors[2];
+                    case EdgeLocation.Left:
+                        return neighbors[3];
+                    case EdgeLocation.TopLeft:
+                        return neighbors[4];
+                    case EdgeLocation.TopRight:
+                        return neighbors[5];
+                }
+            }
+            Debug.LogError("Adjacent hex not found");
+            return null;
         }
 
         /// <summary>

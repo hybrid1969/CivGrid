@@ -102,4 +102,12 @@ Version 0.7
 	+Corrected misnaming of latitude
 	+Added latitude/longitudes
 	+Cached all coordinate formats
-	+
+	+Fixed shore logic
+	+New Terrain Manager Window
+	+Better Window performance
+	+Better GetHexFromXXXX() performance
+	+Mesh generation overhaul
+	+Neighbors logic
+	+Fixed offset coordinate conversions
+	+Flat hexagon's are heightmapped and 3D with blending
+	+Fixed oceans being set as shore incorrectly on map 	borders
