@@ -299,7 +299,7 @@ namespace CivGrid
 
                     for (int y = 0; y < worldManager.hexChunks.GetLength(1); y++)
                     {
-                        HexChunk chunk = worldManager.hexChunks[x, y];
+                        CustomChunk chunk = worldManager.hexChunks[x, y];
 
                         writer.WriteStartElement("Chunk");
 
@@ -310,7 +310,7 @@ namespace CivGrid
                         {
                             for (int _y = 0; _y < chunk.hexArray.GetLength(1); _y++)
                             {
-                                HexInfo hex = chunk.hexArray[_x, _y];
+                                CustomHex hex = chunk.hexArray[_x, _y];
 
                                 #region Hex
 
@@ -421,7 +421,7 @@ namespace CivGrid
                                 }
                                 break;
                             case "Hexagon":
-                                HexInfo hex = worldManager.hexChunks[XmlConvert.ToInt32(reader["xParentChunk"]), XmlConvert.ToInt32(reader["yParentChunk"])].hexArray[XmlConvert.ToInt32(reader["xHexLoc"]), XmlConvert.ToInt32(reader["yHexLoc"])];
+                                CustomHex hex = worldManager.hexChunks[XmlConvert.ToInt32(reader["xParentChunk"]), XmlConvert.ToInt32(reader["yParentChunk"])].hexArray[XmlConvert.ToInt32(reader["xHexLoc"]), XmlConvert.ToInt32(reader["yHexLoc"])];
                                 
                                 hex.terrainType = worldManager.tileManager.TryGetTile(reader["type"]);
                                 hex.terrainFeature = (Feature)XmlConvert.ToInt32(reader["feature"]);
@@ -492,10 +492,10 @@ namespace CivGrid
                 }
             }
 
-            foreach(HexChunk chunk in worldManager.hexChunks)
+            foreach(CustomChunk chunk in worldManager.hexChunks)
             {
                 chunk.StartHexGeneration();
-                foreach(HexInfo hex in chunk.hexArray)
+                foreach (CustomHex hex in chunk.hexArray)
                 {
                     if (hex.currentResource.name != "None")
                     {

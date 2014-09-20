@@ -60,9 +60,9 @@ namespace CivGrid
         internal void InitiateResourceTexturesOnHexs()
         {
             //loop through all hexs
-            foreach (HexChunk chunk in worldManager.hexChunks)
+            foreach (CustomChunk chunk in worldManager.hexChunks)
             {
-                foreach (HexInfo hex in chunk.hexArray)
+                foreach (CustomHex hex in chunk.hexArray)
                 {
                     //has a resource?
                     if (hex.currentResource.name != "None")
@@ -226,7 +226,7 @@ namespace CivGrid
         /// }
         /// </code>
         /// </example>
-        public void CheckForResource(HexInfo hex)
+        public void CheckForResource(CustomHex hex)
         {
 
             //loop through all resources
@@ -266,7 +266,7 @@ namespace CivGrid
         /// <param name="hex">Hex to spawn the resource on</param>
         /// <param name="r">Resource to spawn</param>
         /// <param name="regenerateChunk">If the parent chunk should be regenerated</param>
-        public void SpawnResource(HexInfo hex, Resource r, bool regenerateChunk)
+        public void SpawnResource(CustomHex hex, Resource r, bool regenerateChunk)
         {
             //reset resource locations
             hex.resourceLocations.Clear();

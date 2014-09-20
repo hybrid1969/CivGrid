@@ -165,9 +165,9 @@ namespace CivGrid
         public Vector2 mousePos;
         private GameObject chunkHolder;
         /// <summary>
-        /// The chunks in the generated world, <see cref="HexChunk"/>
+        /// The chunks in the generated world, <see cref="CustomChunk"/>
         /// </summary>
-        public HexChunk[,] hexChunks;
+        public CustomChunk[,] hexChunks;
         private int xSectors;
         private int zSectors;
         /// <summary>
@@ -250,7 +250,7 @@ namespace CivGrid
         public Vector3[,] nodeLocations;
 
         //hashtable
-        public Dictionary<Vector2, HexInfo> axialToHexDictionary;
+        public Dictionary<Vector2, CustomHex> axialToHexDictionary;
 
         //managers
         internal ResourceManager resourceManager;
@@ -262,7 +262,7 @@ namespace CivGrid
         /// </summary>
         /// <param name="hex">The hexagon clicked</param>
         /// <param name="mouseButton">The mouse button used</param>
-        public delegate void OnHexClick(HexInfo hex, int mouseButton);
+        public delegate void OnHexClick(CustomHex hex, int mouseButton);
         /// <summary>
         /// Delegate to listen to for OnHexClick events.
         /// </summary>
@@ -272,7 +272,7 @@ namespace CivGrid
         /// Delegate for when the mouse pointer is over a hexagon.
         /// </summary>
         /// <param name="hex">The hexagon that the mouse is over</param>
-        public delegate void OnMouseOverHex(HexInfo hex);
+        public delegate void OnMouseOverHex(CustomHex hex);
         /// <summary>
         /// Delegate to listen to for OnMouseOverHex events.
         /// </summary>
@@ -288,7 +288,7 @@ namespace CivGrid
             improvementManager = GetComponent<ImprovementManager>();
             tileManager = GetComponent<TileManager>();
             civGridCamera = GameObject.FindObjectOfType<CivGridCamera>();
-            axialToHexDictionary = new Dictionary<Vector2, HexInfo>();
+            axialToHexDictionary = new Dictionary<Vector2, CustomHex>();
 
             if (generateNodeLocations)
             {
@@ -541,7 +541,7 @@ namespace CivGrid
         /// <param name="x">The width interval of the chunks</param>
         /// <param name="y">The height interval of the chunks</param>
         /// <returns>The new chunk's script</returns>
-        private HexChunk NewChunk(int x, int y)
+        private CustomChunk NewChunk(int x, int y)
         {
             //if this the first chunk made?
             if (x == 0 && y == 0)
@@ -551,7 +551,7 @@ namespace CivGrid
             //create the chunk object
             GameObject chunkObj = new GameObject("Chunk[" + x + "," + y + "]");
             //add the hexChunk script and cache it
-            HexChunk hexChunk = chunkObj.AddComponent<HexChunk>();
+            CustomChunk hexChunk = chunkObj.AddComponent<CustomChunk>();
             //assign the size of the chunk
             hexChunk.SetSize(chunkSize, chunkSize);
             //setup HexInfo array
@@ -564,7 +564,7 @@ namespace CivGrid
             chunkObj.transform.parent = chunkHolder.transform;
 
             //return the script on the new chunk 
-            return chunkObj.GetComponent<HexChunk>();
+            return chunkObj.GetComponent<CustomChunk>();
         }
 
         /// <summary>
@@ -578,7 +578,7 @@ namespace CivGrid
             zSectors = Mathf.CeilToInt(mapSize.y / chunkSize);
 
             //allocate chunk array
-            hexChunks = new HexChunk[xSectors, zSectors];
+            hexChunks = new CustomChunk[xSectors, zSectors];
 
             //cycle through all chunks
             for (int x = 0; x < xSectors; x++)
@@ -601,7 +601,7 @@ namespace CivGrid
             }
 
             //cycle through all chunks
-            foreach (HexChunk chunk in hexChunks)
+            foreach (CustomChunk chunk in hexChunks)
             {
                 //begin chunk operations since we are done with value generation
                 chunk.Begin();
@@ -711,7 +711,7 @@ namespace CivGrid
 
         private void RegisterDelegates()
         {
-            HexInfo hex = GetHexFromMouse();
+            CustomHex hex = GetHexFromMouse();
 
             //OnHexClick
             if (onHexClick != null)
@@ -740,14 +740,14 @@ namespace CivGrid
         /// </summary>
         /// <param name="worldPosition">The position of the needed hexagon</param>
         /// <returns>The hex at the nearest position</returns>
-        public HexInfo GetHexFromWorldPosition(Vector3 worldPosition)
+        public CustomHex GetHexFromWorldPosition(Vector3 worldPosition)
         {
-            HexInfo hexToReturn = null;
+            CustomHex hexToReturn = null;
 
             float minDistance = 100;
-            foreach (HexChunk chunk in hexChunks)
+            foreach (CustomChunk chunk in hexChunks)
             {
-                foreach (HexInfo hex in chunk.hexArray)
+                foreach (CustomHex hex in chunk.hexArray)
                 {
                     //find lowest distance to point
                     float distance = Vector3.Distance(hex.worldPosition, worldPosition);
@@ -769,17 +769,17 @@ namespace CivGrid
         /// <param name="worldPosition">The position of the needed hexagon</param>
         /// <param name="originalChunk">The chunk that contains the hexagon</param>
         /// <returns>The hexagon at the nearest position within the provided chunk</returns>
-        public HexInfo GetHexFromWorldPosition(Vector3 worldPosition, HexChunk originalChunk)
+        public CustomHex GetHexFromWorldPosition(Vector3 worldPosition, CustomChunk originalChunk)
         {
-            HexInfo hexToReturn = null;
+            CustomHex hexToReturn = null;
 
-            HexChunk[] possibleChunks = FindPossibleChunks(originalChunk);
+            CustomChunk[] possibleChunks = FindPossibleChunks(originalChunk);
 
             float minDistance = 100;
 
-            foreach (HexChunk chunk in possibleChunks)
+            foreach (CustomChunk chunk in possibleChunks)
             {
-                foreach (HexInfo hex in chunk.hexArray)
+                foreach (CustomHex hex in chunk.hexArray)
                 {
                     //find lowest distance to point
                     float distance = Vector3.Distance(hex.worldPosition, worldPosition);
@@ -799,9 +799,9 @@ namespace CivGrid
         /// </summary>
         /// <param name="axialCoordinates">Axial coordinates of the needed hexagon</param>
         /// <returns>The hexagon with the requested axial coordinates within the provided chunk</returns>
-        public HexInfo GetHexFromAxialCoordinates(Vector2 axialCoordinates)
+        public CustomHex GetHexFromAxialCoordinates(Vector2 axialCoordinates)
         {
-            HexInfo returnHex;
+            CustomHex returnHex;
             axialToHexDictionary.TryGetValue(axialCoordinates, out returnHex);
 
             return returnHex;
@@ -812,7 +812,7 @@ namespace CivGrid
         /// </summary>
         /// <param name="cubeCoordinates">Cube coordinates of the needed hexagon</param>
         /// <returns>The hexagon with the requested cube coordinates</returns>
-        public HexInfo GetHexFromCubeCoordinates(Vector3 cubeCoordinates)
+        public CustomHex GetHexFromCubeCoordinates(Vector3 cubeCoordinates)
         {
             return GetHexFromAxialCoordinates(new Vector2(cubeCoordinates.x, cubeCoordinates.z));
         }
@@ -833,7 +833,7 @@ namespace CivGrid
         //    return tempHex;
         //}
 
-        public HexInfo GetHexFromOffsetCoordinates(Vector2 position)
+        public CustomHex GetHexFromOffsetCoordinates(Vector2 position)
         {
 
             int hexChunksLengthX = hexChunks.GetLength(0) - 1;
@@ -845,8 +845,8 @@ namespace CivGrid
             if (chunkX < 0 || chunkY < 0 || chunkX > hexChunksLengthX || chunkY > hexChunksLengthY)
                 return null;
 
-            HexChunk chunk = hexChunks[chunkX, chunkY];
-            HexInfo hex = chunk.hexArray[(int)position.x - (chunkX * chunkSize), (int)position.y - (chunkY * chunkSize)];
+            CustomChunk chunk = hexChunks[chunkX, chunkY];
+            CustomHex hex = chunk.hexArray[(int)position.x - (chunkX * chunkSize), (int)position.y - (chunkY * chunkSize)];
 
             return hex;
 
@@ -859,12 +859,12 @@ namespace CivGrid
         /// Gets a hexagon from the mouse posion.
         /// </summary>
         /// <returns>The hexagon closest to the mouse position</returns>
-        public HexInfo GetHexFromMouse()
+        public CustomHex GetHexFromMouse()
         {
             Ray ray1 = civGridCamera.GetCamera(0).ScreenPointToRay(mousePos);
             if (Physics.Raycast(ray1, out chunkHit, 100f))
             {
-                HexChunk chunkHexIsLocatedIn = chunkHit.collider.gameObject.GetComponent<HexChunk>();
+                CustomChunk chunkHexIsLocatedIn = chunkHit.collider.gameObject.GetComponent<CustomChunk>();
                 if (chunkHit.collider != null)
                 {
                     return GetHexFromWorldPosition(chunkHit.point, chunkHexIsLocatedIn);
@@ -875,7 +875,7 @@ namespace CivGrid
                 Ray ray2 = civGridCamera.GetCamera(1).ScreenPointToRay(mousePos);
                 if (Physics.Raycast(ray2, out chunkHit, 100f))
                 {
-                    HexChunk chunkHexIsLocatedIn = chunkHit.collider.gameObject.GetComponent<HexChunk>();
+                    CustomChunk chunkHexIsLocatedIn = chunkHit.collider.gameObject.GetComponent<CustomChunk>();
                     if (chunkHit.collider != null)
                     {
                         return GetHexFromWorldPosition(chunkHit.point, chunkHexIsLocatedIn);
@@ -887,11 +887,11 @@ namespace CivGrid
         }
         #endregion
 
-        public HexInfo[] GetNeighboursOfHex(HexInfo centreTile)
+        public CustomHex[] GetNeighboursOfHex(CustomHex centreTile)
         {
             int[] d;
 
-            HexInfo[] neighbours = new HexInfo[6];
+            CustomHex[] neighbours = new CustomHex[6];
             Vector2 neighbourOffsetGridPos = new Vector2(0, 0);
 
             int parity = (int)centreTile.OffsetCoordinates.y & 1;
@@ -909,12 +909,12 @@ namespace CivGrid
             return neighbours;
         }
 
-        private HexChunk[] FindPossibleChunks(HexChunk chunk)
+        private CustomChunk[] FindPossibleChunks(CustomChunk chunk)
         {
-            HexChunk[] chunkArray;
+            CustomChunk[] chunkArray;
             if (DetermineWorldEdge(chunk) == false)
             {
-                chunkArray = new HexChunk[9];
+                chunkArray = new CustomChunk[9];
                 chunkArray[0] = hexChunks[(int)chunk.chunkLocation.x + 1, (int)chunk.chunkLocation.y];
                 chunkArray[1] = hexChunks[(int)chunk.chunkLocation.x + 1, (int)chunk.chunkLocation.y + 1];
                 chunkArray[2] = hexChunks[(int)chunk.chunkLocation.x, (int)chunk.chunkLocation.y + 1];
@@ -928,11 +928,11 @@ namespace CivGrid
             }
             else
             {
-                Utility.ToSingleArray<HexChunk>(hexChunks, out chunkArray); return chunkArray;
+                Utility.ToSingleArray<CustomChunk>(hexChunks, out chunkArray); return chunkArray;
             }
         }
 
-        private bool DetermineWorldEdge(HexChunk chunk)
+        private bool DetermineWorldEdge(CustomChunk chunk)
         {
             if (chunk.chunkLocation.x == 0 || chunk.chunkLocation.x == ((mapSize.x / chunkSize) - 1))
             {

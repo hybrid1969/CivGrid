@@ -16,7 +16,7 @@ namespace CivGrid.SampleResources
 
         public int health;
         public bool selected = false;
-        public HexInfo currentLocation;
+        public CustomHex currentLocation;
         bool moveMode;
 
         public int unitMoves;
@@ -73,7 +73,7 @@ namespace CivGrid.SampleResources
                             {
                                 //since its a tile get the Hex script
                                 //TODO: FIX
-                                HexInfo hex = new HexInfo();//obj.GetComponent<HexInfo>();
+                                CustomHex hex = new CustomHex();//obj.GetComponent<HexInfo>();
 
                                 //check to see if tile is occupied
                                 if (hex.currentUnit == null)
@@ -130,7 +130,7 @@ namespace CivGrid.SampleResources
 
 
 
-        public void Move(HexInfo fromTile, HexInfo toTile, bool quickMove)
+        public void Move(CustomHex fromTile, CustomHex toTile, bool quickMove)
         {
             if (quickMove)
             {

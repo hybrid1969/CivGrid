@@ -10,15 +10,15 @@ namespace CivGrid
     /// Positions and setups up each hexagon within this chunk.
     /// Handles combining them upon one mesh.
     /// </summary>
-    public class HexChunk : MonoBehaviour
+    public class Chunk : MonoBehaviour
     {
         /// <summary>
         /// The array of hexagons in this chunk.
-        /// Each hexagon is represented by the class <see cref="HexInfo"/>, which holds all
+        /// Each hexagon is represented by the class <see cref="CustomHex"/>, which holds all
         /// data concerning the hexagon.
         /// </summary>
         [SerializeField]
-        public HexInfo[,] hexArray;
+        public CustomHex[,] hexArray;
         /// <summary>
         /// The size of the chunk described as, width and height in the number of hexagons included within
         /// the chunk.
@@ -90,7 +90,7 @@ namespace CivGrid
         /// </remarks>
         public void AllocateHexArray()
         {
-            hexArray = new HexInfo[(int)chunkSize.x, (int)chunkSize.y];
+            hexArray = new CustomHex[(int)chunkSize.x, (int)chunkSize.y];
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace CivGrid
         public void GenerateChunk()
         {
             //create the hexagons in memory
-            hexArray = new HexInfo[(int)chunkSize.x, (int)chunkSize.y];
+            hexArray = new CustomHex[(int)chunkSize.x, (int)chunkSize.y];
 
             //if this is an offset row
             bool even;
@@ -139,9 +139,9 @@ namespace CivGrid
         private void GenerateHex(int x, int y)
         {
             //cache and create hex hex
-            HexInfo hex;
+            CustomHex hex;
             Vector2 worldArrayPosition;
-            hexArray[x, y] = new HexInfo();
+            hexArray[x, y] = new CustomHex();
             hex = hexArray[x, y];
 
             //set world array position
@@ -187,9 +187,9 @@ namespace CivGrid
         private void GenerateHexOffset(int x, int y)
         {
             //cache and create hex hex
-            HexInfo hex;
+            CustomHex hex;
             Vector2 worldArrayPosition;
-            hexArray[x, y] = new HexInfo();
+            hexArray[x, y] = new CustomHex();
             hex = hexArray[x, y];
 
             //set world array position
@@ -266,7 +266,7 @@ namespace CivGrid
                     if (hexArray[x, z] != null)
                     {
                         //set parent chunk of the hex to this
-                        hexArray[x, z].parentChunk = this;
+                        hexArray[x, z].parentChunk = (CustomChunk)this;
                         //start hex operations(pulling down the mesh)
                         hexArray[x, z].Start();
                     }
@@ -308,7 +308,7 @@ namespace CivGrid
         /// This method generates a new collider for the chunk if it does not already include a collider.
         /// If one is present it will resize it.
         /// 
-        /// Therefore any <b>BoxCollider</b> on a <b>GameObject</b> that has a <see cref="HexChunk"/> script
+        /// Therefore any <b>BoxCollider</b> on a <b>GameObject</b> that has a <see cref="CustomChunk"/> script
         /// will use the present <b>BoxCollider</b> and resize it.
         /// </remarks>
         public void GenerateHexCollider()
@@ -327,7 +327,7 @@ namespace CivGrid
         /// Combines all localMeshes' in the hexes of this chunk into one mesh.
         /// </summary>
         /// <remarks>
-        /// This method must be called to apply any changes to a hexagon's <see cref="HexInfo.localMesh"/>. Without calling
+        /// This method must be called to apply any changes to a hexagon's <see cref="CustomHex.localMesh"/>. Without calling
         /// this method the changes won't be seen in the chunk mesh.
         /// </remarks>
         internal void RegenerateMesh()

@@ -58,7 +58,7 @@ namespace CivGrid
         /// </summary>
         /// <param name="hex">Hex to create the improvement on</param>
         /// <param name="i">Improvement to add</param>
-        private void InitiateImprovementsOnHexs(HexInfo hex, Improvement i)
+        private void InitiateImprovementsOnHexs(CustomHex hex, Improvement i)
         {
             //get the parent chunk object; this is where we will parent the improvement objects to
             GameObject resourceHolder = hex.parentChunk.gameObject;
@@ -243,7 +243,7 @@ namespace CivGrid
         /// }
         /// </code>
         /// </example>
-        public void TestedAddImprovementToTile(HexInfo hex, string improvementName)
+        public void TestedAddImprovementToTile(CustomHex hex, string improvementName)
         {
             //if it's possible to spawn the improvement according to it's rules
             bool possible = false;
@@ -307,7 +307,7 @@ namespace CivGrid
         /// </code>
         /// </example>
         [System.Obsolete("Use improvementIndex overload; otherwise retrieve [index+1] to return correct improvement")]
-        public void TestedAddImprovementToTile(HexInfo hex, Improvement improvement)
+        public void TestedAddImprovementToTile(CustomHex hex, Improvement improvement)
         {
             //if it's possible to spawn the improvement according to it's rules
             bool possible = false;
@@ -369,7 +369,7 @@ namespace CivGrid
         /// The index system should be based off of the inspector indexes at startup. The automatically generated "None" improvement
         /// is not included in the index numbering.
         /// </remarks>
-        public void TestedAddImprovementToTile(HexInfo hex, int improvementIndex)
+        public void TestedAddImprovementToTile(CustomHex hex, int improvementIndex)
         {
             //if it's possible to spawn the improvement according to it's rules
             bool possible = false;
@@ -429,7 +429,7 @@ namespace CivGrid
         /// }
         /// </code>
         /// </example>
-        public void RemoveImprovementFromTile(HexInfo hex)
+        public void RemoveImprovementFromTile(CustomHex hex)
         {
             if (hex.currentImprovement != null)
             {

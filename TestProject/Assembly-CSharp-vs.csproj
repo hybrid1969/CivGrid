@@ -46,11 +46,11 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\Chunk.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\CivGridCamera.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\ExampleClass.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\FileUtility.cs" />
-     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\HexChunk.cs" />
-     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\HexInfo.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\Hex.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\HexRule.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\ImprovementManager.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\MeshLoader.cs" />
@@ -65,6 +65,8 @@
      <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\Range.cs" />
      <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\SaveManager.cs" />
      <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\Unit.cs" />
+     <Compile Include="Assets\CivGrid\Exposed\CustomChunk.cs" />
+     <Compile Include="Assets\CivGrid\Exposed\CustomHex.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

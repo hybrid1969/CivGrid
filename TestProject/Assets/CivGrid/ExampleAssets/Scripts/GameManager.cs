@@ -27,7 +27,7 @@ namespace CivGrid.SampleResources
             worldManager = GameObject.FindObjectOfType<WorldManager>();
         }
 
-        void OnHexClick(HexInfo hex, int mouseButton)
+        void OnHexClick(CustomHex hex, int mouseButton)
         {
             if(mouseButton == 0)
             {
@@ -53,7 +53,7 @@ namespace CivGrid.SampleResources
 
         void SpawnUnit(GameObject obj, Vector2 hexLoc)
         {
-            HexInfo hex = worldManager.GetHexFromAxialCoordinates(hexLoc);
+            CustomHex hex = worldManager.GetHexFromAxialCoordinates(hexLoc);
 
             GameObject unit = (GameObject)Instantiate(obj, hex.worldPosition, Quaternion.identity);
 

@@ -592,7 +592,7 @@ namespace CivGrid
         // The index to each vertex
         public int[] vertexIndex = new int[2];
         internal EdgeLocation edgeLocation;
-        internal HexInfo adjacentHex;
+        internal CustomHex adjacentHex;
         // The index into the face.
         // (faceindex[0] == faceindex[1] means the edge connects to only one triangle)
         internal int[] faceIndex = new int[2];

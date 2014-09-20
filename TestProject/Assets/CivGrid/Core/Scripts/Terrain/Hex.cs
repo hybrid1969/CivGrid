@@ -19,7 +19,7 @@ namespace CivGrid
     /// Generates it's UV data depending on constraints.
     /// </summary>
     [System.Serializable]
-    public class HexInfo
+    public class Hex
     {
         //positioning
         private Vector3 cubeCoordinates;
@@ -67,7 +67,7 @@ namespace CivGrid
         /// <summary>
         /// The chunk that this hexagon is within.
         /// </summary>
-        public HexChunk parentChunk;
+        public CustomChunk parentChunk;
 
         private TextureAtlas worldTextureAtlas;
 
@@ -141,7 +141,7 @@ namespace CivGrid
         /// <summary>
         /// Bordering hexagons of this hexagon.
         /// </summary>
-        public HexInfo[] neighbors;
+        public CustomHex[] neighbors;
 
         /// <summary>
         /// The coordinates of the hexagon in cube coordinates.
@@ -225,10 +225,10 @@ namespace CivGrid
             //get the texture atlas from world manager
             worldTextureAtlas = parentChunk.worldManager.textureAtlas;
 
-            parentChunk.worldManager.axialToHexDictionary.Add(AxialCoordinates, this);
+            parentChunk.worldManager.axialToHexDictionary.Add(AxialCoordinates, (CustomHex)this);
 
             //cache neighbors of this hexagon
-            neighbors = parentChunk.worldManager.GetNeighboursOfHex(this);
+            neighbors = parentChunk.worldManager.GetNeighboursOfHex((CustomHex)this);
 
             //generate local mesh
             MeshSetup();
@@ -238,7 +238,7 @@ namespace CivGrid
             {
                 //check for resources and default to no improvement
                 currentImprovement = improvementManager.improvements[0];
-                resourceManager.CheckForResource(this);
+                resourceManager.CheckForResource((CustomHex)this);
             }
         }
 
@@ -246,7 +246,7 @@ namespace CivGrid
         /// Applies any changes on this hex to it's parent chunk.
         /// </summary>
         /// <remarks>
-        /// This method must be called to apply any changes to a hexagon's <see cref="HexInfo.localMesh"/>. Without calling
+        /// This method must be called to apply any changes to a hexagon's <see cref="CustomHex.localMesh"/>. Without calling
         /// this method the changes won't be seen in the chunk mesh.
         /// </remarks>
         /// <example>
@@ -573,7 +573,7 @@ namespace CivGrid
             return false;
         }
 
-        private HexInfo DetermineSideToReturn(int first, int second)
+        private CustomHex DetermineSideToReturn(int first, int second)
         {
             if (neighbors[first] != null)
             {
@@ -586,7 +586,7 @@ namespace CivGrid
             return neighbors[first];
         }
 
-        private HexInfo GetAdjacentHexFromEdgeDirection(EdgeLocation direction)
+        private CustomHex GetAdjacentHexFromEdgeDirection(EdgeLocation direction)
         {
             if (neighbors.Length == 6)
             {
