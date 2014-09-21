@@ -12,7 +12,7 @@ public class BorderDebugTesting : MonoBehaviour {
 
 	}
 
-	void OnHexClick(CustomHex hex, int mouseButton)
+	void OnHexClick(Hex hex, int mouseButton)
 	{
 		if(mouseButton == 0){
 
@@ -29,7 +29,7 @@ public class BorderDebugTesting : MonoBehaviour {
 		}
 	}
 
-	private void RefreshAffectedBorders( CustomHex byChangeInHex ) {
+	private void RefreshAffectedBorders( Hex byChangeInHex ) {
 		
 		// Make the world manager fresh chunks affected by this update.
 		

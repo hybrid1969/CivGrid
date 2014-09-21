@@ -19,7 +19,7 @@ namespace CivGrid
     /// Generates it's UV data depending on constraints.
     /// </summary>
     [System.Serializable]
-    public class Hex
+    public class InternalHex
     {
         //positioning
         private Vector3 cubeCoordinates;
@@ -67,7 +67,7 @@ namespace CivGrid
         /// <summary>
         /// The chunk that this hexagon is within.
         /// </summary>
-        public CustomChunk parentChunk;
+        public Chunk parentChunk;
 
         private TextureAtlas worldTextureAtlas;
 
@@ -141,7 +141,7 @@ namespace CivGrid
         /// <summary>
         /// Bordering hexagons of this hexagon.
         /// </summary>
-        public CustomHex[] neighbors;
+        public Hex[] neighbors;
 
         /// <summary>
         /// The coordinates of the hexagon in cube coordinates.
@@ -225,10 +225,10 @@ namespace CivGrid
             //get the texture atlas from world manager
             worldTextureAtlas = parentChunk.worldManager.textureAtlas;
 
-            parentChunk.worldManager.axialToHexDictionary.Add(AxialCoordinates, (CustomHex)this);
+            parentChunk.worldManager.axialToHexDictionary.Add(AxialCoordinates, (Hex)this);
 
             //cache neighbors of this hexagon
-            neighbors = parentChunk.worldManager.GetNeighboursOfHex((CustomHex)this);
+            neighbors = parentChunk.worldManager.GetNeighboursOfHex((Hex)this);
 
             //generate local mesh
             MeshSetup();
@@ -238,7 +238,7 @@ namespace CivGrid
             {
                 //check for resources and default to no improvement
                 currentImprovement = improvementManager.improvements[0];
-                resourceManager.CheckForResource((CustomHex)this);
+                resourceManager.CheckForResource((Hex)this);
             }
         }
 
@@ -246,7 +246,7 @@ namespace CivGrid
         /// Applies any changes on this hex to it's parent chunk.
         /// </summary>
         /// <remarks>
-        /// This method must be called to apply any changes to a hexagon's <see cref="CustomHex.localMesh"/>. Without calling
+        /// This method must be called to apply any changes to a hexagon's <see cref="Hex.localMesh"/>. Without calling
         /// this method the changes won't be seen in the chunk mesh.
         /// </remarks>
         /// <example>
@@ -575,7 +575,7 @@ namespace CivGrid
             return false;
         }
 
-        private CustomHex DetermineSideToReturn(int first, int second)
+        private Hex DetermineSideToReturn(int first, int second)
         {
             if (neighbors[first] != null)
             {
@@ -588,7 +588,7 @@ namespace CivGrid
             return neighbors[first];
         }
 
-        private CustomHex GetAdjacentHexFromEdgeDirection(EdgeLocation direction)
+        private Hex GetAdjacentHexFromEdgeDirection(EdgeLocation direction)
         {
             if (neighbors.Length == 6)
             {
@@ -696,26 +696,9 @@ namespace CivGrid
 
 		public uint ownedByTeam = uint.MaxValue; // Team ID that owns this hex. uint.MaxValue is the undefined team id, because 0 is a valid team id.
 
-		public Vector2 OffsetCoordPosition {
-			
-			get { 
-				
-				int x = (int) cubeCoordinates.x;
-				int y = (int) cubeCoordinates.y;
-				
-				return new Vector2( x + (y + (y&1)) / 2, y ); 
-				
-			}
-			
-		}
-		
-		public int OffsetPosX { get { return ( int ) OffsetCoordPosition.x; } }
-		public int OffsetPosY { get { return ( int ) OffsetCoordPosition.y; } }
-
-		private Color[] teamCols = new Color[]{ new Color( 1f, 0, 0, 1f ), new Color( 0, 1f, 1f, 1 ) };
+		private Color[] teamColors = new Color[]{ new Color( 1f, 0, 0, 1f ), new Color( 0, 1f, 1f, 1 ) };
 
 		private void RefreshBorderTextureUV( int borderTileType ){
-
 			// This does the assigning of this tile's UV2 to the corrensponding cell, depending on the borderTileType
 
 			int borderTypeId = borderTileType < 0 ? 64 : borderTileType;
@@ -727,7 +710,7 @@ namespace CivGrid
 			Vector2[] rawUV = parentChunk.worldManager.flatHexagonSharedMesh.uv;
 			
 			Vector2[] UV2 = new Vector2[rawUV.Length];
-			Color[] COLS = new Color[rawUV.Length];
+			Color[] colors = new Color[rawUV.Length];
 
 			int sprShTextureWidth = borderSettings.sprShDefBorders.textureWidth;
 			int sprShTextureHeight = borderSettings.sprShDefBorders.textureHeight;
@@ -737,12 +720,12 @@ namespace CivGrid
 				UV2[i] = new Vector2(rawUV[i].x * ( rectArea.width / sprShTextureWidth ) + ( rectArea.x  / sprShTextureWidth ), 
 				                     rawUV[i].y * ( rectArea.height / sprShTextureHeight ) + ( rectArea.y / sprShTextureHeight ) );
 
-				COLS[ i ] = borderTypeId == 64 ? Color.white : teamCols[ ownedByTeam ];
+				colors[ i ] = borderTypeId == 64 ? Color.white : teamColors[ ownedByTeam ];
 
 			}
 			
 			localMesh.uv2 = UV2;
-			localMesh.colors = COLS;
+			localMesh.colors = colors;
 
 		}
 
@@ -755,12 +738,12 @@ namespace CivGrid
 			if( ownedByTeam == uint.MaxValue )
 				return -1;
 
-			Hex val_1 = parentChunk.worldManager.GetOffsetNeighbour( (CustomHex) this, 0, 1 );
-			Hex val_2 = parentChunk.worldManager.GetOffsetNeighbour( (CustomHex) this, 1, 0 );
-			Hex val_4 = parentChunk.worldManager.GetOffsetNeighbour( (CustomHex) this, 0, -1 );
-			Hex val_8 = parentChunk.worldManager.GetOffsetNeighbour( (CustomHex) this, -1, -1 );
-			Hex val_16 = parentChunk.worldManager.GetOffsetNeighbour( (CustomHex) this, -1, 0 );
-			Hex val_32 = parentChunk.worldManager.GetOffsetNeighbour( (CustomHex) this, -1, 1 );
+			InternalHex val_1 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, 0, 1 );
+			InternalHex val_2 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, 1, 0 );
+			InternalHex val_4 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, 0, -1 );
+			InternalHex val_8 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, -1, -1 );
+			InternalHex val_16 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, -1, 0 );
+			InternalHex val_32 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, -1, 1 );
 			
 			int border_1 = val_1 == null || val_1.ownedByTeam != ownedByTeam ? 0 : 1;
 			int border_2 = val_2 == null || val_2.ownedByTeam != ownedByTeam ? 0 : 2;
