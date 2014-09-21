@@ -453,9 +453,9 @@ namespace CivGrid
             if (levelOfDetail > 0)
             {
                 if (levelOfDetail == 1)
-                { flatHexagonSharedMesh = MeshLoader.LoadMesh(location + @"\Hexagon_1.obj"); }
+                { flatHexagonSharedMesh = MeshLoader.LoadMesh(location + @"Hexagon_1.obj"); }
                 if (levelOfDetail == 2)
-                { flatHexagonSharedMesh = MeshLoader.LoadMesh(location + @"\Hexagon_2.obj"); }
+                { flatHexagonSharedMesh = MeshLoader.LoadMesh(location + @"Hexagon_2.obj"); }
             }
             else
             {
@@ -557,7 +557,16 @@ namespace CivGrid
             //setup HexInfo array
             hexChunk.AllocateHexArray();
             //set the texture map for this chunk and add the mesh renderer
-            chunkObj.AddComponent<MeshRenderer>().material.mainTexture = textureAtlas.terrainAtlas;
+			chunkObj.AddComponent<MeshRenderer>();
+
+
+			chunkObj.renderer.material.shader = Shader.Find( "HexFloor" );
+			chunkObj.renderer.material.mainTexture = textureAtlas.terrainAtlas;
+			chunkObj.renderer.material.SetTexture( "_BlendTex", GameObject.Find("BorderSettings").GetComponent<BorderSettings>().bordersTexture );
+//			chunkObj.renderer.material.SetColor( "_Color", new Color( Random.Range( 0f, 1f ), Random.Range( 0f, 1f ), Random.Range( 0f, 1f ),  1 ) );
+
+
+
             //add the mesh filter
             chunkObj.AddComponent<MeshFilter>();
             //make this chunk a child of "ChunkHolder"s
@@ -992,6 +1001,93 @@ namespace CivGrid
             //GUI.Label(new Rect(20, 30, 100, 20), distance.ToString("Distance: #."));
         }
          */
+
+		// Added
+
+		public CustomHex GetOffsetNeighbour( CustomHex centreTile, int addedX, int addedY ){
+			
+			int parity = (int)centreTile.OffsetCoordPosition.y & 1;
+			
+			Vector2 neighbourOffsetGridPos = new Vector2( 
+			                                             centreTile.OffsetCoordPosition.x + ( addedY == 0 ? addedX : ( addedX + parity ) ),
+			                                             centreTile.OffsetCoordPosition.y + addedY
+			                                             );
+			
+			return GetHexFromOffsetPosition( neighbourOffsetGridPos );
+			
+		}
+		
+		public CustomHex[] GetNeighboursOfHexOffset( CustomHex centreTile, bool includeCentreTile = false ){
+			
+			int[] d;
+			
+			ArrayList neighbours = new ArrayList();
+			Vector2 neighbourOffsetGridPos = new Vector2( 0, 0 );
+			Hex hex;
+			
+			int parity = (int)centreTile.OffsetCoordPosition.y & 1;
+			
+			for( int i = 0; i < 6; i++ ){
+				
+				d = offsetNeighbors[ parity ][ i ];
+				
+				neighbourOffsetGridPos.x = centreTile.OffsetCoordPosition.x + d[ 0 ];
+				neighbourOffsetGridPos.y = centreTile.OffsetCoordPosition.y + d[ 1 ];
+				
+				hex = GetHexFromOffsetPosition( neighbourOffsetGridPos );
+				
+				if( hex != null )
+					neighbours.Add( hex );
+				
+			}
+			
+			if( includeCentreTile )
+				neighbours.Add( centreTile );
+			
+			return ( CustomHex[] ) neighbours.ToArray( typeof( CustomHex ) );
+			
+		}
+
+		public CustomHex GetHexFromOffsetPosition( Vector2 position ){
+			
+			int hexChunksLengthX = hexChunks.GetLength( 0 ) - 1;
+			int hexChunksLengthY = hexChunks.GetLength( 1 ) - 1;
+			
+			int chunkX = Mathf.FloorToInt( position.x / chunkSize );
+			int chunkY = Mathf.FloorToInt( position.y / chunkSize );
+			
+			if( chunkX < 0 || chunkY < 0 || chunkX > hexChunksLengthX || chunkY > hexChunksLengthY )
+				return null;
+			
+			CustomChunk chunk = hexChunks[ chunkX, chunkY ];
+			CustomHex hex = chunk.hexArray[ (int)position.x - ( chunkX * chunkSize ), (int)position.y - ( chunkY * chunkSize ) ];
+			
+			return hex;
+			
+		}
+		
+		public void RefreshBorders( CustomHex dueToModifiedTile ){
+			
+			CustomChunk originalChunk = dueToModifiedTile.parentChunk;
+			CustomChunk[] possibleChunks = FindPossibleChunks( originalChunk );
+			
+			foreach( CustomChunk chunk in possibleChunks ){
+				
+				foreach( CustomHex hex in chunk.hexArray ){
+
+					// Have to make every hex update their border value so neighbours refresh their knowledge of neighbours.
+
+					hex.UpdateBorderValue();
+					
+				}
+				
+				chunk.RegenerateMesh();
+				
+			}
+			
+		}
+
+
     }
 
     /// <summary>

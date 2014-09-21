@@ -31,6 +31,7 @@ namespace CivGrid.SampleResources
         {
             if(mouseButton == 0)
             {
+				Debug.Log( "nya" );
                 worldManager.improvementManager.TestedAddImprovementToTile(hex, 0);
             }
             if(mouseButton == 1)
