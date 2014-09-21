@@ -33,8 +33,8 @@ public class BorderDebugTesting : MonoBehaviour {
 		
 		// Make the world manager fresh chunks affected by this update.
 		
-		// TODO : This is highly inefficient if updating multiple tiles' border values at once. Should figure out a different way to
-		//        refresh the tiles maybe?
+		// TODO : This will be highly inefficient if updating multiple tiles' border values at once. Should only call this once after all 
+		//        hex.ownedByTeam changes have been made.
 
 		worldManager.RefreshBorders( byChangeInHex );
 

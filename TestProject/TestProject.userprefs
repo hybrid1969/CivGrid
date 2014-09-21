@@ -1,11 +1,9 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/CivGrid/Core/Scripts/Terrain/WorldManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/CivGrid/Borders/HexFloor.shader">
     <Files>
-      <File FileName="Assets/CivGrid/Core/Scripts/Terrain/Hex.cs" Line="1" Column="1" />
-      <File FileName="Assets/CivGrid/Core/Scripts/Terrain/WorldManager.cs" Line="557" Column="34" />
-      <File FileName="Assets/CivGrid/ExampleAssets/Scripts/GameManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/CivGrid/Borders/BorderDebugTesting.cs" Line="1" Column="1" />
+      <File FileName="Assets/CivGrid/Borders/HexFloor.shader" Line="26" Column="3" />
+      <File FileName="Assets/CivGrid/Core/Scripts/Terrain/Hex.cs" Line="715" Column="86" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

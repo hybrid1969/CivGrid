@@ -712,6 +712,8 @@ namespace CivGrid
 		public int OffsetPosX { get { return ( int ) OffsetCoordPosition.x; } }
 		public int OffsetPosY { get { return ( int ) OffsetCoordPosition.y; } }
 
+		private Color[] teamCols = new Color[]{ new Color( 1f, 0, 0, 1f ), new Color( 0, 1f, 1f, 1 ) };
+
 		private void RefreshBorderTextureUV( int borderTileType ){
 
 			// This does the assigning of this tile's UV2 to the corrensponding cell, depending on the borderTileType
@@ -725,6 +727,7 @@ namespace CivGrid
 			Vector2[] rawUV = parentChunk.worldManager.flatHexagonSharedMesh.uv;
 			
 			Vector2[] UV2 = new Vector2[rawUV.Length];
+			Color[] COLS = new Color[rawUV.Length];
 
 			int sprShTextureWidth = borderSettings.sprShDefBorders.textureWidth;
 			int sprShTextureHeight = borderSettings.sprShDefBorders.textureHeight;
@@ -733,11 +736,14 @@ namespace CivGrid
 				
 				UV2[i] = new Vector2(rawUV[i].x * ( rectArea.width / sprShTextureWidth ) + ( rectArea.x  / sprShTextureWidth ), 
 				                     rawUV[i].y * ( rectArea.height / sprShTextureHeight ) + ( rectArea.y / sprShTextureHeight ) );
-				
+
+				COLS[ i ] = borderTypeId == 64 ? Color.white : teamCols[ ownedByTeam ];
+
 			}
 			
 			localMesh.uv2 = UV2;
-			
+			localMesh.colors = COLS;
+
 		}
 
 		public int QueryBorderValue(){
