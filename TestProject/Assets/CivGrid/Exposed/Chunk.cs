@@ -4,8 +4,9 @@ using CivGrid;
 
 namespace CivGrid
 {
-    public class CustomHex : Hex
-    {
 
+    public class Chunk : InternalChunk
+    {
+        
     }
 }

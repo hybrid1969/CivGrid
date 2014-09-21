@@ -46,7 +46,7 @@ namespace CivGrid
         /// <param name="rule">Rules to check</param>
         /// <param name="tileManager">The scene tile manager</param>
         /// <returns>If the hex passed the tests</returns>
-        public static bool Test(CustomHex hex, HexRule rule, TileManager tileManager)
+        public static bool Test(Hex hex, HexRule rule, TileManager tileManager)
         {
             //check tile rules
             for (int i = 0; i < rule.possibleTiles.Length; i++)
@@ -74,7 +74,7 @@ namespace CivGrid
         /// <param name="hex">Hex to compare to the tile</param>
         /// <param name="tile">Tile to compare to the hex</param>
         /// <returns></returns>
-        private static bool TestRule(CustomHex hex, Tile tile)
+        private static bool TestRule(Hex hex, Tile tile)
         {
             if (hex.terrainType == tile) { return true; } else { return false; }
         }
@@ -85,7 +85,7 @@ namespace CivGrid
         /// <param name="hex">Hex to compare to the feature</param>
         /// <param name="feature">Feature to compare to the hex</param>
         /// <returns></returns>
-        private static bool TestRule(CustomHex hex, Feature feature)
+        private static bool TestRule(Hex hex, Feature feature)
         {
             if (hex.terrainFeature == feature) { return true; } else { return false; }
         }
