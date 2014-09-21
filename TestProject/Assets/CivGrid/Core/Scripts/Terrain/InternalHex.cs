@@ -511,6 +511,8 @@ namespace CivGrid
                 AssignUVToDefaultTile();
             }
 
+			RefreshBorderTextureUV( -1 );
+
         }
 
         private bool VertexIsEdge(int vertexIndex)
@@ -688,5 +690,77 @@ namespace CivGrid
             //assign the created UV data
             localMesh.uv = UV;
         }
+
+
+		// Added
+
+		public uint ownedByTeam = uint.MaxValue; // Team ID that owns this hex. uint.MaxValue is the undefined team id, because 0 is a valid team id.
+
+		private Color[] teamColors = new Color[]{ new Color( 1f, 0, 0, 1f ), new Color( 0, 1f, 1f, 1 ) };
+
+		private void RefreshBorderTextureUV( int borderTileType ){
+			// This does the assigning of this tile's UV2 to the corrensponding cell, depending on the borderTileType
+
+			int borderTypeId = borderTileType < 0 ? 64 : borderTileType;
+			
+			BorderSettings borderSettings = GameObject.Find( "BorderSettings" ).GetComponent<BorderSettings>();
+
+			Rect rectArea = borderSettings.sprShDefBorders.GetRectFromBorderId( borderTypeId );
+			
+			Vector2[] rawUV = parentChunk.worldManager.flatHexagonSharedMesh.uv;
+			
+			Vector2[] UV2 = new Vector2[rawUV.Length];
+			Color[] colors = new Color[rawUV.Length];
+
+			int sprShTextureWidth = borderSettings.sprShDefBorders.textureWidth;
+			int sprShTextureHeight = borderSettings.sprShDefBorders.textureHeight;
+			
+			for( int i = 0; i < rawUV.Length; i++ ){
+				
+				UV2[i] = new Vector2(rawUV[i].x * ( rectArea.width / sprShTextureWidth ) + ( rectArea.x  / sprShTextureWidth ), 
+				                     rawUV[i].y * ( rectArea.height / sprShTextureHeight ) + ( rectArea.y / sprShTextureHeight ) );
+
+				colors[ i ] = borderTypeId == 64 ? Color.white : teamColors[ ownedByTeam ];
+
+			}
+			
+			localMesh.uv2 = UV2;
+			localMesh.colors = colors;
+
+		}
+
+		public int QueryBorderValue(){
+			
+			// Queries the border value - That is, the number defined by how many of this tile's neighbours also belong to the same
+			// team. This number corresponds to a specific tile in the Borders.png, and thus a specific rect in Borders.asset as defined
+			// by the sprite sheet creator. Thus we can get the region of the texture for that cell, assign tile's UV2's to it.
+
+			if( ownedByTeam == uint.MaxValue )
+				return -1;
+
+			InternalHex val_1 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, 0, 1 );
+			InternalHex val_2 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, 1, 0 );
+			InternalHex val_4 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, 0, -1 );
+			InternalHex val_8 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, -1, -1 );
+			InternalHex val_16 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, -1, 0 );
+			InternalHex val_32 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, -1, 1 );
+			
+			int border_1 = val_1 == null || val_1.ownedByTeam != ownedByTeam ? 0 : 1;
+			int border_2 = val_2 == null || val_2.ownedByTeam != ownedByTeam ? 0 : 2;
+			int border_4 = val_4 == null || val_4.ownedByTeam != ownedByTeam ? 0 : 4;
+			int border_8 = val_8 == null || val_8.ownedByTeam != ownedByTeam ? 0 : 8;
+			int border_16 = val_16 == null || val_16.ownedByTeam != ownedByTeam ? 0 : 16;
+			int border_32 = val_32 == null || val_32.ownedByTeam != ownedByTeam ? 0 : 32;
+			
+			return border_1 + border_2 + border_4 + border_8 + border_16 + border_32;
+			
+		}
+
+		public void UpdateBorderValue(){
+
+			RefreshBorderTextureUV( QueryBorderValue() );
+
+		}
+
     }
 }
