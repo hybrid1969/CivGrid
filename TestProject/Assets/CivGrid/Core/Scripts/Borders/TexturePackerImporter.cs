@@ -71,7 +71,7 @@ public class TexturePackerImporter : AssetPostprocessor
 		int textureWidth = 0;
 		int textureHeight = 0;
 
-		TexturePackerSprSh scriptableObj = ScriptableObject.CreateInstance<TexturePackerSprSh>();
+		BorderTextureData scriptableObj = ScriptableObject.CreateInstance<BorderTextureData>();
 		
 		scriptableObj.idName = nom;
 		scriptableObj.names = new List<string>();

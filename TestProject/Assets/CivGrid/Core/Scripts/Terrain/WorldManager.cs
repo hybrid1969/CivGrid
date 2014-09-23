@@ -825,23 +825,6 @@ namespace CivGrid
         {
             return GetHexFromAxialCoordinates(new Vector2(cubeCoordinates.x, cubeCoordinates.z));
         }
-
-        //public HexInfo GetHexFromOffsetCoordinates(Vector2 position)
-        //{
-        //    int x, z;
-
-        //    int q = (int)position.x;
-        //    int r = (int)position.y;
-
-        //    //x = q - (r + (r & 1)) / 2;
-        //    x = q - (r - (r & 1)) / 2;
-        //    z = r;
-
-        //    HexInfo tempHex = GetHexFromAxialCoordinates(new Vector2(x, z));
-
-        //    return tempHex;
-        //}
-
         public Hex GetHexFromOffsetCoordinates(Vector2 position)
         {
 
@@ -1004,90 +987,32 @@ namespace CivGrid
 
 		// Added
 
-		public Hex GetOffsetNeighbour( Hex centreTile, int addedX, int addedY ){
-			
-			int parity = (int)centreTile.OffsetCoordinates.y & 1;
-			
-			Vector2 neighbourOffsetGridPos = new Vector2( 
-			                                             centreTile.OffsetCoordinates.x + ( addedY == 0 ? addedX : ( addedX + parity ) ),
-			                                             centreTile.OffsetCoordinates.y + addedY
-			                                             );
-			
-			return GetHexFromOffsetPosition( neighbourOffsetGridPos );
-			
-		}
-		
-		public Hex[] GetNeighboursOfHexOffset( Hex centerTile, bool includeCenterTile = false ){
-			
-			int[] d;
-			
-			List<Hex> neighbours = new List<Hex>();
-			Vector2 neighbourOffsetGridPos = new Vector2( 0, 0 );
-			Hex hex;
-			
-			int parity = (int)centerTile.OffsetCoordinates.y & 1;
-			
-			for( int i = 0; i < 6; i++ ){
-				
-				d = offsetNeighbors[ parity ][ i ];
-				
-				neighbourOffsetGridPos.x = centerTile.OffsetCoordinates.x + d[ 0 ];
-				neighbourOffsetGridPos.y = centerTile.OffsetCoordinates.y + d[ 1 ];
-				
-				hex = GetHexFromOffsetPosition( neighbourOffsetGridPos );
-				
-				if( hex != null )
-					neighbours.Add( hex );
-				
-			}
-			
-			if( includeCenterTile )
-				neighbours.Add( centerTile );
-			
-			return ( Hex[] ) neighbours.ToArray();
-			
-		}
+        public Hex GetOffsetNeighbour(Hex centreTile, int addedX, int addedY)
+        {
+            int parity = (int)centreTile.OffsetCoordinates.y & 1;
 
-		public Hex GetHexFromOffsetPosition( Vector2 position ){
-			
-			int hexChunksLengthX = hexChunks.GetLength( 0 ) - 1;
-			int hexChunksLengthY = hexChunks.GetLength( 1 ) - 1;
-			
-			int chunkX = Mathf.FloorToInt( position.x / chunkSize );
-			int chunkY = Mathf.FloorToInt( position.y / chunkSize );
-			
-			if( chunkX < 0 || chunkY < 0 || chunkX > hexChunksLengthX || chunkY > hexChunksLengthY )
-				return null;
-			
-			Chunk chunk = hexChunks[ chunkX, chunkY ];
-			Hex hex = chunk.hexArray[ (int)position.x - ( chunkX * chunkSize ), (int)position.y - ( chunkY * chunkSize ) ];
-			
-			return hex;
-			
-		}
-		
-		public void RefreshBorders( Hex dueToModifiedTile ){
-			
-			Chunk originalChunk = dueToModifiedTile.parentChunk;
-			Chunk[] possibleChunks = FindPossibleChunks( originalChunk );
-			
-			foreach( Chunk chunk in possibleChunks ){
-				
-				foreach( Hex hex in chunk.hexArray ){
+            Vector2 neighbourOffsetGridPos = 
+                new Vector2(centreTile.OffsetCoordinates.x + (addedY == 0 ? addedX : (addedX + parity)),centreTile.OffsetCoordinates.y + addedY);
 
-					// Have to make every hex update their border value so neighbours refresh their knowledge of neighbours.
+            return GetHexFromOffsetCoordinates(neighbourOffsetGridPos);
+        }
 
-					hex.UpdateBorderValue();
-					
-				}
-				
-				chunk.RegenerateMesh();
-				
-			}
-			
-		}
+        public void RefreshBorders(Hex dueToModifiedTile)
+        {
+            Chunk originalChunk = dueToModifiedTile.parentChunk;
+            Chunk[] possibleChunks = FindPossibleChunks(originalChunk);
 
+            foreach (Chunk chunk in possibleChunks)
+            {
+                foreach (Hex hex in chunk.hexArray)
+                {
+                    // Have to make every hex update their border value so neighbours refresh their knowledge of neighbours.
+                    hex.UpdateBorder();
+                }
+                chunk.RegenerateMesh();
 
+            }
+        }
     }
 
     /// <summary>

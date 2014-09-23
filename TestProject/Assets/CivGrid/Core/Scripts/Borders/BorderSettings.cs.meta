@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 70278de5ab12d4019acf99063bad9070
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - bordersTexture: {fileID: 2800000, guid: 7baa60d1568964be4b423f1cb0bc034b, type: 3}
+  - sprShDefBorders: {fileID: 11400000, guid: 6ca889418d4d54cacad1d966c2549117, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 

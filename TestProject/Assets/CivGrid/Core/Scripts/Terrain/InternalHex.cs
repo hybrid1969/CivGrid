@@ -703,7 +703,7 @@ namespace CivGrid
 
 			int borderTypeId = borderTileType < 0 ? 64 : borderTileType;
 			
-			BorderSettings borderSettings = GameObject.Find( "BorderSettings" ).GetComponent<BorderSettings>();
+			BorderSettings borderSettings = GameObject.FindObjectOfType<BorderSettings>();
 
 			Rect rectArea = borderSettings.sprShDefBorders.GetRectFromBorderId( borderTypeId );
 			
@@ -718,7 +718,9 @@ namespace CivGrid
 			for( int i = 0; i < rawUV.Length; i++ ){
 				
 				UV2[i] = new Vector2(rawUV[i].x * ( rectArea.width / sprShTextureWidth ) + ( rectArea.x  / sprShTextureWidth ), 
-				                     rawUV[i].y * ( rectArea.height / sprShTextureHeight ) + ( rectArea.y / sprShTextureHeight ) );
+				                   rawUV[i].y * ( rectArea.height / sprShTextureHeight ) + ( rectArea.y / sprShTextureHeight ) );
+
+                //UV2[i] = new Vector2(rawUV[i].x * (rectArea.width / sprShTextureWidth) + rectArea.x, rawUV[i].y * (rectArea.height / sprShTextureHeight) + rectArea.y);
 
 				colors[ i ] = borderTypeId == 64 ? Color.white : teamColors[ ownedByTeam ];
 
@@ -756,10 +758,9 @@ namespace CivGrid
 			
 		}
 
-		public void UpdateBorderValue(){
-
+		public void UpdateBorder()
+        {
 			RefreshBorderTextureUV( QueryBorderValue() );
-
 		}
 
     }
