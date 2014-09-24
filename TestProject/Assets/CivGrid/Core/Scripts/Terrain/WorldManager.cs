@@ -112,35 +112,24 @@ namespace CivGrid
     /// While some generation methods are exposed for use, it is best to not try and use the lower level methods.
     /// </summary>
     [RequireComponent(typeof(TileManager), typeof(ResourceManager), typeof(ImprovementManager))]
+    [RequireComponent(typeof(BorderSettings))]
     public class WorldManager : MonoBehaviour
     {
         #region fields
 
         private int[][][] offsetNeighbors = new int[][][]
         {
-
             new int[][]
             {
-
                 new int[]{+1, 0}, new int[]{0, -1}, new int[]{-1, -1},
                 new int[]{-1, 0}, new int[]{-1, +1}, new int[]{0, +1}
-
             },
-
             new int[][]
             {
-
                 new int[]{+1, 0}, new int[]{+1, -1}, new int[]{0, -1},
                 new int[]{-1, 0}, new int[]{0, +1}, new int[]{+1, +1}
-
             },
-
         };
-
-        //Moving
-        //internal Vector3 currentHex;
-        //internal Vector3 goToHex;
-        //sinternal int distance;
 
         /// <summary>
         /// The extents of a hexagon from the origin
@@ -277,6 +266,9 @@ namespace CivGrid
         /// Delegate to listen to for OnMouseOverHex events.
         /// </summary>
         public static OnMouseOverHex onMouseOverHex;
+
+        public delegate void StartHexOperations();
+        public static StartHexOperations startHexOperations;
         #endregion
 
         /// <summary>
@@ -562,7 +554,7 @@ namespace CivGrid
 
 			chunkObj.renderer.material.shader = Shader.Find( "HexFloor" );
 			chunkObj.renderer.material.mainTexture = textureAtlas.terrainAtlas;
-			chunkObj.renderer.material.SetTexture( "_BlendTex", GameObject.Find("BorderSettings").GetComponent<BorderSettings>().bordersTexture );
+			chunkObj.renderer.material.SetTexture( "_BlendTex", GetComponent<BorderSettings>().bordersTexture );
 //			chunkObj.renderer.material.SetColor( "_Color", new Color( Random.Range( 0f, 1f ), Random.Range( 0f, 1f ), Random.Range( 0f, 1f ),  1 ) );
 
 
@@ -614,6 +606,10 @@ namespace CivGrid
             {
                 //begin chunk operations since we are done with value generation
                 chunk.Begin();
+            }
+            if (startHexOperations != null)
+            {
+                startHexOperations.Invoke();
             }
         }
 
@@ -825,6 +821,7 @@ namespace CivGrid
         {
             return GetHexFromAxialCoordinates(new Vector2(cubeCoordinates.x, cubeCoordinates.z));
         }
+
         public Hex GetHexFromOffsetCoordinates(Vector2 position)
         {
 
@@ -841,7 +838,6 @@ namespace CivGrid
             Hex hex = chunk.hexArray[(int)position.x - (chunkX * chunkSize), (int)position.y - (chunkY * chunkSize)];
 
             return hex;
-
         }
          
          
@@ -879,26 +875,26 @@ namespace CivGrid
         }
         #endregion
 
-        public Hex[] GetNeighboursOfHex(Hex centreTile)
-        {
+        public Hex[] GetNeighborsOfHex(Hex centerTile)
+        { 
             int[] d;
 
-            Hex[] neighbours = new Hex[6];
-            Vector2 neighbourOffsetGridPos = new Vector2(0, 0);
+            Hex[] neighbors = new Hex[6];
+            Vector2 neighborOffsetGridPos = new Vector2(0, 0);
 
-            int parity = (int)centreTile.OffsetCoordinates.y & 1;
+            int parity = (int)centerTile.OffsetCoordinates.y & 1;
 
             for (int i = 0; i < 6; i++)
             {
 
                 d = offsetNeighbors[parity][i];
 
-                neighbourOffsetGridPos.x = centreTile.OffsetCoordinates.x + d[0];
-                neighbourOffsetGridPos.y = centreTile.OffsetCoordinates.y + d[1];
+                neighborOffsetGridPos.x = centerTile.OffsetCoordinates.x + d[0];
+                neighborOffsetGridPos.y = centerTile.OffsetCoordinates.y + d[1];
 
-                neighbours[i] = GetHexFromOffsetCoordinates(neighbourOffsetGridPos);
+                neighbors[i] = GetHexFromOffsetCoordinates(neighborOffsetGridPos);
             }
-            return neighbours;
+            return neighbors;
         }
 
         private Chunk[] FindPossibleChunks(Chunk chunk)

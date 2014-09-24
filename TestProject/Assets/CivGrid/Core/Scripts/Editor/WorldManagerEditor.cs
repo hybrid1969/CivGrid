@@ -55,6 +55,11 @@ namespace CivGrid.Editors
                 EditorGUILayout.HelpBox("Map Size must be divisible by Chunk Size", MessageType.Error);
             }
 
+            if((worldManager.chunkSize % 2) != 0)
+            {
+                EditorGUILayout.HelpBox("Chunk Size must be an even number", MessageType.Error);
+            }
+
             worldManager.hexRadiusSize = EditorGUILayout.FloatField("Hex Radius Size", worldManager.hexRadiusSize);
 
             EditorGUI.indentLevel--;

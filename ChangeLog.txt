@@ -111,3 +111,5 @@ Version 0.7
 	+Flat hexagon's are heightmapped and 3D with blending
 	+Fixed oceans being set as shore incorrectly on map 	borders
 	+Implimented custom extension classes for Hex, and Chunk
+	+Hexagon borders
+	

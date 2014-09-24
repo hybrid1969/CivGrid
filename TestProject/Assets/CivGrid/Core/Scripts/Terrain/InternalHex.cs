@@ -228,7 +228,7 @@ namespace CivGrid
             parentChunk.worldManager.axialToHexDictionary.Add(AxialCoordinates, (Hex)this);
 
             //cache neighbors of this hexagon
-            neighbors = parentChunk.worldManager.GetNeighboursOfHex((Hex)this);
+            neighbors = parentChunk.worldManager.GetNeighborsOfHex((Hex)this);
 
             //generate local mesh
             MeshSetup();
@@ -469,24 +469,16 @@ namespace CivGrid
                 Vector3[] vertices = localMesh.vertices;
                 for (int i = 0; i < vertices.Length; i++)
                 {
-                    if(VertexIsEdge(i))
+                    if (VertexIsEdge(i))
                     {
-                        //if (onChunkEdge == true)
-                        //{
-                        //    vertices[i].Set(vertices[i].x, 0f, vertices[i].z);
-                        //}
-                        ////not on the edge of the chunk
-                        //else
-                        //{
-                            if(IsLandVertex(i))
-                            {
-                                vertices[i].Set(vertices[i].x, 0.1f, vertices[i].z);
-                            }
-                            else
-                            {
-                                vertices[i].Set(vertices[i].x, 0f, vertices[i].z);
-                            }
-                        //}
+                        if (IsLandVertex(i))
+                        {
+                            vertices[i].Set(vertices[i].x, 0.06f, vertices[i].z);
+                        }
+                        else
+                        {
+                            vertices[i].Set(vertices[i].x, 0f, vertices[i].z);
+                        }
                     }
                     else
                     {
@@ -548,31 +540,20 @@ namespace CivGrid
                 {
                     if (containerEdges[0].adjacentHex.terrainType.isOcean || containerEdges[0].adjacentHex.terrainType.isShore)
                     {
+                        //water edge
                         return false;
                     }
-                    else
-                    {
-                        return true;
-                    }
                 }
-                if (containerEdges[1].adjacentHex != null)
+                else if (containerEdges[1].adjacentHex != null)
                 {
                     if (containerEdges[1].adjacentHex.terrainType.isOcean || containerEdges[1].adjacentHex.terrainType.isShore)
                     {
+                        //water edge
                         return false;
-                    }
-                    else
-                    {
-                        return true;
                     }
                 }
             }
-            else
-            {
-                return false;
-            }
-            //never reached
-            return false;
+            return true;
         }
 
         private Hex DetermineSideToReturn(int first, int second)

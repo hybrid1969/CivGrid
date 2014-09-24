@@ -47,6 +47,11 @@ namespace CivGrid
         /// </summary>
         public Texture2D flatHeightMap;
 
+        void Awake()
+        {
+            WorldManager.startHexOperations += StartHexGeneration;
+        }
+
         /// <summary>
         /// Starts chunk operations of spawning the hexagons and then chunking them
         /// </summary>
@@ -56,11 +61,6 @@ namespace CivGrid
 
             //begin making hexagons
             GenerateChunk();
-
-            if (worldManager.generateNewValues == true)
-            {
-                StartHexGeneration();
-            }
         }
 
         /// <summary>
@@ -257,48 +257,31 @@ namespace CivGrid
         /// </summary>
         internal void StartHexGeneration()
         {
-            //cycle through all hexagons
-            for (int x = 0; x < chunkSize.x; x++)
+            if (worldManager.generateNewValues == true)
             {
-                for (int z = 0; z < chunkSize.y; z++)
+                //cycle through all hexagons
+                for (int x = 0; x < chunkSize.x; x++)
                 {
-                    //check if this hexagon is null; if so throw an error
-                    if (hexArray[x, z] != null)
+                    for (int z = 0; z < chunkSize.y; z++)
                     {
-                        //set parent chunk of the hex to this
-                        hexArray[x, z].parentChunk = (Chunk)this;
-                        //start hex operations(pulling down the mesh)
-                        hexArray[x, z].Start();
-                    }
-                    else
-                    {
-                        //throw error if the hexagon is null in memory
-                        Debug.LogError("null hexagon found in memory: " + x + " " + z);
+                        //check if this hexagon is null; if so throw an error
+                        if (hexArray[x, z] != null)
+                        {
+                            //set parent chunk of the hex to this
+                            hexArray[x, z].parentChunk = (Chunk)this;
+                            //start hex operations(pulling down the mesh)
+                            hexArray[x, z].Start();
+                        }
+                        else
+                        {
+                            //throw error if the hexagon is null in memory
+                            Debug.LogError("null hexagon found in memory: " + x + " " + z);
+                        }
                     }
                 }
+                //combine all the hexagon's meshes in this chunk into one mesh
+                RegenerateMesh();
             }
-
-            ////cycle through all hexagons for late start
-            //for (int x = 0; x < chunkSize.x; x++)
-            //{
-            //    for (int z = 0; z < chunkSize.y; z++)
-            //    {
-            //        //check if this hexagon is null; if so throw an error
-            //        if (hexArray[x, z] != null)
-            //        {
-            //            //start hex operations(pulling down the mesh)
-            //            hexArray[x, z].LateStart();
-            //        }
-            //        else
-            //        {
-            //            //throw error if the hexagon is null in memory
-            //            Debug.LogError("null hexagon found in memory: " + x + " " + z);
-            //        }
-            //    }
-            //}
-
-            //combine all the hexagon's meshes in this chunk into one mesh
-            RegenerateMesh();
         }
 
         /// <summary>
