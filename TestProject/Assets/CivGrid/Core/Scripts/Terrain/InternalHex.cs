@@ -455,11 +455,25 @@ namespace CivGrid
 
                 if (terrainFeature == Feature.Mountain)
                 {
-                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainHeightMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.2f, 0.5f), Random.Range(0.3f, 0.6f), 2, true, false);
+                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainHeightMap,
+                        Random.Range(-500f, 500f), 
+                        parentChunk.worldManager.mountainNoiseScale, ///0.005f-0.18f
+                        parentChunk.worldManager.mountainNoiseSize, //0.2-0.5f
+                        Random.Range(0.3f, 0.6f), //0.3-0.6
+                        parentChunk.worldManager.mountainMaximumHeight, //2 
+                        true, 
+                        false);
                 }
                 else if (terrainFeature == Feature.Hill)
                 {
-                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainHeightMap, Random.Range(-100f, 100f), Random.Range(0.005f, 0.18f), Random.Range(0.75f, 1f), Random.Range(0.4f, 0.7f), 2, true, false);
+                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainHeightMap, 
+                        Random.Range(-100f, 100f), 
+                        parentChunk.worldManager.hillNoiseScale, //0.005-0.18
+                        parentChunk.worldManager.hillNoiseSize, //0.75-1
+                        Random.Range(0.4f, 0.7f), 
+                        parentChunk.worldManager.hillMaximumHeight, //2 
+                        true, 
+                        false);
                 }
                 else
                 {

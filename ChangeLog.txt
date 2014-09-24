@@ -112,4 +112,5 @@ Version 0.7
 	+Fixed oceans being set as shore incorrectly on map 	borders
 	+Implimented custom extension classes for Hex, and Chunk
 	+Hexagon borders
+	+Exposed noise settings
 	

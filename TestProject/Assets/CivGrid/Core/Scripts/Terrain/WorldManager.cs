@@ -233,6 +233,14 @@ namespace CivGrid
         /// Amount to scale the mountain heightmap upon
         /// </summary>
         public float mountainScaleY;
+        public float mountainNoiseScale;
+        public float mountainNoiseSize;
+        public float mountainMaximumHeight;
+
+        public float hillNoiseScale;
+        public float hillNoiseSize;
+        public float hillMaximumHeight;
+
 
         //pathfinding
         public bool generateNodeLocations = true;

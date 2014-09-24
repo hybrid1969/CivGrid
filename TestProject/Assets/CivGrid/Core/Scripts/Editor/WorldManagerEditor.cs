@@ -74,8 +74,20 @@ namespace CivGrid.Editors
             EditorGUI.indentLevel++;
             EditorGUILayout.SelectableLabel("Mountain Settings", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
-            worldManager.mountainScaleY = EditorGUILayout.FloatField("Vertical Size", worldManager.mountainScaleY);
+            worldManager.hillMaximumHeight = EditorGUILayout.FloatField("Maximum Height", worldManager.hillMaximumHeight);
+            worldManager.hillNoiseScale = EditorGUILayout.FloatField("Noise Scale", worldManager.hillNoiseScale);
+            worldManager.hillNoiseSize = EditorGUILayout.FloatField("Noise Size", worldManager.hillNoiseSize);
+            EditorGUI.indentLevel--;
+            EditorGUI.indentLevel--;
+
+            EditorGUI.indentLevel++;
+            EditorGUILayout.SelectableLabel("Mountain Settings", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
             worldManager.mountainHeightMap = (Texture2D)EditorGUILayout.ObjectField("Base Heightmap", worldManager.mountainHeightMap, typeof(Texture2D), false);
+            worldManager.mountainScaleY = EditorGUILayout.FloatField("Vertical Size", worldManager.mountainScaleY);
+            worldManager.mountainMaximumHeight = EditorGUILayout.FloatField("Maximum Height", worldManager.mountainMaximumHeight);
+            worldManager.mountainNoiseScale = EditorGUILayout.FloatField("Noise Scale", worldManager.mountainNoiseScale);
+            worldManager.mountainNoiseSize = EditorGUILayout.FloatField("Noise Size", worldManager.mountainNoiseSize);
             EditorGUI.indentLevel--;
             EditorGUI.indentLevel--;
 
