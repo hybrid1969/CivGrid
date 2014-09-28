@@ -51,7 +51,7 @@
      <Compile Include="Assets\CivGrid\Core\Scripts\Editor\ResourceManagerEditor.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Editor\TileManagerEditor.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Editor\WorldManagerEditor.cs" />
-     <None Include="Assets\CivGrid\Core\Scripts\Borders\HexFloor.shader" />
+     <None Include="Assets\CivGrid\Core\Scripts\Borders\Hex.shader" />
  <Reference Include="UnityEditor.Graphs">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
  </Reference>

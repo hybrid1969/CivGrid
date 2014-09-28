@@ -46,7 +46,6 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\CivGrid\Core\Scripts\Borders\BorderDebugTesting.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Borders\BorderSettings.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Borders\BorderTextureData.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Borders\TexturePackerImporter.cs" />
@@ -64,6 +63,7 @@
      <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\TileManager.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\Utility.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\WorldManager.cs" />
+     <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\BorderDebugTesting.cs" />
      <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\GameManager.cs" />
      <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\Melee.cs" />
      <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\Range.cs" />
@@ -71,7 +71,7 @@
      <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\Unit.cs" />
      <Compile Include="Assets\CivGrid\Exposed\Chunk.cs" />
      <Compile Include="Assets\CivGrid\Exposed\Hex.cs" />
-     <None Include="Assets\CivGrid\Core\Scripts\Borders\HexFloor.shader" />
+     <None Include="Assets\CivGrid\Core\Scripts\Borders\Hex.shader" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -545,25 +545,50 @@ namespace CivGrid
         {
             Edge[] containerEdges = GetAllEdgesFromVertex(vertexIndex);
 
-            containerEdges[0].adjacentHex = GetAdjacentHexFromEdgeDirection(containerEdges[0].edgeLocation);
-            containerEdges[1].adjacentHex = GetAdjacentHexFromEdgeDirection(containerEdges[1].edgeLocation);
+            bool cornerEdge0;
+            bool cornerEdge1;
+
+            containerEdges[0].adjacentHex = GetAdjacentHexFromEdgeDirection(containerEdges[0].edgeLocation, out cornerEdge0);
+            containerEdges[1].adjacentHex = GetAdjacentHexFromEdgeDirection(containerEdges[1].edgeLocation, out cornerEdge1);
 
             if (containerEdges[0].adjacentHex != null || containerEdges[1].adjacentHex != null)
             {
-                if (containerEdges[0].adjacentHex != null)
+                if (cornerEdge0)
                 {
-                    if (containerEdges[0].adjacentHex.terrainType.isOcean || containerEdges[0].adjacentHex.terrainType.isShore)
+                    if (containerEdges[1].adjacentHex != null)
                     {
-                        //water edge
-                        return false;
+                        if (containerEdges[1].adjacentHex.terrainType.isOcean || containerEdges[1].adjacentHex.terrainType.isShore)
+                        {
+                            //water edge
+                            return false;
+                        }
+                    }
+                    if (containerEdges[0].adjacentHex != null)
+                    {
+                        if (containerEdges[0].adjacentHex.terrainType.isOcean || containerEdges[0].adjacentHex.terrainType.isShore)
+                        {
+                            //water edge
+                            return false;
+                        }
                     }
                 }
-                else if (containerEdges[1].adjacentHex != null)
+                else
                 {
-                    if (containerEdges[1].adjacentHex.terrainType.isOcean || containerEdges[1].adjacentHex.terrainType.isShore)
+                    if (containerEdges[0].adjacentHex != null)
                     {
-                        //water edge
-                        return false;
+                        if (containerEdges[0].adjacentHex.terrainType.isOcean || containerEdges[0].adjacentHex.terrainType.isShore)
+                        {
+                            //water edge
+                            return false;
+                        }
+                    }
+                    if (containerEdges[1].adjacentHex != null)
+                    {
+                        if (containerEdges[1].adjacentHex.terrainType.isOcean || containerEdges[1].adjacentHex.terrainType.isShore)
+                        {
+                            //water edge
+                            return false;
+                        }
                     }
                 }
             }
@@ -583,7 +608,7 @@ namespace CivGrid
             return neighbors[first];
         }
 
-        private Hex GetAdjacentHexFromEdgeDirection(EdgeLocation direction)
+        private Hex GetAdjacentHexFromEdgeDirection(EdgeLocation direction, out bool isCornerDirection)
         {
             if (neighbors.Length == 6)
             {
@@ -593,35 +618,48 @@ namespace CivGrid
                     /// Points
                     /// 
                     case EdgeLocation.Top:
+                        isCornerDirection = true;
                         return DetermineSideToReturn(4, 5);
                     case EdgeLocation.Bottom:
+                        isCornerDirection = true;
                         return DetermineSideToReturn(1, 2);
                     case EdgeLocation.BottomLeftCorner:
+                        isCornerDirection = true;
                         return DetermineSideToReturn(2, 3);
                     case EdgeLocation.BottomRightCorner:
+                        isCornerDirection = true;
                         return DetermineSideToReturn(0, 1);
                     case EdgeLocation.TopLeftCorner:
+                        isCornerDirection = true;
                         return DetermineSideToReturn(3, 4);
                     case EdgeLocation.TopRightCorner:
+                        isCornerDirection = true;
                         return DetermineSideToReturn(0, 5);
                     ///
                     /// Sides
                     ///
                     case EdgeLocation.Right:
+                        isCornerDirection = false;
                         return neighbors[0];
                     case EdgeLocation.BottomRight:
+                        isCornerDirection = false;
                         return neighbors[1];
                     case EdgeLocation.BottomLeft:
+                        isCornerDirection = false;
                         return neighbors[2];
                     case EdgeLocation.Left:
+                        isCornerDirection = false;
                         return neighbors[3];
                     case EdgeLocation.TopLeft:
+                        isCornerDirection = false;
                         return neighbors[4];
                     case EdgeLocation.TopRight:
+                        isCornerDirection = false;
                         return neighbors[5];
                 }
             }
             Debug.LogError("Adjacent hex not found");
+            isCornerDirection = false;
             return null;
         }
 
@@ -693,65 +731,66 @@ namespace CivGrid
 
 		private Color[] teamColors = new Color[]{ new Color( 1f, 0, 0, 1f ), new Color( 0, 1f, 1f, 1 ) };
 
-		private void RefreshBorderTextureUV( int borderTileType ){
-			// This does the assigning of this tile's UV2 to the corrensponding cell, depending on the borderTileType
+        private void RefreshBorderTextureUV(int borderTileType)
+        {
+            // This does the assigning of this tile's UV2 to the corrensponding cell, depending on the borderTileType
 
-			int borderTypeId = borderTileType < 0 ? 64 : borderTileType;
-			
-			BorderSettings borderSettings = GameObject.FindObjectOfType<BorderSettings>();
+            int borderTypeId = borderTileType < 0 ? 64 : borderTileType;
 
-			Rect rectArea = borderSettings.sprShDefBorders.GetRectFromBorderId( borderTypeId );
-			
-			Vector2[] rawUV = parentChunk.worldManager.flatHexagonSharedMesh.uv;
-			
-			Vector2[] UV2 = new Vector2[rawUV.Length];
-			Color[] colors = new Color[rawUV.Length];
+            BorderSettings borderSettings = GameObject.FindObjectOfType<BorderSettings>();
 
-			int sprShTextureWidth = borderSettings.sprShDefBorders.textureWidth;
-			int sprShTextureHeight = borderSettings.sprShDefBorders.textureHeight;
-			
-			for( int i = 0; i < rawUV.Length; i++ ){
-				
-				UV2[i] = new Vector2(rawUV[i].x * ( rectArea.width / sprShTextureWidth ) + ( rectArea.x  / sprShTextureWidth ), 
-				                   rawUV[i].y * ( rectArea.height / sprShTextureHeight ) + ( rectArea.y / sprShTextureHeight ) );
+            Rect rectArea = borderSettings.sprShDefBorders.GetRectFromBorderId(borderTypeId);
 
-                //UV2[i] = new Vector2(rawUV[i].x * (rectArea.width / sprShTextureWidth) + rectArea.x, rawUV[i].y * (rectArea.height / sprShTextureHeight) + rectArea.y);
+            Vector2[] rawUV = parentChunk.worldManager.flatHexagonSharedMesh.uv;
 
-				colors[ i ] = borderTypeId == 64 ? Color.white : teamColors[ ownedByTeam ];
+            Vector2[] UV2 = new Vector2[rawUV.Length];
+            Color[] colors = new Color[rawUV.Length];
 
-			}
-			
-			localMesh.uv2 = UV2;
-			localMesh.colors = colors;
+            int sprShTextureWidth = borderSettings.sprShDefBorders.textureWidth;
+            int sprShTextureHeight = borderSettings.sprShDefBorders.textureHeight;
 
-		}
+            for (int i = 0; i < rawUV.Length; i++)
+            {
 
-		public int QueryBorderValue(){
-			
-			// Queries the border value - That is, the number defined by how many of this tile's neighbours also belong to the same
-			// team. This number corresponds to a specific tile in the Borders.png, and thus a specific rect in Borders.asset as defined
-			// by the sprite sheet creator. Thus we can get the region of the texture for that cell, assign tile's UV2's to it.
+                UV2[i] = new Vector2(rawUV[i].x * (rectArea.width / sprShTextureWidth) + (rectArea.x / sprShTextureWidth),
+                                  rawUV[i].y * (rectArea.height / sprShTextureHeight) + (rectArea.y / sprShTextureHeight));
 
-			if( ownedByTeam == uint.MaxValue )
-				return -1;
+                colors[i] = borderTypeId == 64 ? Color.white : teamColors[ownedByTeam];
 
-			InternalHex val_1 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, 0, 1 );
-			InternalHex val_2 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, 1, 0 );
-			InternalHex val_4 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, 0, -1 );
-			InternalHex val_8 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, -1, -1 );
-			InternalHex val_16 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, -1, 0 );
-			InternalHex val_32 = parentChunk.worldManager.GetOffsetNeighbour( (Hex) this, -1, 1 );
-			
-			int border_1 = val_1 == null || val_1.ownedByTeam != ownedByTeam ? 0 : 1;
-			int border_2 = val_2 == null || val_2.ownedByTeam != ownedByTeam ? 0 : 2;
-			int border_4 = val_4 == null || val_4.ownedByTeam != ownedByTeam ? 0 : 4;
-			int border_8 = val_8 == null || val_8.ownedByTeam != ownedByTeam ? 0 : 8;
-			int border_16 = val_16 == null || val_16.ownedByTeam != ownedByTeam ? 0 : 16;
-			int border_32 = val_32 == null || val_32.ownedByTeam != ownedByTeam ? 0 : 32;
-			
-			return border_1 + border_2 + border_4 + border_8 + border_16 + border_32;
-			
-		}
+            }
+
+            localMesh.uv2 = UV2;
+            localMesh.colors = colors;
+        }
+
+        public int QueryBorderValue()
+        {
+
+            // Queries the border value - That is, the number defined by how many of this tile's neighbours also belong to the same
+            // team. This number corresponds to a specific tile in the Borders.png, and thus a specific rect in Borders.asset as defined
+            // by the sprite sheet creator. Thus we can get the region of the texture for that cell, assign tile's UV2's to it.
+
+            if (ownedByTeam == uint.MaxValue)
+                return -1;
+
+            Hex val_1 = parentChunk.worldManager.GetOffsetNeighbour((Hex)this, 0, 1);
+            Hex val_2 = parentChunk.worldManager.GetOffsetNeighbour((Hex)this, 1, 0);
+            Hex val_4 = parentChunk.worldManager.GetOffsetNeighbour((Hex)this, 0, -1);
+            Hex val_8 = parentChunk.worldManager.GetOffsetNeighbour((Hex)this, -1, -1);
+            Hex val_16 = parentChunk.worldManager.GetOffsetNeighbour((Hex)this, -1, 0);
+            Hex val_32 = parentChunk.worldManager.GetOffsetNeighbour((Hex)this, -1, 1);
+
+            int border_1 = val_1 == null || val_1.ownedByTeam != ownedByTeam ? 0 : 1;
+            int border_2 = val_2 == null || val_2.ownedByTeam != ownedByTeam ? 0 : 2;
+            int border_4 = val_4 == null || val_4.ownedByTeam != ownedByTeam ? 0 : 4;
+            int border_8 = val_8 == null || val_8.ownedByTeam != ownedByTeam ? 0 : 8;
+            int border_16 = val_16 == null || val_16.ownedByTeam != ownedByTeam ? 0 : 16;
+            int border_32 = val_32 == null || val_32.ownedByTeam != ownedByTeam ? 0 : 32;
+
+            //Debug.Log("Tile at: " + offsetCoordinates + " is showing grid tile: " +  (border_1 + border_2 + border_4 + border_8 + border_16 + border_32));
+            return border_1 + border_2 + border_4 + border_8 + border_16 + border_32;
+
+        }
 
 		public void UpdateBorder()
         {

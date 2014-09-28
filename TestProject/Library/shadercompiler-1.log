@@ -1,3 +1,49 @@
 Base path: C:/Program Files (x86)/Unity/Editor/Data
-Pipe name: \\.\pipe\UnityShaderCompiler-1-6312
+Pipe name: \\.\pipe\UnityShaderCompiler-1-6808
 Cmd: getPlatforms
+Cmd: preprocess
+  insize=1690 outsize=1720 ok=1
+Cmd: compileSnippet
+  api=1 type=0 insize=5173 outsize=673 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF ok=1
+Cmd: compileSnippet
+  api=1 type=1 insize=5173 outsize=435 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF ok=1
+Cmd: compileSnippet
+  api=1 type=0 insize=3124 outsize=461 kw=POINT ok=1
+Cmd: compileSnippet
+  api=1 type=1 insize=3124 outsize=574 kw=POINT ok=1
+Cmd: compileSnippet
+  api=1 type=0 insize=2467 outsize=190 kw= ok=1
+Cmd: compileSnippet
+  api=1 type=1 insize=2467 outsize=118 kw= ok=1
+Cmd: compileSnippet
+  api=1 type=0 insize=4865 outsize=717 kw=LIGHTMAP_OFF DIRLIGHTMAP_OFF HDR_LIGHT_PREPASS_OFF ok=1
+Cmd: compileSnippet
+  api=1 type=1 insize=4865 outsize=404 kw=LIGHTMAP_OFF DIRLIGHTMAP_OFF HDR_LIGHT_PREPASS_OFF ok=1
+Cmd: preprocess
+  insize=1690 outsize=1721 ok=1
+Cmd: compileSnippet
+  api=1 type=0 insize=5173 outsize=673 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF ok=1
+Cmd: compileSnippet
+  api=1 type=1 insize=5173 outsize=451 kw=DIRECTIONAL SHADOWS_OFF LIGHTMAP_OFF DIRLIGHTMAP_OFF ok=1
+Cmd: compileSnippet
+  api=1 type=0 insize=3124 outsize=461 kw=POINT ok=1
+Cmd: compileSnippet
+  api=1 type=1 insize=3124 outsize=590 kw=POINT ok=1
+Cmd: compileSnippet
+  api=1 type=0 insize=2467 outsize=190 kw= ok=1
+Cmd: compileSnippet
+  api=1 type=1 insize=2467 outsize=118 kw= ok=1
+Cmd: compileSnippet
+  api=1 type=0 insize=4865 outsize=717 kw=LIGHTMAP_OFF DIRLIGHTMAP_OFF HDR_LIGHT_PREPASS_OFF ok=1
+Cmd: compileSnippet
+  api=1 type=1 insize=4865 outsize=420 kw=LIGHTMAP_OFF DIRLIGHTMAP_OFF HDR_LIGHT_PREPASS_OFF ok=1
+Cmd: preprocess
+  insize=1690 outsize=1721 ok=1
+Cmd: preprocess
+  insize=1690 outsize=1721 ok=1
+Cmd: preprocess
+  insize=1685 outsize=1716 ok=1
+Cmd: preprocess
+  insize=1675 outsize=1706 ok=1
+Cmd: preprocess
+  insize=1658 outsize=1689 ok=1

@@ -69,6 +69,8 @@ namespace CivGrid.Editors
 
             EditorGUI.indentLevel++;
             worldManager.levelOfDetail = EditorGUILayout.IntSlider("Level of Detail", worldManager.levelOfDetail, 0, 2);
+            worldManager.LOD1 = (Mesh)EditorGUILayout.ObjectField("LOD 1", worldManager.LOD1, typeof(Mesh), false);
+            worldManager.LOD2 = (Mesh)EditorGUILayout.ObjectField("LOD 2", worldManager.LOD2, typeof(Mesh), false);
             EditorGUI.indentLevel--;
 
             EditorGUI.indentLevel++;

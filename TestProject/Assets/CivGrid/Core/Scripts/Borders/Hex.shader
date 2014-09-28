@@ -1,4 +1,4 @@
-﻿Shader "HexFloor"
+﻿Shader "Hex"
 {
 
 // This shader is pretty inefficient on mobile, maybe find a way to do it without a surface shader. Its a transparent shader as I need
@@ -12,7 +12,7 @@
     }
     SubShader
     {
-        Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
+        Tags {"IgnoreProjector"="True" "RenderType"="Opaque"}
         LOD 200
  
         ZWrite Off

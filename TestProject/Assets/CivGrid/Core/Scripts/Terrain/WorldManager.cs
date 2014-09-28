@@ -209,6 +209,9 @@ namespace CivGrid
         /// </summary>
         public int levelOfDetail;
 
+        public Mesh LOD1;
+        public Mesh LOD2;
+
         //world setup
         /// <summary>
         /// Whether or not to use the built in <see cref="CivGridCamera"/> 
@@ -299,7 +302,7 @@ namespace CivGrid
             {
                 //LoadAndGenerateMap("terrainTest");
                 GenerateNewMap(true);
-                FileUtility.SaveTerrain("terrainTest");
+                //FileUtility.SaveTerrain("terrainTest");
             }
             else { civGridCamera.enabled = false; }
         }
@@ -449,13 +452,13 @@ namespace CivGrid
             //create new mesh to hold the data for the flat hexagon
             flatHexagonSharedMesh = new Mesh();
 
-            string location = Application.dataPath.Remove(Application.dataPath.Length - 6);
+            //string location = Application.dataPath.Remove(Application.dataPath.Length - 6);
             if (levelOfDetail > 0)
             {
                 if (levelOfDetail == 1)
-                { flatHexagonSharedMesh = MeshLoader.LoadMesh(location + @"Hexagon_1.obj"); }
+                { flatHexagonSharedMesh = LOD1; }
                 if (levelOfDetail == 2)
-                { flatHexagonSharedMesh = MeshLoader.LoadMesh(location + @"Hexagon_2.obj"); }
+                { flatHexagonSharedMesh = LOD2; }
             }
             else
             {
@@ -524,9 +527,9 @@ namespace CivGrid
             inst.GetComponent<MeshCollider>().sharedMesh = flatHexagonSharedMesh;
 
             //calculate the extents of the flat hexagon
-            hexExt = new Vector3(inst.gameObject.collider.bounds.extents.x, inst.gameObject.collider.bounds.extents.y, inst.gameObject.collider.bounds.extents.z);
+            hexExt = new Vector3(inst.gameObject.collider.bounds.extents.x - 0.003f, inst.gameObject.collider.bounds.extents.y, inst.gameObject.collider.bounds.extents.z - 0.003f);
             //calculate the size of the flat hexagon
-            hexSize = new Vector3(inst.gameObject.collider.bounds.size.x, inst.gameObject.collider.bounds.size.y, inst.gameObject.collider.bounds.size.z);
+            hexSize = new Vector3(inst.gameObject.collider.bounds.size.x - 0.003f, inst.gameObject.collider.bounds.size.y, inst.gameObject.collider.bounds.size.z - 0.003f);
             //calculate the center of the flat hexagon
             hexCenter = new Vector3(inst.gameObject.collider.bounds.center.x, inst.gameObject.collider.bounds.center.y, inst.gameObject.collider.bounds.center.z);
             //calculate edge vertices
@@ -560,7 +563,7 @@ namespace CivGrid
 			chunkObj.AddComponent<MeshRenderer>();
 
 
-			chunkObj.renderer.material.shader = Shader.Find( "HexFloor" );
+			chunkObj.renderer.material.shader = Shader.Find( "Hex" );
 			chunkObj.renderer.material.mainTexture = textureAtlas.terrainAtlas;
 			chunkObj.renderer.material.SetTexture( "_BlendTex", GetComponent<BorderSettings>().bordersTexture );
 //			chunkObj.renderer.material.SetColor( "_Color", new Color( Random.Range( 0f, 1f ), Random.Range( 0f, 1f ), Random.Range( 0f, 1f ),  1 ) );
@@ -1014,7 +1017,6 @@ namespace CivGrid
                     hex.UpdateBorder();
                 }
                 chunk.RegenerateMesh();
-
             }
         }
     }
