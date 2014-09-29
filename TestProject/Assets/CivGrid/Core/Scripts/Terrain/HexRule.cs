@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using CivGrid;
 
 namespace CivGrid
@@ -21,6 +22,19 @@ namespace CivGrid
         /// Array of Features that the resource or improvement can spawn upon
         /// </summary>
         public Feature[] possibleFeatures;
+
+        public int[] ValidateData(TileManager tileManager)
+        {
+            List<int> tiles = possibleTiles.ToList();
+            foreach(int t in tiles)
+            {
+                if (tileManager.tiles[t] == null)
+                {
+                    tiles.Remove(t);
+                }
+            }
+            return tiles.ToArray();
+        }
 
         /// <summary>
         /// Constructor for this class.

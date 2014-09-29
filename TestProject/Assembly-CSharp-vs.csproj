@@ -46,7 +46,6 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\CivGrid\Core\Scripts\Borders\BorderSettings.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Borders\BorderTextureData.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Borders\TexturePackerImporter.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Terrain\CivGridCamera.cs" />

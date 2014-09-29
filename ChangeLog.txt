@@ -122,4 +122,6 @@ Version 0.7
 	+Fixed LOD 0, not having raised mountains
 	+Optimized FinePossibleChunks()
 	+Spread Borders work over a few frames
+	+Fixed Editor Bugs
+	+Fixed Tile referencing errors
 	

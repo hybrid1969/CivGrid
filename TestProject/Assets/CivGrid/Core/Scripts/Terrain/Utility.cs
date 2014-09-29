@@ -928,6 +928,16 @@ namespace CivGrid
 
             value = result.ToArray();
         }
+
+        public static List<T> ToList<T>(this T[] value)
+        {
+            List<T> list = new List<T>();
+            foreach(T v in value)
+            {
+                list.Add(v);
+            }
+            return list;
+        }
     }
 
 }

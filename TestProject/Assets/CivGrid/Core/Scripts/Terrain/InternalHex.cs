@@ -765,17 +765,15 @@ namespace CivGrid
 
             int borderTypeId = borderTileType < 0 ? 64 : borderTileType;
 
-            BorderSettings borderSettings = GameObject.FindObjectOfType<BorderSettings>();
-
-            Rect rectArea = borderSettings.sprShDefBorders.GetRectFromBorderId(borderTypeId);
+            Rect rectArea = parentChunk.worldManager.sprShDefBorders.GetRectFromBorderId(borderTypeId);
 
             Vector2[] rawUV = parentChunk.worldManager.flatHexagonSharedMesh.uv;
 
             Vector2[] UV2 = new Vector2[rawUV.Length];
             Color[] colors = new Color[rawUV.Length];
 
-            int sprShTextureWidth = borderSettings.sprShDefBorders.textureWidth;
-            int sprShTextureHeight = borderSettings.sprShDefBorders.textureHeight;
+            int sprShTextureWidth = parentChunk.worldManager.sprShDefBorders.textureWidth;
+            int sprShTextureHeight = parentChunk.worldManager.sprShDefBorders.textureHeight;
 
             for (int i = 0; i < rawUV.Length; i++)
             {

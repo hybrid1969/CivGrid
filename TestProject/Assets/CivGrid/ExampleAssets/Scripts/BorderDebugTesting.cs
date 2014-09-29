@@ -10,18 +10,31 @@ public class BorderDebugTesting : MonoBehaviour
 
     void Start()
     {
-        WorldManager.onHexClick += OnHexClick;
+        WorldManager.onMouseOverHex += OnMouseOverHex;
     }
 
-    void OnHexClick(Hex hex, int mouseButton)
+    void OnDisable()
     {
-        if (mouseButton == 0)
+        WorldManager.onMouseOverHex -= OnMouseOverHex;
+    }
+
+    void OnMouseOverHex(Hex hex)
+    {
+        if (hex.BorderID != 0)
         {
             hex.BorderID = 0;
         }
-        if (mouseButton == 1)
-        {
-            hex.BorderID = 1;
-        }
     }
+
+    //void OnHexClick(Hex hex, int mouseButton)
+    //{
+    //    if (mouseButton == 0)
+    //    {
+    //        hex.BorderID = 0;
+    //    }
+    //    if (mouseButton == 1)
+    //    {
+    //        hex.BorderID = 1;
+    //    }
+    //}
 }

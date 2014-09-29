@@ -112,7 +112,6 @@ namespace CivGrid
     /// While some generation methods are exposed for use, it is best to not try and use the lower level methods.
     /// </summary>
     [RequireComponent(typeof(TileManager), typeof(ResourceManager), typeof(ImprovementManager))]
-    [RequireComponent(typeof(BorderSettings))]
     public class WorldManager : MonoBehaviour
     {
         #region fields
@@ -212,7 +211,10 @@ namespace CivGrid
         public Mesh LOD2;
         public Mesh LOD3;
 
+        [SerializeField]
+        public BorderTextureData sprShDefBorders;
         public List<Color> borderColors = new List<Color>();
+        [SerializeField] public Texture2D borderTexture;
 
         //world setup
         /// <summary>
@@ -255,9 +257,9 @@ namespace CivGrid
         public Dictionary<Vector2, Hex> axialToHexDictionary;
 
         //managers
-        internal ResourceManager resourceManager;
-        internal ImprovementManager improvementManager;
-        internal TileManager tileManager;
+        public ResourceManager resourceManager;
+        public ImprovementManager improvementManager;
+        public TileManager tileManager;
 
         /// <summary>
         /// Delegate for when a hexagon is clicked with a mouse button.
@@ -553,21 +555,16 @@ namespace CivGrid
             {
                 chunkHolder = new GameObject("ChunkHolder");
             }
-            //create the chunk object
             GameObject chunkObj = new GameObject("Chunk[" + x + "," + y + "]");
-            //add the hexChunk script and cache it
             Chunk hexChunk = chunkObj.AddComponent<Chunk>();
-            //assign the size of the chunk
             hexChunk.SetSize(chunkSize, chunkSize);
-            //setup HexInfo array
             hexChunk.AllocateHexArray();
-            //set the texture map for this chunk and add the mesh renderer
 			chunkObj.AddComponent<MeshRenderer>();
 
 
-			chunkObj.renderer.material.shader = Shader.Find( "Hex" );
+			chunkObj.renderer.material.shader = Shader.Find( "Hexagon" );
 			chunkObj.renderer.material.mainTexture = textureAtlas.terrainAtlas;
-			chunkObj.renderer.material.SetTexture( "_BlendTex", GetComponent<BorderSettings>().bordersTexture );
+            chunkObj.renderer.material.SetTexture("_BlendTex", borderTexture);
 
 
             //add the mesh filter
@@ -917,29 +914,6 @@ namespace CivGrid
 
             return GetHexFromOffsetCoordinates(neighbourOffsetGridPos);
         }
-
-        //private Chunk[] FindPossibleChunks(Chunk chunk)
-        //{
-        //    Chunk[] chunkArray;
-        //    if (DetermineWorldEdge(chunk) == false)
-        //    {
-        //        chunkArray = new Chunk[9];
-        //        chunkArray[0] = hexChunks[(int)chunk.chunkLocation.x + 1, (int)chunk.chunkLocation.y];
-        //        chunkArray[1] = hexChunks[(int)chunk.chunkLocation.x + 1, (int)chunk.chunkLocation.y + 1];
-        //        chunkArray[2] = hexChunks[(int)chunk.chunkLocation.x, (int)chunk.chunkLocation.y + 1];
-        //        chunkArray[3] = hexChunks[(int)chunk.chunkLocation.x - 1, (int)chunk.chunkLocation.y + 1];
-        //        chunkArray[4] = hexChunks[(int)chunk.chunkLocation.x - 1, (int)chunk.chunkLocation.y];
-        //        chunkArray[5] = hexChunks[(int)chunk.chunkLocation.x - 1, (int)chunk.chunkLocation.y - 1];
-        //        chunkArray[6] = hexChunks[(int)chunk.chunkLocation.x, (int)chunk.chunkLocation.y - 1];
-        //        chunkArray[7] = hexChunks[(int)chunk.chunkLocation.x + 1, (int)chunk.chunkLocation.y - 1];
-        //        chunkArray[8] = hexChunks[(int)chunk.chunkLocation.x, (int)chunk.chunkLocation.y];
-        //        return chunkArray;
-        //    }
-        //    else
-        //    {
-        //        Utility.ToSingleArray<Chunk>(hexChunks, out chunkArray); return chunkArray;
-        //    }
-        //}
 
         private Chunk[] FindPossibleChunks(Chunk chunk)
         {

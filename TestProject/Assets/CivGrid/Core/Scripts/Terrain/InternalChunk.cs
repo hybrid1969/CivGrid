@@ -336,8 +336,6 @@ namespace CivGrid
 
             //get the filter on the chunk gameObject
             filter = gameObject.GetComponent<MeshFilter>();
-            //create a new mesh on it
-            filter.mesh = new Mesh();
 
             //convert our two-dimensional array into a normal array so that we can use mesh.CombineMeshes()
             CombineInstance[] final;

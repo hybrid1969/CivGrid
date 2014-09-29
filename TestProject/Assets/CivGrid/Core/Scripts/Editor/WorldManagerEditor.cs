@@ -75,7 +75,7 @@ namespace CivGrid.Editors
             EditorGUI.indentLevel--;
 
             EditorGUI.indentLevel++;
-            EditorGUILayout.SelectableLabel("Mountain Settings", EditorStyles.boldLabel);
+            EditorGUILayout.SelectableLabel("Hill Settings", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
             worldManager.hillMaximumHeight = EditorGUILayout.FloatField("Maximum Height", worldManager.hillMaximumHeight);
             worldManager.hillNoiseScale = EditorGUILayout.FloatField("Noise Scale", worldManager.hillNoiseScale);
@@ -97,6 +97,8 @@ namespace CivGrid.Editors
             EditorGUILayout.SelectableLabel("Border Settings", EditorStyles.boldLabel);
             
             EditorGUI.indentLevel++;
+            worldManager.borderTexture = (Texture2D)EditorGUILayout.ObjectField("Border Texture", worldManager.borderTexture, typeof(Texture2D), false);
+            worldManager.sprShDefBorders = (BorderTextureData)EditorGUILayout.ObjectField("Border Definitions", worldManager.sprShDefBorders, typeof(BorderTextureData), false);
             if(GUILayout.Button("Add New Border Define"))
             {
                 worldManager.borderColors.Add(Color.black);

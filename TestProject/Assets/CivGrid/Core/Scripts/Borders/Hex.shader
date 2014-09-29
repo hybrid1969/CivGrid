@@ -1,4 +1,4 @@
-﻿Shader "Hex"
+﻿Shader "Hexagon"
 {
 
 // This shader is pretty inefficient on mobile, maybe find a way to do it without a surface shader. Its a transparent shader as I need
@@ -6,9 +6,9 @@
 
     Properties
     {
-//   		_Color ("_Color", Color) = (1,0,0,1)
         _MainTex ("Base (RGB)", 2D) = "white" {}
-        _BlendTex ("_BlendTex", 2D) = "white" {}
+		_GridTex("Grid Texture", 2D) = "white" {}
+        _BorderTex ("Border Texture", 2D) = "white" {}
     }
     SubShader
     {
@@ -31,6 +31,7 @@
 		}
 		
         sampler2D _MainTex;
+		//sampler2D _GridTex;
         sampler2D _BlendTex;
 
         struct Input
