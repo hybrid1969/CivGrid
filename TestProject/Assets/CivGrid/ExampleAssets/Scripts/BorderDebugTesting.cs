@@ -2,41 +2,26 @@
 using System.Collections;
 using CivGrid;
 
-public class BorderDebugTesting : MonoBehaviour {
+public class BorderDebugTesting : MonoBehaviour
+{
 
-	[SerializeField] public WorldManager worldManager;
+    [SerializeField]
+    public WorldManager worldManager;
 
-	void Start () {
-	
-		WorldManager.onHexClick += OnHexClick;
+    void Start()
+    {
+        WorldManager.onHexClick += OnHexClick;
+    }
 
-	}
-
-	void OnHexClick(Hex hex, int mouseButton)
-	{
-		if(mouseButton == 0){
-
-			hex.ownedByTeam = 0;
-			RefreshAffectedBorders( hex );
-
-		}
-		if(mouseButton == 1)
-		{
-
-			hex.ownedByTeam = 1;
-			RefreshAffectedBorders( hex );
-
-		}
-	}
-
-	private void RefreshAffectedBorders( Hex byChangeInHex ) {
-		
-		// Make the world manager fresh chunks affected by this update.
-		
-		// TODO : This will be highly inefficient if updating multiple tiles' border values at once. Should only call this once after all 
-		//        hex.ownedByTeam changes have been made.
-
-		worldManager.RefreshBorders( byChangeInHex );
-
-	}
+    void OnHexClick(Hex hex, int mouseButton)
+    {
+        if (mouseButton == 0)
+        {
+            hex.BorderID = 0;
+        }
+        if (mouseButton == 1)
+        {
+            hex.BorderID = 1;
+        }
+    }
 }

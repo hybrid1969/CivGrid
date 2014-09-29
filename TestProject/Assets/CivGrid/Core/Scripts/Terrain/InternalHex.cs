@@ -42,12 +42,6 @@ namespace CivGrid
         /// The position of the hexagon in the parent chunk array.
         /// </summary>
         public Vector2 chunkArrayPosition;
-
-        /// <summary>
-        /// Ignore this field block; used for testing a sample game.
-        /// </summary>
-        public bool isSelected;
-        internal Unit currentUnit;
         
         /// <summary>
         /// The type of terrain that this hexagon represents.
@@ -144,6 +138,21 @@ namespace CivGrid
         public Hex[] neighbors;
 
         /// <summary>
+        /// Team ID that owns this hex. uint.MaxValue is the undefined team id, because 0 is a valid team id.
+        /// </summary>
+        private uint borderID = uint.MaxValue;
+
+        public uint BorderID
+        {
+            get { return borderID; }
+            set
+            {
+                borderID = value;
+                parentChunk.worldManager.StartCoroutine(parentChunk.worldManager.RefreshBorders((Hex)this));
+            }
+        }
+
+        /// <summary>
         /// The coordinates of the hexagon in cube coordinates.
         /// </summary>
         /// <remarks>
@@ -181,7 +190,6 @@ namespace CivGrid
         /// </remarks>
         public Vector2 OffsetCoordinates
         {
-
             get
             {
                 if (offsetCoordinates == new Vector2(0, 0))
@@ -194,7 +202,6 @@ namespace CivGrid
                 }
                 else { return offsetCoordinates; }
             }
-
         }
 
         /// <summary>
@@ -218,7 +225,6 @@ namespace CivGrid
         /// </example>
         public void Start()
         {
-
             //set tile type to the mountain tile if the feature is a mountain and the type exists
             if (terrainFeature == Feature.Mountain) { Tile mountain = parentChunk.worldManager.tileManager.TryGetMountain(); if (mountain != null) {  terrainType = mountain; } }
 
@@ -445,80 +451,106 @@ namespace CivGrid
                 //assign tile texture
                 AssignUVToDefaultTile();
             }
-            else
+            else if(parentChunk.worldManager.levelOfDetail == 1)
             {
-                Texture2D localMountainTexture;
-
-                localMesh.vertices = parentChunk.worldManager.flatHexagonSharedMesh.vertices;
-                localMesh.triangles = parentChunk.worldManager.flatHexagonSharedMesh.triangles;
-                localMesh.uv = parentChunk.worldManager.flatHexagonSharedMesh.uv;
-
-                if (terrainFeature == Feature.Mountain)
+                if (terrainType.isMountain)
                 {
-                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainHeightMap,
-                        Random.Range(-500f, 500f), 
-                        parentChunk.worldManager.mountainNoiseScale, ///0.005f-0.18f
-                        parentChunk.worldManager.mountainNoiseSize, //0.2-0.5f
-                        Random.Range(0.3f, 0.6f), //0.3-0.6
-                        parentChunk.worldManager.mountainMaximumHeight, //2 
-                        true, 
-                        false);
-                }
-                else if (terrainFeature == Feature.Hill)
-                {
-                    localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainHeightMap, 
-                        Random.Range(-100f, 100f), 
-                        parentChunk.worldManager.hillNoiseScale, //0.005-0.18
-                        parentChunk.worldManager.hillNoiseSize, //0.75-1
-                        Random.Range(0.4f, 0.7f), 
-                        parentChunk.worldManager.hillMaximumHeight, //2 
-                        true, 
-                        false);
+                    GenerateCustomHexMesh(false);
                 }
                 else
                 {
-                    localMountainTexture = parentChunk.flatHeightMap;
+                    //pull mesh data from WorldManager
+                    localMesh.vertices = parentChunk.worldManager.flatHexagonSharedMesh.vertices;
+                    localMesh.triangles = parentChunk.worldManager.flatHexagonSharedMesh.triangles;
+                    localMesh.uv = parentChunk.worldManager.flatHexagonSharedMesh.uv;
+
+                    //recalculate normals to play nicely with lighting
+                    localMesh.RecalculateNormals();
+
+                    //assign tile texture
+                    AssignUVToDefaultTile();
                 }
-
-                Vector3[] vertices = localMesh.vertices;
-                for (int i = 0; i < vertices.Length; i++)
-                {
-                    if (VertexIsEdge(i))
-                    {
-                        if (IsLandVertex(i))
-                        {
-                            vertices[i].Set(vertices[i].x, 0.06f, vertices[i].z);
-                        }
-                        else
-                        {
-                            vertices[i].Set(vertices[i].x, 0f, vertices[i].z);
-                        }
-                    }
-                    else
-                    {
-                        float pixelHeight = localMountainTexture.GetPixelBilinear(localMesh.uv[i].x, localMesh.uv[i].y).grayscale;
-                        if (terrainFeature == Feature.Mountain) { pixelHeight *= 1.5f; vertices[i].Set(vertices[i].x, vertices[i].y + (pixelHeight - (parentChunk.worldManager.mountainScaleY / 100)), vertices[i].z); }
-                        if (terrainFeature == Feature.Hill) { vertices[i].Set(vertices[i].x, vertices[i].y + (pixelHeight - (parentChunk.worldManager.mountainScaleY / 100)), vertices[i].z); }
-                        //flat
-                        else
-                        {
-                            pixelHeight = localMountainTexture.GetPixelBilinear(localMesh.uv[i].x + (chunkArrayPosition.x * localMesh.uv[i].x), localMesh.uv[i].y + (chunkArrayPosition.y * localMesh.uv[i].y)).grayscale;
-                            vertices[i].Set(vertices[i].x, vertices[i].y + pixelHeight / 10, vertices[i].z);
-                        }
-                    }
-                }
-                localMesh.vertices = vertices;
-
-
-                //recalculate normals to play nicely with lighting
-                localMesh.RecalculateNormals();
-
-                //assign tile texture
-                AssignUVToDefaultTile();
+            }
+            //LOD 2/3
+            else
+            {
+                GenerateCustomHexMesh(true);
             }
 
 			RefreshBorderTextureUV( -1 );
 
+        }
+
+        private void GenerateCustomHexMesh(bool raiseBorders)
+        {
+            Texture2D localMountainTexture;
+
+            localMesh.vertices = parentChunk.worldManager.flatHexagonSharedMesh.vertices;
+            localMesh.triangles = parentChunk.worldManager.flatHexagonSharedMesh.triangles;
+            localMesh.uv = parentChunk.worldManager.flatHexagonSharedMesh.uv;
+
+            if (terrainFeature == Feature.Mountain)
+            {
+                localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainHeightMap,
+                    Random.Range(-500f, 500f),
+                    parentChunk.worldManager.mountainNoiseScale, ///0.005f-0.18f
+                    parentChunk.worldManager.mountainNoiseSize, //0.2-0.5f
+                    Random.Range(0.3f, 0.6f), //0.3-0.6
+                    parentChunk.worldManager.mountainMaximumHeight, //2 
+                    true,
+                    false);
+            }
+            else if (terrainFeature == Feature.Hill)
+            {
+                localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainHeightMap,
+                    Random.Range(-100f, 100f),
+                    parentChunk.worldManager.hillNoiseScale, //0.005-0.18
+                    parentChunk.worldManager.hillNoiseSize, //0.75-1
+                    Random.Range(0.4f, 0.7f),
+                    parentChunk.worldManager.hillMaximumHeight, //2 
+                    true,
+                    false);
+            }
+            else
+            {
+                localMountainTexture = parentChunk.flatHeightMap;
+            }
+
+            Vector3[] vertices = localMesh.vertices;
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                if (VertexIsEdge(i))
+                {
+                    if (IsLandVertex(i) && raiseBorders == true)
+                    {
+                        vertices[i].Set(vertices[i].x, 0.06f, vertices[i].z);
+                    }
+                    else
+                    {
+                        vertices[i].Set(vertices[i].x, 0f, vertices[i].z);
+                    }
+                }
+                else
+                {
+                    float pixelHeight = localMountainTexture.GetPixelBilinear(localMesh.uv[i].x, localMesh.uv[i].y).grayscale;
+                    if (terrainFeature == Feature.Mountain) { pixelHeight *= 1.5f; vertices[i].Set(vertices[i].x, vertices[i].y + (pixelHeight - (parentChunk.worldManager.mountainScaleY / 100)), vertices[i].z); }
+                    if (terrainFeature == Feature.Hill) { vertices[i].Set(vertices[i].x, vertices[i].y + (pixelHeight - (parentChunk.worldManager.mountainScaleY / 100)), vertices[i].z); }
+                    //flat
+                    else
+                    {
+                        pixelHeight = localMountainTexture.GetPixelBilinear(localMesh.uv[i].x + (chunkArrayPosition.x * localMesh.uv[i].x), localMesh.uv[i].y + (chunkArrayPosition.y * localMesh.uv[i].y)).grayscale;
+                        vertices[i].Set(vertices[i].x, vertices[i].y + pixelHeight / 10, vertices[i].z);
+                    }
+                }
+            }
+            localMesh.vertices = vertices;
+
+
+            //recalculate normals to play nicely with lighting
+            localMesh.RecalculateNormals();
+
+            //assign tile texture
+            AssignUVToDefaultTile();
         }
 
         private bool VertexIsEdge(int vertexIndex)
@@ -727,10 +759,6 @@ namespace CivGrid
 
 		// Added
 
-		public uint ownedByTeam = uint.MaxValue; // Team ID that owns this hex. uint.MaxValue is the undefined team id, because 0 is a valid team id.
-
-		private Color[] teamColors = new Color[]{ new Color( 1f, 0, 0, 1f ), new Color( 0, 1f, 1f, 1 ) };
-
         private void RefreshBorderTextureUV(int borderTileType)
         {
             // This does the assigning of this tile's UV2 to the corrensponding cell, depending on the borderTileType
@@ -755,7 +783,7 @@ namespace CivGrid
                 UV2[i] = new Vector2(rawUV[i].x * (rectArea.width / sprShTextureWidth) + (rectArea.x / sprShTextureWidth),
                                   rawUV[i].y * (rectArea.height / sprShTextureHeight) + (rectArea.y / sprShTextureHeight));
 
-                colors[i] = borderTypeId == 64 ? Color.white : teamColors[ownedByTeam];
+                colors[i] = borderTypeId == 64 ? Color.white : parentChunk.worldManager.borderColors[(int)borderID];
 
             }
 
@@ -770,7 +798,7 @@ namespace CivGrid
             // team. This number corresponds to a specific tile in the Borders.png, and thus a specific rect in Borders.asset as defined
             // by the sprite sheet creator. Thus we can get the region of the texture for that cell, assign tile's UV2's to it.
 
-            if (ownedByTeam == uint.MaxValue)
+            if (borderID == uint.MaxValue)
                 return -1;
 
             Hex val_1 = parentChunk.worldManager.GetOffsetNeighbour((Hex)this, 0, 1);
@@ -780,14 +808,13 @@ namespace CivGrid
             Hex val_16 = parentChunk.worldManager.GetOffsetNeighbour((Hex)this, -1, 0);
             Hex val_32 = parentChunk.worldManager.GetOffsetNeighbour((Hex)this, -1, 1);
 
-            int border_1 = val_1 == null || val_1.ownedByTeam != ownedByTeam ? 0 : 1;
-            int border_2 = val_2 == null || val_2.ownedByTeam != ownedByTeam ? 0 : 2;
-            int border_4 = val_4 == null || val_4.ownedByTeam != ownedByTeam ? 0 : 4;
-            int border_8 = val_8 == null || val_8.ownedByTeam != ownedByTeam ? 0 : 8;
-            int border_16 = val_16 == null || val_16.ownedByTeam != ownedByTeam ? 0 : 16;
-            int border_32 = val_32 == null || val_32.ownedByTeam != ownedByTeam ? 0 : 32;
+            int border_1 = val_1 == null || val_1.borderID != borderID ? 0 : 1;
+            int border_2 = val_2 == null || val_2.borderID != borderID ? 0 : 2;
+            int border_4 = val_4 == null || val_4.borderID != borderID ? 0 : 4;
+            int border_8 = val_8 == null || val_8.borderID != borderID ? 0 : 8;
+            int border_16 = val_16 == null || val_16.borderID != borderID ? 0 : 16;
+            int border_32 = val_32 == null || val_32.borderID != borderID ? 0 : 32;
 
-            //Debug.Log("Tile at: " + offsetCoordinates + " is showing grid tile: " +  (border_1 + border_2 + border_4 + border_8 + border_16 + border_32));
             return border_1 + border_2 + border_4 + border_8 + border_16 + border_32;
 
         }

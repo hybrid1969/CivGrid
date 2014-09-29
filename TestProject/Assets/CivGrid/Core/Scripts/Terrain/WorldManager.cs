@@ -209,8 +209,10 @@ namespace CivGrid
         /// </summary>
         public int levelOfDetail;
 
-        public Mesh LOD1;
         public Mesh LOD2;
+        public Mesh LOD3;
+
+        public List<Color> borderColors = new List<Color>();
 
         //world setup
         /// <summary>
@@ -456,9 +458,9 @@ namespace CivGrid
             if (levelOfDetail > 0)
             {
                 if (levelOfDetail == 1)
-                { flatHexagonSharedMesh = LOD1; }
-                if (levelOfDetail == 2)
                 { flatHexagonSharedMesh = LOD2; }
+                if (levelOfDetail == 2)
+                { flatHexagonSharedMesh = LOD3; }
             }
             else
             {
@@ -527,9 +529,9 @@ namespace CivGrid
             inst.GetComponent<MeshCollider>().sharedMesh = flatHexagonSharedMesh;
 
             //calculate the extents of the flat hexagon
-            hexExt = new Vector3(inst.gameObject.collider.bounds.extents.x - 0.003f, inst.gameObject.collider.bounds.extents.y, inst.gameObject.collider.bounds.extents.z - 0.003f);
+            hexExt = new Vector3(inst.gameObject.collider.bounds.extents.x - 0.01f, inst.gameObject.collider.bounds.extents.y, inst.gameObject.collider.bounds.extents.z - 0.01f);
             //calculate the size of the flat hexagon
-            hexSize = new Vector3(inst.gameObject.collider.bounds.size.x - 0.003f, inst.gameObject.collider.bounds.size.y, inst.gameObject.collider.bounds.size.z - 0.003f);
+            hexSize = new Vector3(inst.gameObject.collider.bounds.size.x - 0.01f, inst.gameObject.collider.bounds.size.y, inst.gameObject.collider.bounds.size.z - 0.01f);
             //calculate the center of the flat hexagon
             hexCenter = new Vector3(inst.gameObject.collider.bounds.center.x, inst.gameObject.collider.bounds.center.y, inst.gameObject.collider.bounds.center.z);
             //calculate edge vertices
@@ -566,8 +568,6 @@ namespace CivGrid
 			chunkObj.renderer.material.shader = Shader.Find( "Hex" );
 			chunkObj.renderer.material.mainTexture = textureAtlas.terrainAtlas;
 			chunkObj.renderer.material.SetTexture( "_BlendTex", GetComponent<BorderSettings>().bordersTexture );
-//			chunkObj.renderer.material.SetColor( "_Color", new Color( Random.Range( 0f, 1f ), Random.Range( 0f, 1f ), Random.Range( 0f, 1f ),  1 ) );
-
 
 
             //add the mesh filter
@@ -600,7 +600,7 @@ namespace CivGrid
                     //create the new chunk
                     hexChunks[x, z] = NewChunk(x, z);
                     //set the position of the new chunk
-                    hexChunks[x, z].gameObject.transform.position = new Vector3(x * (chunkSize * hexSize.x), 0f, (z * (chunkSize * hexSize.z) * (.75f)));
+                    hexChunks[x, z].gameObject.transform.position = new Vector3(x * (chunkSize * hexSize.x - (0.01f * chunkSize)), 0f, (z * (chunkSize * hexSize.z - (0.01f * chunkSize)) * .75f));
                     //set hex size for hexagon positioning
                     hexChunks[x, z].hexSize = hexSize;
                     //set the number of hexagons for the chunk to generate
@@ -908,42 +908,81 @@ namespace CivGrid
             return neighbors;
         }
 
-        private Chunk[] FindPossibleChunks(Chunk chunk)
+        public Hex GetOffsetNeighbour(Hex centreTile, int addedX, int addedY)
         {
-            Chunk[] chunkArray;
-            if (DetermineWorldEdge(chunk) == false)
-            {
-                chunkArray = new Chunk[9];
-                chunkArray[0] = hexChunks[(int)chunk.chunkLocation.x + 1, (int)chunk.chunkLocation.y];
-                chunkArray[1] = hexChunks[(int)chunk.chunkLocation.x + 1, (int)chunk.chunkLocation.y + 1];
-                chunkArray[2] = hexChunks[(int)chunk.chunkLocation.x, (int)chunk.chunkLocation.y + 1];
-                chunkArray[3] = hexChunks[(int)chunk.chunkLocation.x - 1, (int)chunk.chunkLocation.y + 1];
-                chunkArray[4] = hexChunks[(int)chunk.chunkLocation.x - 1, (int)chunk.chunkLocation.y];
-                chunkArray[5] = hexChunks[(int)chunk.chunkLocation.x - 1, (int)chunk.chunkLocation.y - 1];
-                chunkArray[6] = hexChunks[(int)chunk.chunkLocation.x, (int)chunk.chunkLocation.y - 1];
-                chunkArray[7] = hexChunks[(int)chunk.chunkLocation.x + 1, (int)chunk.chunkLocation.y - 1];
-                chunkArray[8] = hexChunks[(int)chunk.chunkLocation.x, (int)chunk.chunkLocation.y];
-                return chunkArray;
-            }
-            else
-            {
-                Utility.ToSingleArray<Chunk>(hexChunks, out chunkArray); return chunkArray;
-            }
+            int parity = (int)centreTile.OffsetCoordinates.y & 1;
+
+            Vector2 neighbourOffsetGridPos =
+                new Vector2(centreTile.OffsetCoordinates.x + (addedY == 0 ? addedX : (addedX + parity)), centreTile.OffsetCoordinates.y + addedY);
+
+            return GetHexFromOffsetCoordinates(neighbourOffsetGridPos);
         }
 
-        private bool DetermineWorldEdge(Chunk chunk)
+        //private Chunk[] FindPossibleChunks(Chunk chunk)
+        //{
+        //    Chunk[] chunkArray;
+        //    if (DetermineWorldEdge(chunk) == false)
+        //    {
+        //        chunkArray = new Chunk[9];
+        //        chunkArray[0] = hexChunks[(int)chunk.chunkLocation.x + 1, (int)chunk.chunkLocation.y];
+        //        chunkArray[1] = hexChunks[(int)chunk.chunkLocation.x + 1, (int)chunk.chunkLocation.y + 1];
+        //        chunkArray[2] = hexChunks[(int)chunk.chunkLocation.x, (int)chunk.chunkLocation.y + 1];
+        //        chunkArray[3] = hexChunks[(int)chunk.chunkLocation.x - 1, (int)chunk.chunkLocation.y + 1];
+        //        chunkArray[4] = hexChunks[(int)chunk.chunkLocation.x - 1, (int)chunk.chunkLocation.y];
+        //        chunkArray[5] = hexChunks[(int)chunk.chunkLocation.x - 1, (int)chunk.chunkLocation.y - 1];
+        //        chunkArray[6] = hexChunks[(int)chunk.chunkLocation.x, (int)chunk.chunkLocation.y - 1];
+        //        chunkArray[7] = hexChunks[(int)chunk.chunkLocation.x + 1, (int)chunk.chunkLocation.y - 1];
+        //        chunkArray[8] = hexChunks[(int)chunk.chunkLocation.x, (int)chunk.chunkLocation.y];
+        //        return chunkArray;
+        //    }
+        //    else
+        //    {
+        //        Utility.ToSingleArray<Chunk>(hexChunks, out chunkArray); return chunkArray;
+        //    }
+        //}
+
+        private Chunk[] FindPossibleChunks(Chunk chunk)
         {
-            if (chunk.chunkLocation.x == 0 || chunk.chunkLocation.x == ((mapSize.x / chunkSize) - 1))
-            {
-                return true;
-            }
+            List<Chunk> chunkArray = new List<Chunk>();
 
-            if (chunk.chunkLocation.y == 0 || chunk.chunkLocation.y == ((mapSize.y / chunkSize) - 1))
+            if((chunk.chunkLocation.x + 1) >= 0 && (chunk.chunkLocation.x + 1) < xSectors && (chunk.chunkLocation.y) >= 0 && (chunk.chunkLocation.y) < zSectors)
             {
-                return true;
+                chunkArray.Add(hexChunks[(int)chunk.chunkLocation.x + 1, (int)chunk.chunkLocation.y]);
             }
-
-            return false;
+            if ((chunk.chunkLocation.x + 1) >= 0 && (chunk.chunkLocation.x + 1) < xSectors && (chunk.chunkLocation.y + 1) >= 0 && (chunk.chunkLocation.y + 1) < zSectors)
+            {
+                chunkArray.Add(hexChunks[(int)chunk.chunkLocation.x + 1, (int)chunk.chunkLocation.y + 1]);
+            }
+            if ((chunk.chunkLocation.x) >= 0 && (chunk.chunkLocation.x) < xSectors && (chunk.chunkLocation.y+1) >= 0 && (chunk.chunkLocation.y+1) < zSectors)
+            {
+                chunkArray.Add(hexChunks[(int)chunk.chunkLocation.x, (int)chunk.chunkLocation.y + 1]);
+            }
+            if ((chunk.chunkLocation.x - 1) >= 0 && (chunk.chunkLocation.x - 1) < xSectors && (chunk.chunkLocation.y+1) >= 0 && (chunk.chunkLocation.y+1) < zSectors)
+            {
+                chunkArray.Add(hexChunks[(int)chunk.chunkLocation.x - 1, (int)chunk.chunkLocation.y + 1]);
+            }
+            if ((chunk.chunkLocation.x - 1) >= 0 && (chunk.chunkLocation.x - 1) < xSectors && (chunk.chunkLocation.y) >= 0 && (chunk.chunkLocation.y) < zSectors)
+            {
+                chunkArray.Add(hexChunks[(int)chunk.chunkLocation.x - 1, (int)chunk.chunkLocation.y]);
+            }
+            if ((chunk.chunkLocation.x - 1) >= 0 && (chunk.chunkLocation.x -1) < xSectors && (chunk.chunkLocation.y-1) >= 0 && (chunk.chunkLocation.y-1) < zSectors)
+            {
+                chunkArray.Add(hexChunks[(int)chunk.chunkLocation.x - 1, (int)chunk.chunkLocation.y - 1]);
+            }
+            if ((chunk.chunkLocation.x) >= 0 && (chunk.chunkLocation.x) < xSectors && (chunk.chunkLocation.y-1) >= 0 && (chunk.chunkLocation.y-1) < zSectors)
+            {
+                chunkArray.Add(hexChunks[(int)chunk.chunkLocation.x, (int)chunk.chunkLocation.y - 1]);
+            }
+            if ((chunk.chunkLocation.x + 1) >= 0 && (chunk.chunkLocation.x + 1) < xSectors && (chunk.chunkLocation.y-1) >= 0 && (chunk.chunkLocation.y-1) < zSectors)
+            {
+                chunkArray.Add(hexChunks[(int)chunk.chunkLocation.x + 1, (int)chunk.chunkLocation.y - 1]);
+            }
+            if ((chunk.chunkLocation.x) >= 0 && (chunk.chunkLocation.x) < xSectors && (chunk.chunkLocation.y) >= 0 && (chunk.chunkLocation.y) < zSectors)
+            {
+                chunkArray.Add(hexChunks[(int)chunk.chunkLocation.x, (int)chunk.chunkLocation.y]);
+            }
+            
+            return chunkArray.ToArray();
         }
 
         /*
@@ -994,29 +1033,20 @@ namespace CivGrid
 
 		// Added
 
-        public Hex GetOffsetNeighbour(Hex centreTile, int addedX, int addedY)
+        public IEnumerator RefreshBorders(Hex modifiedHex)
         {
-            int parity = (int)centreTile.OffsetCoordinates.y & 1;
-
-            Vector2 neighbourOffsetGridPos = 
-                new Vector2(centreTile.OffsetCoordinates.x + (addedY == 0 ? addedX : (addedX + parity)),centreTile.OffsetCoordinates.y + addedY);
-
-            return GetHexFromOffsetCoordinates(neighbourOffsetGridPos);
-        }
-
-        public void RefreshBorders(Hex dueToModifiedTile)
-        {
-            Chunk originalChunk = dueToModifiedTile.parentChunk;
+            Chunk originalChunk = modifiedHex.parentChunk;
             Chunk[] possibleChunks = FindPossibleChunks(originalChunk);
 
             foreach (Chunk chunk in possibleChunks)
             {
                 foreach (Hex hex in chunk.hexArray)
                 {
-                    // Have to make every hex update their border value so neighbours refresh their knowledge of neighbours.
+                    // Have to make every hex update their border texture and value
                     hex.UpdateBorder();
                 }
                 chunk.RegenerateMesh();
+                yield return new WaitForEndOfFrame();
             }
         }
     }
