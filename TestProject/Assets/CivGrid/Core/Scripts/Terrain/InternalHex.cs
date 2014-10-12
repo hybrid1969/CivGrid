@@ -433,7 +433,6 @@ namespace CivGrid
         /// </summary>
         public void MeshSetup()
         {
-
             //create new mesh to start fresh
             localMesh = new Mesh();
 
@@ -478,7 +477,7 @@ namespace CivGrid
             }
 
 			RefreshBorderTextureUV( -1 );
-
+            UpdateGridOverlay(true);
         }
 
         private void GenerateCustomHexMesh(bool raiseBorders)
@@ -757,7 +756,20 @@ namespace CivGrid
         }
 
 
-		// Added
+        private void UpdateGridOverlay(bool show)
+        {
+            if(show == true)
+            {
+                localMesh.tangents = parentChunk.worldManager.flatHexagonSharedMesh.uv.ToVector4();
+            }
+
+            else
+            {
+                //localMesh.tangents = new Vector4[] { };
+            }
+        }
+
+		//Borders
 
         private void RefreshBorderTextureUV(int borderTileType)
         {

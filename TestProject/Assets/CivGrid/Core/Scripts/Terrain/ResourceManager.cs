@@ -54,6 +54,17 @@ namespace CivGrid
             }
         }
 
+        public void DeleteDependencies(int index)
+        {
+            foreach (Resource r in resources)
+            {
+				List<int> list = r.rule.possibleTiles.ToList<int>();
+                list.Remove(index);
+				
+				r.rule.possibleTiles = list.ToArray();
+            }
+        }
+
         /// <summary>
         /// Called on start-up to make sure all hexs with resources are changed to use their resource texture.
         /// </summary>

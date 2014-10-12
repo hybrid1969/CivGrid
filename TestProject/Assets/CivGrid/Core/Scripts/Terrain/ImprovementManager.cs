@@ -53,6 +53,17 @@ namespace CivGrid
             }
         }
 
+        public void DeleteDependencies(int index)
+        {
+            foreach (Improvement i in improvements)
+            {
+                List<int> list = i.rule.possibleTiles.ToList<int>();
+                list.Remove(index);
+				
+				i.rule.possibleTiles = list.ToArray();
+            }
+        }
+
         /// <summary>
         /// Creates the improvement GameObject and switches the hex texture.
         /// </summary>

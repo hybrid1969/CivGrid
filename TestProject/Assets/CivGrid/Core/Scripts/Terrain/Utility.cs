@@ -27,6 +27,7 @@ namespace CivGrid
 		#endregion
 #endif
 
+
         /// <summary>
         /// Get the surronding pixels of the referenced pixel location.
         /// </summary>
@@ -937,6 +938,18 @@ namespace CivGrid
                 list.Add(v);
             }
             return list;
+        }
+
+        public static Vector4[] ToVector4(this Vector2[] input)
+        {
+            List<Vector4> output = new List<Vector4>();
+
+            foreach (Vector2 v in input)
+            {
+                output.Add(new Vector4(v.x, v.y));
+            }
+
+            return output.ToArray();
         }
     }
 

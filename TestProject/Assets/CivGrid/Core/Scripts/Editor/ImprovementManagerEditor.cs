@@ -82,30 +82,45 @@ namespace CivGrid.Editors
                         improvement.name = EditorGUILayout.TextField("Improvement Name:", improvement.name);
                         improvement.replaceGroundTexture = EditorGUILayout.Toggle("Replace Ground Texture:", improvement.replaceGroundTexture);
 
-                        //if ((worldManager.textureAtlas.improvementLocations.ContainsKey(improvement) == false) && improvement.replaceGroundTexture == true)
-                        {
-                          //  EditorGUILayout.HelpBox("Please add this improvement to the terrain atlas.", MessageType.Warning);
-                        }
-
                         extraInfoFoldout[i] = EditorGUILayout.Foldout(extraInfoFoldout[i], "Rules:");
 
                         if (extraInfoFoldout[i])
                         {
                             EditorGUILayout.SelectableLabel("Possible Tiles:", EditorStyles.boldLabel, GUILayout.ExpandHeight(false), GUILayout.MaxHeight(15));
-                            foreach (int t in improvement.rule.possibleTiles)
-                            {
-                                EditorGUI.indentLevel++;
-                                EditorGUILayout.SelectableLabel(tileManager.tiles[t].name, GUILayout.ExpandHeight(false), GUILayout.MaxHeight(18));
-                                EditorGUI.indentLevel--;
-                            }
-
+							EditorGUI.indentLevel++;
+							if(improvement.rule.possibleTiles.Length == 0)
+							{
+								EditorGUILayout.SelectableLabel("No Possible Tiles");	
+							}
+							else
+							{
+								foreach (int t in improvement.rule.possibleTiles)
+                            	{
+                                	EditorGUI.indentLevel++;
+                                	EditorGUILayout.SelectableLabel(tileManager.tiles[t].name, GUILayout.ExpandHeight(false), GUILayout.MaxHeight(18));
+                                	EditorGUI.indentLevel--;
+                            	}
+							}
+							EditorGUI.indentLevel--;
+							
                             EditorGUILayout.SelectableLabel("Possible Features:", EditorStyles.boldLabel, GUILayout.ExpandHeight(false), GUILayout.MaxHeight(15));
-                            foreach (Feature f in improvement.rule.possibleFeatures)
-                            {
-                                EditorGUI.indentLevel++;
-                                EditorGUILayout.SelectableLabel(f.ToString(), GUILayout.ExpandHeight(false), GUILayout.MaxHeight(18));
-                                EditorGUI.indentLevel--;
-                            }
+							EditorGUI.indentLevel++;
+							if(improvement.rule.possibleFeatures.Length == 0)
+							{
+								EditorGUILayout.SelectableLabel("No Possible Features");	
+							}
+							else
+							{
+								foreach (Feature f in improvement.rule.possibleFeatures)
+                            	{
+                                	EditorGUI.indentLevel++;
+                                	EditorGUILayout.SelectableLabel(f.ToString(), GUILayout.ExpandHeight(false), GUILayout.MaxHeight(18));
+                                	EditorGUI.indentLevel--;
+                            	}
+							}
+							EditorGUI.indentLevel--;
+							
+							EditorGUILayout.Separator();
                         }
                         improvement.meshToSpawn = (Mesh)EditorGUILayout.ObjectField("Improvement Mesh", (Object)improvement.meshToSpawn, typeof(Mesh), false);
                         //if (improvement.meshToSpawn.isReadable == false) { EditorGUILayout.HelpBox("Please enable Read/Write on this mesh in its import settings", MessageType.Error); }

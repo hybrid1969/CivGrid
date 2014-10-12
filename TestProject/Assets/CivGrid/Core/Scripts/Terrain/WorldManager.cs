@@ -564,6 +564,7 @@ namespace CivGrid
 
 			chunkObj.renderer.material.shader = Shader.Find( "Hexagon" );
 			chunkObj.renderer.material.mainTexture = textureAtlas.terrainAtlas;
+            chunkObj.renderer.material.SetTexture("_GridTex", mountainHeightMap);
             chunkObj.renderer.material.SetTexture("_BlendTex", borderTexture);
 
 
