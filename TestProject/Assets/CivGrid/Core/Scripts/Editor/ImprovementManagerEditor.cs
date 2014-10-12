@@ -123,18 +123,8 @@ namespace CivGrid.Editors
 							EditorGUILayout.Separator();
                         }
                         improvement.meshToSpawn = (Mesh)EditorGUILayout.ObjectField("Improvement Mesh", (Object)improvement.meshToSpawn, typeof(Mesh), false);
-                        //if (improvement.meshToSpawn.isReadable == false) { EditorGUILayout.HelpBox("Please enable Read/Write on this mesh in its import settings", MessageType.Error); }
                         improvement.meshTexture = (Texture2D)EditorGUILayout.ObjectField("Improvement Mesh Texture:", (Object)improvement.meshTexture, typeof(Texture2D), false, GUILayout.ExpandHeight(false), GUILayout.ExpandWidth(true));
-                        //improvement.improvementMeshTexture.SetPixel(0, 0, improvement.improvementMeshTexture.GetPixel(0, 0));
-                        //try
-                        //{
-                        //   improvement.improvementMeshTexture.SetPixel(0, 0, improvement.improvementMeshTexture.GetPixel(0, 0));
-                        //}
-                        //catch (UnityException e)
-                        //{
-                        //  Debug.Log(e);
-                        //EditorGUILayout.HelpBox("Please enable read/write on this texture in its import settings", MessageType.Error);
-                        //}
+
                     }
                     EditorGUI.indentLevel--;
                 }
