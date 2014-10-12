@@ -214,7 +214,29 @@ namespace CivGrid
         [SerializeField]
         public BorderTextureData sprShDefBorders;
         public List<Color> borderColors = new List<Color>();
-        [SerializeField] public Texture2D borderTexture;
+        [SerializeField] 
+		public Texture2D borderTexture;
+		
+		[SerializeField]
+		private bool showGrid;
+		
+		public bool ShowGrid
+		{
+			get { return showGrid; } 
+			set { showGrid = value; 
+			
+			if(Application.isPlaying)
+				{
+					foreach(Chunk chunk in hexChunks)
+					{
+						chunk.UpdateGridOverlay();	
+					}
+				}
+			}
+		}
+		
+		[SerializeField] 
+		public Texture2D gridTexture;
 
         //world setup
         /// <summary>
@@ -236,17 +258,13 @@ namespace CivGrid
         /// </summary>
         [SerializeField]
         public Texture2D mountainHeightMap;
-        /// <summary>
-        /// Amount to scale the mountain heightmap upon
-        /// </summary>
-        public float mountainScaleY;
-        public float mountainNoiseScale;
-        public float mountainNoiseSize;
-        public float mountainMaximumHeight;
-
-        public float hillNoiseScale;
-        public float hillNoiseSize;
-        public float hillMaximumHeight;
+		
+		[SerializeField]
+		public TileDefines flatDefines = new TileDefines(0,0,0);
+		[SerializeField]
+		public TileDefines hillDefines = new TileDefines(0,0,0);// max:2, scale 0.01, size 0.03
+		[SerializeField]
+		public TileDefines mountainDefines = new TileDefines(0,0,0);//scale 1.05, max 1.2, scale 0.01, size 0.85
 
 
         //pathfinding
@@ -284,6 +302,15 @@ namespace CivGrid
 
         public delegate void StartHexOperations();
         public static StartHexOperations startHexOperations;
+		
+		//public bool ShowGrid
+		//{
+	    //	get { return showGrid; }
+		//	set
+		//	{
+		//		showGrid = value;
+		//	}
+		//}
         #endregion
 
         /// <summary>
@@ -291,6 +318,7 @@ namespace CivGrid
         /// </summary>
         void Awake()
         {
+			showGrid = ShowGrid;
             resourceManager = GetComponent<ResourceManager>();
             improvementManager = GetComponent<ImprovementManager>();
             tileManager = GetComponent<TileManager>();
@@ -561,12 +589,11 @@ namespace CivGrid
             hexChunk.AllocateHexArray();
 			chunkObj.AddComponent<MeshRenderer>();
 
-
-			chunkObj.renderer.material.shader = Shader.Find( "Hexagon" );
-			chunkObj.renderer.material.mainTexture = textureAtlas.terrainAtlas;
-            chunkObj.renderer.material.SetTexture("_GridTex", mountainHeightMap);
-            chunkObj.renderer.material.SetTexture("_BlendTex", borderTexture);
-
+			Renderer chunkRenderer = chunkObj.GetComponent<Renderer>();
+			chunkRenderer.material.shader = Shader.Find( "Hexagon" );
+			chunkRenderer.material.mainTexture = textureAtlas.terrainAtlas;
+            chunkRenderer.material.SetTexture("_GridTex", gridTexture);
+            chunkRenderer.material.SetTexture("_BlendTex", borderTexture);
 
             //add the mesh filter
             chunkObj.AddComponent<MeshFilter>();
@@ -1024,8 +1051,26 @@ namespace CivGrid
                 yield return new WaitForEndOfFrame();
             }
         }
-    }
 
+		public void SetBorders(Hex[] hexes, int borderID)
+		{
+			foreach(Hex h in hexes)
+			{
+				h.SetBorder(borderID);	
+			}
+		}
+		
+		public void ClearBorders(Hex[] hexes)
+		{
+			foreach(Hex h in hexes)
+			{
+				h.ClearBorder();
+			}
+		}
+    }
+	
+	#region HelperClasses
+	
     /// <summary>
     /// The world texture atlas.
     /// </summary>
@@ -1237,4 +1282,31 @@ namespace CivGrid
             this.value = value;
         }
     }
+	
+	[System.Serializable]
+	public class TileDefines
+	{
+		public float yScale;
+		public float noiseScale;
+        public float noiseSize;
+        public float maximumHeight;
+		
+		public TileDefines(float noiseScale, float noiseSize, float maximumHeight)
+		{
+			this.yScale = 1;
+			this.noiseScale = noiseScale;
+			this.noiseSize = noiseSize;
+			this.maximumHeight = maximumHeight;
+		}
+		
+		public TileDefines(float yScale, float noiseScale, float noiseSize, float maximumHeight)
+		{
+			this.yScale = yScale;
+			this.noiseScale = noiseScale;
+			this.noiseSize = noiseSize;
+			this.maximumHeight = maximumHeight;
+		}
+	}
+	
+	#endregion
 }

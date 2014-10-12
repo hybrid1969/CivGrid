@@ -73,39 +73,64 @@ namespace CivGrid.Editors
             worldManager.LOD2 = (Mesh)EditorGUILayout.ObjectField("LOD 2", worldManager.LOD2, typeof(Mesh), false);
             worldManager.LOD3 = (Mesh)EditorGUILayout.ObjectField("LOD 3", worldManager.LOD3, typeof(Mesh), false);
             EditorGUI.indentLevel--;
+			
+			if(worldManager.levelOfDetail > 0)
+			{
+				EditorGUI.indentLevel++;
+            	EditorGUILayout.SelectableLabel("Flat Settings", EditorStyles.boldLabel);
+            	EditorGUI.indentLevel++;
+            	worldManager.flatDefines.maximumHeight = EditorGUILayout.FloatField("Maximum Height", worldManager.flatDefines.maximumHeight);
+            	worldManager.flatDefines.noiseScale = EditorGUILayout.FloatField("Noise Scale", worldManager.flatDefines.noiseScale);
+            	worldManager.flatDefines.noiseSize = EditorGUILayout.FloatField("Noise Size", worldManager.flatDefines.noiseSize);
+            	EditorGUI.indentLevel--;
+            	EditorGUI.indentLevel--;
+				
+            	EditorGUI.indentLevel++;
+            	EditorGUILayout.SelectableLabel("Hill Settings", EditorStyles.boldLabel);
+            	EditorGUI.indentLevel++;
+            	worldManager.hillDefines.maximumHeight = EditorGUILayout.FloatField("Maximum Height", worldManager.hillDefines.maximumHeight);
+            	worldManager.hillDefines.noiseScale = EditorGUILayout.FloatField("Noise Scale", worldManager.hillDefines.noiseScale);
+            	worldManager.hillDefines.noiseSize = EditorGUILayout.FloatField("Noise Size", worldManager.hillDefines.noiseSize);
+            	EditorGUI.indentLevel--;
+            	EditorGUI.indentLevel--;
 
-            EditorGUI.indentLevel++;
-            EditorGUILayout.SelectableLabel("Hill Settings", EditorStyles.boldLabel);
-            EditorGUI.indentLevel++;
-            worldManager.hillMaximumHeight = EditorGUILayout.FloatField("Maximum Height", worldManager.hillMaximumHeight);
-            worldManager.hillNoiseScale = EditorGUILayout.FloatField("Noise Scale", worldManager.hillNoiseScale);
-            worldManager.hillNoiseSize = EditorGUILayout.FloatField("Noise Size", worldManager.hillNoiseSize);
-            EditorGUI.indentLevel--;
-            EditorGUI.indentLevel--;
-
-            EditorGUI.indentLevel++;
-            EditorGUILayout.SelectableLabel("Mountain Settings", EditorStyles.boldLabel);
-            EditorGUI.indentLevel++;
-            worldManager.mountainScaleY = EditorGUILayout.FloatField("Vertical Size", worldManager.mountainScaleY);
-            worldManager.mountainMaximumHeight = EditorGUILayout.FloatField("Maximum Height", worldManager.mountainMaximumHeight);
-            worldManager.mountainNoiseScale = EditorGUILayout.FloatField("Noise Scale", worldManager.mountainNoiseScale);
-            worldManager.mountainNoiseSize = EditorGUILayout.FloatField("Noise Size", worldManager.mountainNoiseSize);
-			worldManager.mountainHeightMap = (Texture2D)EditorGUILayout.ObjectField("Base Heightmap", worldManager.mountainHeightMap, typeof(Texture2D), false);
-            EditorGUI.indentLevel--;
-            EditorGUI.indentLevel--;
+            	EditorGUI.indentLevel++;
+            	EditorGUILayout.SelectableLabel("Mountain Settings", EditorStyles.boldLabel);
+            	EditorGUI.indentLevel++;
+				worldManager.mountainHeightMap = (Texture2D)EditorGUILayout.ObjectField("Base Heightmap", worldManager.mountainHeightMap, typeof(Texture2D), false);
+            	worldManager.mountainDefines.yScale = EditorGUILayout.FloatField("Vertical Size", worldManager.mountainDefines.yScale);
+            	worldManager.mountainDefines.maximumHeight = EditorGUILayout.FloatField("Maximum Height", worldManager.mountainDefines.maximumHeight);
+            	worldManager.mountainDefines.noiseScale = EditorGUILayout.FloatField("Noise Scale", worldManager.mountainDefines.noiseScale);
+            	worldManager.mountainDefines.noiseSize = EditorGUILayout.FloatField("Noise Size", worldManager.mountainDefines.noiseSize);
+            	EditorGUI.indentLevel--;
+            	EditorGUI.indentLevel--;
+			}
+			
+			EditorGUILayout.SelectableLabel("Grid Settings", EditorStyles.boldLabel);
+			
+			EditorGUI.indentLevel++;
+			worldManager.ShowGrid = EditorGUILayout.Toggle("Show Grid", worldManager.ShowGrid);
+			worldManager.gridTexture = (Texture2D)EditorGUILayout.ObjectField("Grid Texture", worldManager.gridTexture, typeof(Texture2D), false);
+			EditorGUI.indentLevel--;
 
             EditorGUILayout.SelectableLabel("Border Settings", EditorStyles.boldLabel);
             
             EditorGUI.indentLevel++;
-            worldManager.borderTexture = (Texture2D)EditorGUILayout.ObjectField("Border Texture", worldManager.borderTexture, typeof(Texture2D), false);
             worldManager.sprShDefBorders = (BorderTextureData)EditorGUILayout.ObjectField("Border Definitions", worldManager.sprShDefBorders, typeof(BorderTextureData), false);
+			worldManager.borderTexture = (Texture2D)EditorGUILayout.ObjectField("Border Texture", worldManager.borderTexture, typeof(Texture2D), false);
             if(GUILayout.Button("Add New Border Define"))
             {
                 worldManager.borderColors.Add(Color.black);
             }
             for(int i = 0; i < worldManager.borderColors.Count; i++)
             {
+				EditorGUILayout.BeginHorizontal();
                 worldManager.borderColors[i] = EditorGUILayout.ColorField("Border Color " + i, worldManager.borderColors[i]);
+				if(GUILayout.Button("X"))
+				{
+					worldManager.borderColors.RemoveAt(i);
+				}
+				EditorGUILayout.EndHorizontal();
             }
             
             EditorGUI.indentLevel--;

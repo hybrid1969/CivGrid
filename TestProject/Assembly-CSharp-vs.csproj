@@ -70,7 +70,7 @@
      <Compile Include="Assets\CivGrid\ExampleAssets\Scripts\Unit.cs" />
      <Compile Include="Assets\CivGrid\Exposed\Chunk.cs" />
      <Compile Include="Assets\CivGrid\Exposed\Hex.cs" />
-     <None Include="Assets\CivGrid\Core\Scripts\Terrain\Borders\Hex.shader" />
+     <None Include="Assets\CivGrid\Core\Scripts\Terrain\Hex.shader" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

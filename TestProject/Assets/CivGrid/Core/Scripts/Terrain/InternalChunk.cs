@@ -57,7 +57,8 @@ namespace CivGrid
         /// </summary>
         internal void Begin()
         {
-            flatHeightMap = NoiseGenerator.PerlinNoise((int)chunkSize.x * (int)Mathf.Sqrt(worldManager.flatHexagonSharedMesh.vertexCount), (int)chunkSize.y * (int)Mathf.Sqrt(worldManager.flatHexagonSharedMesh.vertexCount), 0.1f);
+			int size = (int)Mathf.Sqrt(worldManager.flatHexagonSharedMesh.vertexCount);
+            flatHeightMap = NoiseGenerator.PerlinNoise((int)chunkSize.x * size, (int)chunkSize.y * size, 0.5f);
 
             //begin making hexagons
             GenerateChunk();
@@ -282,6 +283,19 @@ namespace CivGrid
                 //combine all the hexagon's meshes in this chunk into one mesh
                 RegenerateMesh();
             }
+			UpdateGridOverlay();
+        }
+		
+		internal void UpdateGridOverlay()
+        {
+			if(worldManager.ShowGrid == true)
+			{
+				GetComponent<Renderer>().material.SetFloat("_UseGrid", 1f);
+			}
+			else
+			{
+				GetComponent<Renderer>().material.SetFloat("_UseGrid", 0f);	
+			}
         }
 
         /// <summary>

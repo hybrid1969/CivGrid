@@ -10,31 +10,25 @@ public class BorderDebugTesting : MonoBehaviour
 
     void Start()
     {
-        WorldManager.onMouseOverHex += OnMouseOverHex;
+        WorldManager.onHexClick += OnHexClick;
     }
 
     void OnDisable()
     {
-        WorldManager.onMouseOverHex -= OnMouseOverHex;
+        WorldManager.onHexClick -= OnHexClick;
     }
 
-    void OnMouseOverHex(Hex hex)
+    void OnHexClick(Hex hex, int mouseButton)
     {
-        if (hex.BorderID != 0)
+        if (mouseButton == 0)
         {
-            hex.BorderID = 0;
+			//worldManager.ShowGrid = true;
+           	hex.BorderID = 0;
+        }
+        if (mouseButton == 1)
+        {
+			//worldManager.ShowGrid = false;
+            hex.BorderID = 1;
         }
     }
-
-    //void OnHexClick(Hex hex, int mouseButton)
-    //{
-    //    if (mouseButton == 0)
-    //    {
-    //        hex.BorderID = 0;
-    //    }
-    //    if (mouseButton == 1)
-    //    {
-    //        hex.BorderID = 1;
-    //    }
-    //}
 }

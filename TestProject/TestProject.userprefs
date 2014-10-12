@@ -2,9 +2,45 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\CivGrid\Core\Scripts\Terrain\WorldManager.cs">
     <Files>
-      <File FileName="Assets\CivGrid\Core\Scripts\Editor\ResourceManagerEditor.cs" Line="1" Column="1" />
-      <File FileName="Assets\CivGrid\Core\Scripts\Terrain\WorldManager.cs" Line="185" Column="42" />
+      <File FileName="Assets\CivGrid\Core\Scripts\Terrain\Hex.shader" Line="67" Column="60" />
+      <File FileName="Assets\CivGrid\Core\Scripts\Terrain\WorldManager.cs" Line="235" Column="5" />
+      <File FileName="Assets\CivGrid\Core\Scripts\Editor\WorldManagerEditor.cs" Line="1" Column="1" />
+      <File FileName="Assets\CivGrid\ExampleAssets\Scripts\BorderDebugTesting.cs" Line="1" Column="1" />
+      <File FileName="Assets\CivGrid\Core\Scripts\Terrain\InternalChunk.cs" Line="291" Column="28" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="Assembly-CSharp" expanded="True">
+            <Node name="CivGrid" expanded="True">
+              <Node name="Core" expanded="True">
+                <Node name="Scripts" expanded="True">
+                  <Node name="Terrain" expanded="True">
+                    <Node name="WorldManager.cs" selected="True" />
+                  </Node>
+                </Node>
+              </Node>
+              <Node name="ExampleAssets" expanded="True">
+                <Node name="Scripts" expanded="True" />
+              </Node>
+              <Node name="Exposed" expanded="True" />
+            </Node>
+          </Node>
+          <Node name="Assembly-CSharp-Editor" expanded="True">
+            <Node name="CivGrid" expanded="True">
+              <Node name="Core" expanded="True">
+                <Node name="Scripts" expanded="True">
+                  <Node name="Editor" expanded="True" />
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="ClassPad">
+        <State expanded="True" selected="True" />
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

@@ -141,16 +141,30 @@ namespace CivGrid
         /// Team ID that owns this hex. uint.MaxValue is the undefined team id, because 0 is a valid team id.
         /// </summary>
         private uint borderID = uint.MaxValue;
+		
+		private bool underFogOfWar;
 
         public uint BorderID
         {
             get { return borderID; }
             set
             {
-                borderID = value;
-                parentChunk.worldManager.StartCoroutine(parentChunk.worldManager.RefreshBorders((Hex)this));
+				if(borderID <= parentChunk.worldManager.borderColors.Count)
+				{
+                	borderID = value;
+                	parentChunk.worldManager.StartCoroutine(parentChunk.worldManager.RefreshBorders((Hex)this));
+				}
             }
         }
+		
+		public bool UnderFogOfWar
+		{
+			get { return underFogOfWar; }
+			set
+			{
+				underFogOfWar = value;
+			}
+		}
 
         /// <summary>
         /// The coordinates of the hexagon in cube coordinates.
@@ -435,7 +449,7 @@ namespace CivGrid
         {
             //create new mesh to start fresh
             localMesh = new Mesh();
-
+			
             //if we are generating a flat regular hexagon
             if (parentChunk.worldManager.levelOfDetail == 0 || terrainType.isShore || terrainType.isOcean)
             {
@@ -443,6 +457,7 @@ namespace CivGrid
                 localMesh.vertices = parentChunk.worldManager.flatHexagonSharedMesh.vertices;
                 localMesh.triangles = parentChunk.worldManager.flatHexagonSharedMesh.triangles;
                 localMesh.uv = parentChunk.worldManager.flatHexagonSharedMesh.uv;
+				localMesh.tangents = parentChunk.worldManager.flatHexagonSharedMesh.uv.ToVector4();
 
                 //recalculate normals to play nicely with lighting
                 localMesh.RecalculateNormals();
@@ -462,6 +477,7 @@ namespace CivGrid
                     localMesh.vertices = parentChunk.worldManager.flatHexagonSharedMesh.vertices;
                     localMesh.triangles = parentChunk.worldManager.flatHexagonSharedMesh.triangles;
                     localMesh.uv = parentChunk.worldManager.flatHexagonSharedMesh.uv;
+					localMesh.tangents = parentChunk.worldManager.flatHexagonSharedMesh.uv.ToVector4();
 
                     //recalculate normals to play nicely with lighting
                     localMesh.RecalculateNormals();
@@ -477,42 +493,50 @@ namespace CivGrid
             }
 
 			RefreshBorderTextureUV( -1 );
-            UpdateGridOverlay(true);
         }
 
         private void GenerateCustomHexMesh(bool raiseBorders)
         {
-            Texture2D localMountainTexture;
+            Texture2D localHeightMap;
 
             localMesh.vertices = parentChunk.worldManager.flatHexagonSharedMesh.vertices;
             localMesh.triangles = parentChunk.worldManager.flatHexagonSharedMesh.triangles;
             localMesh.uv = parentChunk.worldManager.flatHexagonSharedMesh.uv;
-
+			localMesh.tangents = parentChunk.worldManager.flatHexagonSharedMesh.uv.ToVector4();
+		
+			
             if (terrainFeature == Feature.Mountain)
             {
-                localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainHeightMap,
+                localHeightMap = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainHeightMap,
                     Random.Range(-500f, 500f),
-                    parentChunk.worldManager.mountainNoiseScale, ///0.005f-0.18f
-                    parentChunk.worldManager.mountainNoiseSize, //0.2-0.5f
+                    parentChunk.worldManager.mountainDefines.noiseScale, ///0.005f-0.18f
+                    parentChunk.worldManager.mountainDefines.noiseSize, //0.2-0.5f
                     Random.Range(0.3f, 0.6f), //0.3-0.6
-                    parentChunk.worldManager.mountainMaximumHeight, //2 
+                    parentChunk.worldManager.mountainDefines.maximumHeight, //2 
                     true,
                     false);
             }
             else if (terrainFeature == Feature.Hill)
             {
-                localMountainTexture = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainHeightMap,
+                localHeightMap = NoiseGenerator.RandomOverlay(parentChunk.worldManager.mountainHeightMap,
                     Random.Range(-100f, 100f),
-                    parentChunk.worldManager.hillNoiseScale, //0.005-0.18
-                    parentChunk.worldManager.hillNoiseSize, //0.75-1
+                    parentChunk.worldManager.hillDefines.noiseScale, //0.005-0.18
+                    parentChunk.worldManager.hillDefines.noiseSize, //0.75-1
                     Random.Range(0.4f, 0.7f),
-                    parentChunk.worldManager.hillMaximumHeight, //2 
+                    parentChunk.worldManager.hillDefines.maximumHeight, //2 
                     true,
                     false);
             }
             else
             {
-                localMountainTexture = parentChunk.flatHeightMap;
+                localHeightMap = NoiseGenerator.RandomOverlay(parentChunk.flatHeightMap,
+                    Random.Range(-100f, 100f),
+                    parentChunk.worldManager.flatDefines.noiseScale,
+                    parentChunk.worldManager.flatDefines.noiseSize,
+                    Random.Range(0.4f, 0.7f),
+                    parentChunk.worldManager.flatDefines.maximumHeight,
+                    false,
+                    false);
             }
 
             Vector3[] vertices = localMesh.vertices;
@@ -531,13 +555,13 @@ namespace CivGrid
                 }
                 else
                 {
-                    float pixelHeight = localMountainTexture.GetPixelBilinear(localMesh.uv[i].x, localMesh.uv[i].y).grayscale;
-                    if (terrainFeature == Feature.Mountain) { pixelHeight *= 1.5f; vertices[i].Set(vertices[i].x, vertices[i].y + (pixelHeight - (parentChunk.worldManager.mountainScaleY / 100)), vertices[i].z); }
-                    if (terrainFeature == Feature.Hill) { vertices[i].Set(vertices[i].x, vertices[i].y + (pixelHeight - (parentChunk.worldManager.mountainScaleY / 100)), vertices[i].z); }
+                    float pixelHeight = localHeightMap.GetPixelBilinear(localMesh.uv[i].x, localMesh.uv[i].y).grayscale;
+                    if (terrainFeature == Feature.Mountain) { pixelHeight *= 1.5f; vertices[i].Set(vertices[i].x, vertices[i].y + (pixelHeight - (parentChunk.worldManager.mountainDefines.yScale / 100)), vertices[i].z); }
+                    if (terrainFeature == Feature.Hill) { vertices[i].Set(vertices[i].x, vertices[i].y + (pixelHeight - (parentChunk.worldManager.hillDefines.yScale / 100)), vertices[i].z); }
                     //flat
                     else
                     {
-                        pixelHeight = localMountainTexture.GetPixelBilinear(localMesh.uv[i].x + (chunkArrayPosition.x * localMesh.uv[i].x), localMesh.uv[i].y + (chunkArrayPosition.y * localMesh.uv[i].y)).grayscale;
+                        pixelHeight = localHeightMap.GetPixelBilinear(localMesh.uv[i].x + (chunkArrayPosition.x * localMesh.uv[i].x), localMesh.uv[i].y + (chunkArrayPosition.y * localMesh.uv[i].y)).grayscale;
                         vertices[i].Set(vertices[i].x, vertices[i].y + pixelHeight / 10, vertices[i].z);
                     }
                 }
@@ -755,21 +779,17 @@ namespace CivGrid
             localMesh.uv = UV;
         }
 
-
-        private void UpdateGridOverlay(bool show)
-        {
-            if(show == true)
-            {
-                localMesh.tangents = parentChunk.worldManager.flatHexagonSharedMesh.uv.ToVector4();
-            }
-
-            else
-            {
-                //localMesh.tangents = new Vector4[] { };
-            }
-        }
-
 		//Borders
+		
+		public void SetBorder(int borderID)
+		{
+			BorderID = (uint)borderID;
+		}
+		
+		public void ClearBorder()
+		{
+			BorderID = uint.MaxValue;	
+		}
 
         private void RefreshBorderTextureUV(int borderTileType)
         {
