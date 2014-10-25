@@ -940,13 +940,13 @@ namespace CivGrid
             return list;
         }
 
-        public static Vector4[] ToVector4(this Vector2[] input)
+        public static Vector4[] ToVector4(this Vector2[] input, float z, float w)
         {
             List<Vector4> output = new List<Vector4>();
 
             foreach (Vector2 v in input)
             {
-                output.Add(new Vector4(v.x, v.y));
+                output.Add(new Vector4(v.x, v.y, z, w));
             }
 
             return output.ToArray();

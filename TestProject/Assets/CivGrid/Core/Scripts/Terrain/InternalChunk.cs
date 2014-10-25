@@ -359,6 +359,7 @@ namespace CivGrid
 
             //set the chunk's mesh to the combined mesh of all the hexagon's in this chunk
             filter.mesh.CombineMeshes(final);
+
             //recalculate the normals of the new mesh to play nicely with lighting
             filter.mesh.RecalculateNormals();
             //generate/set the collider dimensions for this chunk

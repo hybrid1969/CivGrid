@@ -116,6 +116,11 @@ namespace CivGrid
     {
         #region fields
 
+        //biome system
+
+        Texture2D rainfallMap;
+        Texture2D temperatureMap;
+
         private int[][][] offsetNeighbors = new int[][][]
         {
             new int[][]
@@ -484,7 +489,6 @@ namespace CivGrid
             //create new mesh to hold the data for the flat hexagon
             flatHexagonSharedMesh = new Mesh();
 
-            //string location = Application.dataPath.Remove(Application.dataPath.Length - 6);
             if (levelOfDetail > 0)
             {
                 if (levelOfDetail == 1)

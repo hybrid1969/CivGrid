@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using CivGrid;
+using System.Linq;
 
 namespace CivGrid
 {
@@ -75,6 +76,64 @@ namespace CivGrid
 
             //smooth the land vs water
             CleanWater(tex, noiseScale, smoothingCutoff);
+
+            //return perlin noise texture
+            return tex;
+        }
+
+        public static Texture2D SmoothPerlinNoiseRaw(int xSize, int ySize, float noiseScale, int octaves)
+        {
+            //texture to return
+            Texture2D tex = new Texture2D(xSize, ySize);
+
+            float[][,] colors = new float[octaves][,];
+
+            for (int i = 0; i < octaves; i++)
+            {
+                colors[i] = new float[xSize, ySize];
+            }
+
+            float multiplier = 1;
+
+
+            for (int o = 0; o < octaves; o++)
+            {
+                multiplier *= Random.Range(0.2f, 1.5f);
+
+
+                //loop through all the pixels
+                for (int x = 0; x < xSize; x++)
+                {
+                    for (int y = 0; y < ySize; y++)
+                    {
+                        //calculate a smooth modified version of perlin noise and assign the value to the pixel
+                        float randomValue = Random.value;
+                        float pixelValue = Mathf.PerlinNoise(x * noiseScale * multiplier * +randomValue, y * noiseScale * multiplier + randomValue);
+
+                        colors[o][x, y] = pixelValue;
+                    }
+                }
+            }
+
+            float value;
+            //loop through all the pixels
+            for (int x = 0; x < xSize; x++)
+            {
+                for (int y = 0; y < ySize; y++)
+                {
+                    value = colors[0][x, y];
+                    for (int o = 0; o <= octaves; o++)
+                    {
+                        value *= colors[0][x, y];
+                        value /= 2;
+                    }
+                    tex.SetPixel(x, y, new Color(value, value, value, 1));
+                }
+            }
+
+
+            //smooth the land vs water
+            //CleanWater(tex, noiseScale, 3);
 
             //return perlin noise texture
             return tex;
@@ -243,5 +302,151 @@ namespace CivGrid
             //return the source texture with noise overlay
             return returnTexture;
         }
+
+        #region realNoise
+
+        private static System.Random _random = new System.Random();
+        private static int[] _permutation;
+
+        private static Vector2[] _gradients;
+
+        static NoiseGenerator()
+        {
+            CalculatePermutation(out _permutation);
+            CalculateGradients(out _gradients);
+        }
+
+        private static void CalculatePermutation(out int[] p)
+        {
+            p = Enumerable.Range(0, 256).ToArray();
+
+            /// shuffle the array
+            for (var i = 0; i < p.Length; i++)
+            {
+                var source = _random.Next(p.Length);
+
+                var t = p[i];
+                p[i] = p[source];
+                p[source] = t;
+            }
+        }
+
+        /// <summary>
+        /// generate a new permutation.
+        /// </summary>
+        public static void Reseed()
+        {
+            CalculatePermutation(out _permutation);
+        }
+
+        private static void CalculateGradients(out Vector2[] grad)
+        {
+            grad = new Vector2[256];
+
+            for (var i = 0; i < grad.Length; i++)
+            {
+                Vector2 gradient;
+
+                do
+                {
+                    gradient = new Vector2((float)(_random.NextDouble() * 2 - 1), (float)(_random.NextDouble() * 2 - 1));
+                }
+                while (gradient.sqrMagnitude >= 1);
+
+                gradient.Normalize();
+
+                grad[i] = gradient;
+            }
+
+        }
+
+        private static float Drop(float t)
+        {
+            t = Mathf.Abs(t);
+            return 1f - t * t * t * (t * (t * 6 - 15) + 10);
+        }
+
+        private static float Q(float u, float v)
+        {
+            return Drop(u) * Drop(v);
+        }
+
+        public static float Noise(float x, float y)
+        {
+            var cell = new Vector2((float)Mathf.Floor(x), (float)Mathf.Floor(y));
+
+            var total = 0f;
+
+            var corners = new[] { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(1, 1) };
+
+            foreach (var n in corners)
+            {
+                var ij = cell + n;
+                var uv = new Vector2(x - ij.x, y - ij.y);
+
+                var index = _permutation[(int)ij.x % _permutation.Length];
+                index = _permutation[(index + (int)ij.y) % _permutation.Length];
+
+                var grad = _gradients[index % _gradients.Length];
+
+                total += Q(uv.x, uv.y) * Vector2.Dot(grad, uv);
+            }
+
+            return Mathf.Max(Mathf.Min(total, 1f), -1f);
+        }
+
+        public static Texture2D PerlinNoiseRaw(int width, int height, int octaves)
+        {
+            var data = new float[width * height];
+
+            Texture2D noiseTexture = new Texture2D(width, height);
+
+            /// track min and max noise value. Used to normalize the result to the 0 to 1.0 range.
+            var min = float.MaxValue;
+            var max = float.MinValue;
+
+            /// rebuild the permutation table to get a different noise pattern. 
+            /// Leave this out if you want to play with changing the number of octaves while 
+            /// maintaining the same overall pattern.
+            NoiseGenerator.Reseed();
+
+            var frequency = 0.5f;
+            var amplitude = 1f;
+            //var persistence = 0.25f;
+
+            for (var octave = 0; octave < octaves; octave++)
+            {
+                /// parallel loop - easy and fast.
+                for (int offset = 0; offset < width * height; offset++)
+                {
+
+                    var i = offset % width;
+                    var j = offset / width;
+                    var noise = NoiseGenerator.Noise(i * frequency * 1f / width, j * frequency * 1f / height);
+                    noise = data[j * width + i] += noise * amplitude;
+
+                    min = Mathf.Min(min, noise);
+                    max = Mathf.Max(max, noise);
+
+                }
+
+
+                frequency *= 2;
+                amplitude /= 2;
+            }
+
+            var colors = data.Select(
+                (f) =>
+                {
+                    var norm = (f - min) / (max - min);
+                    return new Color(norm, norm, norm, 1);
+                }
+            ).ToArray();
+
+            noiseTexture.SetPixels(colors);
+
+            return noiseTexture;
+        }
+        #endregion
     }
 }

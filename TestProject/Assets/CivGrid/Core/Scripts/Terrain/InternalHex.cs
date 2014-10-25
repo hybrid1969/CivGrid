@@ -149,7 +149,7 @@ namespace CivGrid
             get { return borderID; }
             set
             {
-				if(borderID <= parentChunk.worldManager.borderColors.Count)
+				if(value <= parentChunk.worldManager.borderColors.Count)
 				{
                 	borderID = value;
                 	parentChunk.worldManager.StartCoroutine(parentChunk.worldManager.RefreshBorders((Hex)this));
@@ -457,7 +457,9 @@ namespace CivGrid
                 localMesh.vertices = parentChunk.worldManager.flatHexagonSharedMesh.vertices;
                 localMesh.triangles = parentChunk.worldManager.flatHexagonSharedMesh.triangles;
                 localMesh.uv = parentChunk.worldManager.flatHexagonSharedMesh.uv;
-				localMesh.tangents = parentChunk.worldManager.flatHexagonSharedMesh.uv.ToVector4();
+
+                //we use tangents to pass in another uv map, and if the tile is under FOW(z component)
+				localMesh.tangents = parentChunk.worldManager.flatHexagonSharedMesh.uv.ToVector4(1,0);
 
                 //recalculate normals to play nicely with lighting
                 localMesh.RecalculateNormals();
@@ -477,7 +479,10 @@ namespace CivGrid
                     localMesh.vertices = parentChunk.worldManager.flatHexagonSharedMesh.vertices;
                     localMesh.triangles = parentChunk.worldManager.flatHexagonSharedMesh.triangles;
                     localMesh.uv = parentChunk.worldManager.flatHexagonSharedMesh.uv;
-					localMesh.tangents = parentChunk.worldManager.flatHexagonSharedMesh.uv.ToVector4();
+
+
+                    //we use tangents to pass in another uv map, and if the tile is under FOW(z component)
+					localMesh.tangents = parentChunk.worldManager.flatHexagonSharedMesh.uv.ToVector4(1,0);
 
                     //recalculate normals to play nicely with lighting
                     localMesh.RecalculateNormals();
@@ -502,7 +507,9 @@ namespace CivGrid
             localMesh.vertices = parentChunk.worldManager.flatHexagonSharedMesh.vertices;
             localMesh.triangles = parentChunk.worldManager.flatHexagonSharedMesh.triangles;
             localMesh.uv = parentChunk.worldManager.flatHexagonSharedMesh.uv;
-			localMesh.tangents = parentChunk.worldManager.flatHexagonSharedMesh.uv.ToVector4();
+
+            //we use tangents as an extra uv channel and to pass in the FOW settings
+			localMesh.tangents = parentChunk.worldManager.flatHexagonSharedMesh.uv.ToVector4(1,0);
 		
 			
             if (terrainFeature == Feature.Mountain)

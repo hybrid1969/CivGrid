@@ -1,31 +1,13 @@
 ﻿<Properties GitUserInfo="UsingGIT">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\CivGrid\Core\Scripts\Terrain\WorldManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\CivGrid\Core\Scripts\Terrain\Hex.shader">
     <Files>
-      <File FileName="Assets\CivGrid\Core\Scripts\Terrain\Hex.shader" Line="67" Column="60" />
-      <File FileName="Assets\CivGrid\Core\Scripts\Terrain\WorldManager.cs" Line="235" Column="5" />
-      <File FileName="Assets\CivGrid\Core\Scripts\Editor\WorldManagerEditor.cs" Line="1" Column="1" />
-      <File FileName="Assets\CivGrid\ExampleAssets\Scripts\BorderDebugTesting.cs" Line="1" Column="1" />
-      <File FileName="Assets\CivGrid\Core\Scripts\Terrain\InternalChunk.cs" Line="291" Column="28" />
+      <File FileName="Assets\CivGrid\Core\Scripts\Terrain\Hex.shader" Line="96" Column="31" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
-        <State expanded="True">
-          <Node name="Assembly-CSharp" expanded="True">
-            <Node name="CivGrid" expanded="True">
-              <Node name="Core" expanded="True">
-                <Node name="Scripts" expanded="True">
-                  <Node name="Terrain" expanded="True">
-                    <Node name="WorldManager.cs" selected="True" />
-                  </Node>
-                </Node>
-              </Node>
-              <Node name="ExampleAssets" expanded="True">
-                <Node name="Scripts" expanded="True" />
-              </Node>
-              <Node name="Exposed" expanded="True" />
-            </Node>
-          </Node>
+        <State expanded="True" selected="True">
+          <Node name="Assembly-CSharp" expanded="True" />
           <Node name="Assembly-CSharp-Editor" expanded="True">
             <Node name="CivGrid" expanded="True">
               <Node name="Core" expanded="True">
