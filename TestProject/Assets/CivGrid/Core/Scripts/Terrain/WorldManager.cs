@@ -116,11 +116,6 @@ namespace CivGrid
     {
         #region fields
 
-        //biome system
-
-        Texture2D rainfallMap;
-        Texture2D temperatureMap;
-
         private int[][][] offsetNeighbors = new int[][][]
         {
             new int[][]
@@ -178,7 +173,10 @@ namespace CivGrid
         internal CivGridCamera civGridCamera;
 
         //World Values
-        private Texture2D tileMap;
+        private Texture2D elevationMap;
+        private Texture2D rainfallMap;
+        private Texture2D temperatureMap;
+
         /// <summary>
         /// Scale of the noise map, and in turn the world
         /// </summary>
@@ -307,15 +305,6 @@ namespace CivGrid
 
         public delegate void StartHexOperations();
         public static StartHexOperations startHexOperations;
-		
-		//public bool ShowGrid
-		//{
-	    //	get { return showGrid; }
-		//	set
-		//	{
-		//		showGrid = value;
-		//	}
-		//}
         #endregion
 
         /// <summary>
@@ -465,7 +454,9 @@ namespace CivGrid
             if (noiseScale == 0) { Debug.LogException(new UnityException("Noise scale is zero, this produces artifacts.")); }
             noiseScale = UnityEngine.Random.Range(noiseScale / 1.05f, noiseScale * 1.05f);
 
-            tileMap = NoiseGenerator.SmoothPerlinNoise((int)mapSize.x, (int)mapSize.y, noiseScale, smoothingCutoff);
+            elevationMap = NoiseGenerator.SmoothPerlinNoise((int)mapSize.x, (int)mapSize.y, noiseScale, smoothingCutoff);
+            rainfallMap = NoiseGenerator.PerlinNoiseRaw((int)mapSize.x, (int)mapSize.y, 8, 0.5f, 1f);
+            temperatureMap = NoiseGenerator.PerlinNoiseRaw((int)mapSize.x, (int)mapSize.y, 8, 1f, 1f);
         }
 
         /// <summary>
@@ -661,18 +652,19 @@ namespace CivGrid
         /// <returns>An int corresponding to the biome it should be within</returns>
         internal Tile GenerateTileType(int x, int h)
         {
-            //temp no influence from rainfall values
-            float latitude = Mathf.Abs((mapSize.y / 2) - x) / (mapSize.x / 2);
-            float longitude = Mathf.Abs((mapSize.x / 2) - h) / (mapSize.y / 2);
-            //add more results
-            latitude *= (1 + UnityEngine.Random.Range(-0.2f, 0.2f));
-            longitude *= (1 + UnityEngine.Random.Range(-0.2f, 0.2f));
-            latitude = Mathf.Clamp(latitude, 0f, 1f);
-            longitude = Mathf.Clamp(longitude, 0f, 1f);
+            ////temp no influence from rainfall values
+            //float latitude = Mathf.Abs((mapSize.y / 2) - x) / (mapSize.x / 2);
+            //float longitude = Mathf.Abs((mapSize.x / 2) - h) / (mapSize.y / 2);
+            ////add more results
+            //latitude *= (1 + UnityEngine.Random.Range(-0.2f, 0.2f));
+            //longitude *= (1 + UnityEngine.Random.Range(-0.2f, 0.2f));
+            //latitude = Mathf.Clamp(latitude, 0f, 1f);
+            //longitude = Mathf.Clamp(longitude, 0f, 1f);
 
             Tile tile;
 
-            if (tileMap.GetPixel(x, h).r == 0)
+            //if water
+            if (elevationMap.GetPixel(x, h).r == 0)
             {
                 if (CheckIfCoast(x, h))
                 {
@@ -685,7 +677,8 @@ namespace CivGrid
             }
             else
             {
-                tile = tileManager.GetTileFromLattitudeAndLongitude(latitude, longitude);
+                tile = tileManager.DetermineTile(rainfallMap.GetPixel(x, h).grayscale, temperatureMap.GetPixel(x, h).grayscale);
+                //tile = tileManager.GetTileFromLattitudeAndLongitude(latitude, longitude);
             }
 
             return (tile);
@@ -700,7 +693,7 @@ namespace CivGrid
         /// <returns>The correct <see cref="Feature"/> for this tile</returns>
         internal Feature PickFeatureType(int xArrayPosition, int yArrayPosition, bool edge)
         {
-            float value = tileMap.GetPixel(xArrayPosition, yArrayPosition).r;
+            float value = elevationMap.GetPixel(xArrayPosition, yArrayPosition).r;
             Feature returnVal = 0;
 
             if (value == 0.8f)
@@ -724,7 +717,7 @@ namespace CivGrid
 
         private bool CheckIfCoast(int x, int y)
         {
-            float[] surrondingPixels = Utility.GetSurrondingPixels(tileMap, x, y);
+            float[] surrondingPixels = Utility.GetSurrondingPixels(elevationMap, x, y);
 
             int numberWater = 0;
             for (int i = 0; i < 8; i++)

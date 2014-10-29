@@ -686,13 +686,13 @@ namespace CivGrid.Editors
                 tile.isMountain = EditorGUILayout.Toggle("Is Mountain:", tile.isMountain);
                 if (tile.isShore == false && tile.isOcean == false && tile.isMountain == false)
                 {
-                    tile.topLongitude = EditorGUILayout.FloatField("Top Lattitude:", tile.topLongitude);
-                    tile.bottomLongitude = EditorGUILayout.FloatField("Bottom Lattitude:", tile.bottomLongitude);
+                    tile.possibleWorldDegrees.top = EditorGUILayout.FloatField("Top Lattitude:", tile.possibleWorldDegrees.top);
+                    tile.possibleWorldDegrees.bottom = EditorGUILayout.FloatField("Bottom Lattitude:", tile.possibleWorldDegrees.bottom);
                 }
                 else
                 {
-                    tile.topLongitude = 0;
-                    tile.bottomLongitude = 0;
+                    tile.possibleWorldDegrees.top = 0;
+                    tile.possibleWorldDegrees.bottom = 0;
                 }
 
                 GUILayout.EndScrollView();

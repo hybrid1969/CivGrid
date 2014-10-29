@@ -47,8 +47,10 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\CivGrid\Core\Scripts\Editor\CivGridEditor.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Editor\EditorDebugger.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Editor\ImprovementManagerEditor.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Editor\ResourceManagerEditor.cs" />
+     <Compile Include="Assets\CivGrid\Core\Scripts\Editor\TexturePackerImporter.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Editor\TileManagerEditor.cs" />
      <Compile Include="Assets\CivGrid\Core\Scripts\Editor\WorldManagerEditor.cs" />
      <None Include="Assets\CivGrid\Core\Scripts\Terrain\Hex.shader" />

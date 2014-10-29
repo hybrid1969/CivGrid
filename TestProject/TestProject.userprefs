@@ -2,7 +2,7 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\CivGrid\Core\Scripts\Terrain\Hex.shader">
     <Files>
-      <File FileName="Assets\CivGrid\Core\Scripts\Terrain\Hex.shader" Line="96" Column="31" />
+      <File FileName="Assets\CivGrid\Core\Scripts\Terrain\Hex.shader" Line="76" Column="5" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">

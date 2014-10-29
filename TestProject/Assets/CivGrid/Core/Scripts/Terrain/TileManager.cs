@@ -10,6 +10,8 @@ namespace CivGrid
     /// </summary>
     public class TileManager : MonoBehaviour
     {
+        //public bool useLatAndLong = false;
+
         /// <summary>
         /// Possible tiles to assign.
         /// </summary>
@@ -278,29 +280,82 @@ namespace CivGrid
         /// <param name="latitude">The latitude of the tile you want</param>
         /// <param name="longitude">The longitude of the tile you want</param>
         /// <returns>The tile that should be assign at the given latitude and longitude</returns>
-        public Tile GetTileFromLattitudeAndLongitude(float latitude, float longitude)
+        //public Tile GetTileFromLattitudeAndLongitude(float latitude, float longitude)
+        //{
+        //    //loop through all tiles
+        //    for (int i = 0; i < internalTiles.Length; i++)
+        //    {
+        //        //if its not a special tile
+        //        if ((internalTiles[i].isMountain == false && internalTiles[i].isOcean == false && internalTiles[i].isShore == false))
+        //        {
+        //            //if it doesnt not fit within the lattitude clamp continue to the next tile, otherwise return this tile
+        //            if (longitude < internalTiles[i].possibleWorldDegrees.bottom) { continue; }
+        //            if (longitude > internalTiles[i].possibleWorldDegrees.top) { continue; }
+        //            if (latitude < internalTiles[i].possibleWorldDegrees.left) { continue; }
+        //            if (latitude > internalTiles[i].possibleWorldDegrees.right) { continue; }
+        //            else
+        //            {
+        //                return internalTiles[i];
+        //            }
+        //        }
+        //    }
+        //    //tile not found
+        //    Debug.LogError("Couldn't find tile for this lattitude: " + latitude + " and this longitude: " + longitude);
+        //    return null;
+        //}
+        List<int> possibleTiles = new List<int>();
+        public Tile DetermineTile(float rainfall, float temperature)
         {
+            possibleTiles.Clear();
             //loop through all tiles
             for (int i = 0; i < internalTiles.Length; i++)
             {
                 //if its not a special tile
                 if ((internalTiles[i].isMountain == false && internalTiles[i].isOcean == false && internalTiles[i].isShore == false))
                 {
-                    //if it doesnt not fit within the lattitude clamp continue to the next tile, otherwise return this tile
-                    if (longitude < internalTiles[i].bottomLongitude) { continue; }
-                    if (longitude > internalTiles[i].topLongitude) { continue; }
-                    if (latitude < internalTiles[i].leftLatitude) { continue; }
-                    if (latitude > internalTiles[i].rightLatitude) { continue; }
-                    else
-                    {
-                        return internalTiles[i];
-                    }
+                    if (temperature < internalTiles[i].possibleTemperatureValues.min) { continue; }
+                    if (temperature > internalTiles[i].possibleTemperatureValues.max) { continue; }
+                    if (rainfall < internalTiles[i].possibleRainfallValues.min) { continue; }
+                    if (rainfall > internalTiles[i].possibleRainfallValues.max) { continue; }
+
+                    possibleTiles.Add(i);
                 }
             }
-            //tile not found
-            Debug.LogError("Couldn't find tile for this lattitude: " + latitude + " and this longitude: " + longitude);
-            return null;
+
+            if (possibleTiles.Count == 0)
+            {
+                Debug.LogError("Tile not found for this specific setting; Temperature: " + temperature + " ; Rainfall: " + rainfall);
+                return null;
+            }
+            else
+            {
+                int result = Random.Range(0, possibleTiles.Count);
+
+                return internalTiles[possibleTiles[result]];
+            }
         }
+    }
+
+    [System.Serializable]
+    public class WorldDegree
+    {
+        [SerializeField]
+        public float bottom;
+        [SerializeField]
+        public float top;
+        [SerializeField]
+        public float left;
+        [SerializeField]
+        public float right;
+    }
+
+    [System.Serializable]
+    public class Clamp
+    {
+        [SerializeField]
+        public float min;
+        [SerializeField]
+        public float max;
     }
 
     /// <summary>
@@ -314,21 +369,14 @@ namespace CivGrid
         /// </summary>
         public string name = "None";
         /// <summary>
-        /// The bottom longitude of where this tile can be assigned
+        /// Possible latitude and longitudes to spawn this <see cref="Tile"/>
         /// </summary>
-        public float bottomLongitude;
-        /// <summary>
-        /// The top longitude of where this tile can be assigned
-        /// </summary>
-        public float topLongitude;
-        /// <summary>
-        /// The leftmost latitude of where this tile can be assigned
-        /// </summary>
-        public float leftLatitude;
-        /// <summary>
-        /// The rightmost latitude of where this tile can be assigned
-        /// </summary>
-        public float rightLatitude;
+        [SerializeField]
+        public WorldDegree possibleWorldDegrees = new WorldDegree();
+        [SerializeField]
+        public Clamp possibleRainfallValues = new Clamp();
+        [SerializeField]
+        public Clamp possibleTemperatureValues = new Clamp();
         /// <summary>
         /// Is an ocean tile
         /// </summary>
@@ -351,8 +399,8 @@ namespace CivGrid
         public Tile(string name, float bottomLat, float topLat)
         {
             this.name = name;
-            this.bottomLongitude = bottomLat;
-            this.topLongitude = topLat;
+            this.possibleWorldDegrees.bottom = bottomLat;
+            this.possibleWorldDegrees.top = topLat;
         }
 
         /// <summary>
@@ -370,10 +418,10 @@ namespace CivGrid
             this.isShore = isShore;
             this.isOcean = isOcean;
             this.isMountain = isMountain;
-            this.bottomLongitude = bottomLongitude;
-            this.topLongitude = topLongitude;
-            this.leftLatitude = leftLatitude;
-            this.rightLatitude = rightLatitude;
+            this.possibleWorldDegrees.bottom = bottomLongitude;
+            this.possibleWorldDegrees.top = topLongitude;
+            this.possibleWorldDegrees.left = leftLatitude;
+            this.possibleWorldDegrees.right = rightLatitude;
         }
 
         /// <summary>

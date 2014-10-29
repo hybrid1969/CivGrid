@@ -12,7 +12,7 @@ namespace CivGrid
     /// </summary>
     public static class NoiseGenerator
     {
-
+        #region SimpleNoise
         /// <summary>
         /// A perlin noise generator
         /// </summary>
@@ -302,8 +302,10 @@ namespace CivGrid
             //return the source texture with noise overlay
             return returnTexture;
         }
+        #endregion
 
-        #region realNoise
+
+        #region RealNoise
 
         private static System.Random _random = new System.Random();
         private static int[] _permutation;
@@ -395,7 +397,7 @@ namespace CivGrid
             return Mathf.Max(Mathf.Min(total, 1f), -1f);
         }
 
-        public static Texture2D PerlinNoiseRaw(int width, int height, int octaves)
+        public static Texture2D PerlinNoiseRaw(int width, int height, int octaves, float frequency, float amplitude)
         {
             var data = new float[width * height];
 
@@ -410,9 +412,8 @@ namespace CivGrid
             /// maintaining the same overall pattern.
             NoiseGenerator.Reseed();
 
-            var frequency = 0.5f;
-            var amplitude = 1f;
-            //var persistence = 0.25f;
+            //frequency = 0.5f;
+            //amplitude = 1f;
 
             for (var octave = 0; octave < octaves; octave++)
             {

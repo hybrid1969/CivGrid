@@ -25,8 +25,8 @@ namespace CivGrid.Editors
         }
 
         bool done;
-        bool longOpen = false;
-        bool latOpen = false;
+        //bool longOpen = false;
+        //bool latOpen = false;
         public override void OnInspectorGUI()
         {
             if (done == false)
@@ -88,20 +88,44 @@ namespace CivGrid.Editors
                         tile.isMountain = EditorGUILayout.Toggle("Is Mountain:", tile.isMountain);
                         if (tile.isShore == false && tile.isOcean == false && tile.isMountain == false)
                         {
+
                             EditorGUI.indentLevel++;
-                            longOpen = EditorGUILayout.Foldout(longOpen, "Longitude Clamps:");
-                            if (longOpen)
-                            {
-                                tile.topLongitude = EditorGUILayout.FloatField("Top Longitude:", tile.topLongitude);
-                                tile.bottomLongitude = EditorGUILayout.FloatField("Bottom Longitude:", tile.bottomLongitude);
-                            }
-                            latOpen = EditorGUILayout.Foldout(latOpen, "Latitude Clamps:");
-                            if (latOpen)
-                            {
-                                tile.leftLatitude = EditorGUILayout.FloatField("Left Latitude:", tile.leftLatitude);
-                                tile.rightLatitude = EditorGUILayout.FloatField("Right Latitude:", tile.rightLatitude);
-                            }
+
+                            EditorGUILayout.SelectableLabel("Rainfall Spawn:", EditorStyles.boldLabel);
+                            EditorGUI.indentLevel++;
+                            EditorGUILayout.BeginHorizontal();
+                            tile.possibleRainfallValues.min = EditorGUILayout.FloatField("Minimum", tile.possibleRainfallValues.min);
+                            tile.possibleRainfallValues.max = EditorGUILayout.FloatField("Maximum", tile.possibleRainfallValues.max);
+                            EditorGUILayout.EndHorizontal();
                             EditorGUI.indentLevel--;
+
+                            EditorGUILayout.SelectableLabel("Temperature Spawn:", EditorStyles.boldLabel);
+                            EditorGUI.indentLevel++;
+                            EditorGUILayout.BeginHorizontal();
+                            tile.possibleTemperatureValues.min = EditorGUILayout.FloatField("Minimum", tile.possibleTemperatureValues.min);
+                            tile.possibleTemperatureValues.max = EditorGUILayout.FloatField("Maximum", tile.possibleTemperatureValues.max);
+                            EditorGUILayout.EndHorizontal();
+                            EditorGUI.indentLevel--;
+
+                            EditorGUI.indentLevel--;
+
+                            //if (tileManager.useLatAndLong)
+                            //{
+                            //    EditorGUI.indentLevel++;
+                            //    longOpen = EditorGUILayout.Foldout(longOpen, "Longitude Clamps:");
+                            //    if (longOpen)
+                            //    {
+                            //        tile.possibleWorldDegrees.top = EditorGUILayout.FloatField("Top Longitude:", tile.possibleWorldDegrees.top);
+                            //        tile.possibleWorldDegrees.bottom = EditorGUILayout.FloatField("Bottom Longitude:", tile.possibleWorldDegrees.bottom);
+                            //    }
+                            //    latOpen = EditorGUILayout.Foldout(latOpen, "Latitude Clamps:");
+                            //    if (latOpen)
+                            //    {
+                            //        tile.possibleWorldDegrees.left = EditorGUILayout.FloatField("Left Latitude:", tile.possibleWorldDegrees.left);
+                            //        tile.possibleWorldDegrees.right = EditorGUILayout.FloatField("Right Latitude:", tile.possibleWorldDegrees.right);
+                            //    }
+                            //    EditorGUI.indentLevel--;
+                            //}
                         }
                     }
                 }
