@@ -59,23 +59,22 @@
 	   {
 	     fixed4 mainCol = tex2D(_MainTex, IN.uv_MainTex);
 	 	 fixed4 texTwoCol = BlendMethod( tex2D(_BlendTex, IN.uv2_BlendTex), IN.color.rgba );
-	 	 fixed4 FOWCol = tex2D(_FOWTex, IN.tangent.xy);
-	 
-	 	 FOWCol.a *= 1.3;
-	 		
-	     fixed4 mainOutput = mainCol.rgba * (1.0 - texTwoCol.a - FOWCol.a);
-	     fixed4 blendOutput = texTwoCol.rgba * (1.0 - texTwoCol.a);
-	     fixed4 FOWOutput = FOWCol.rgba * FOWCol.a; 
+
+	     fixed4 mainOutput = mainCol.rgba * (1.0 - texTwoCol.a);
+	     fixed4 blendOutput = texTwoCol.rgba * texTwoCol.a;
 	     
 	     if(_UseGrid == 1)
 	     {
 	     	fixed4 gridCol = tex2D(_GridTex, IN.tangent.xy);
-		 	fixed4 gridOutput = gridCol.rgba; 		 	
+		 	fixed4 gridOutput = gridCol.rgba * gridCol.a; 		 	
 		 	
 		 	if(IN.underFOW == 1)
 		 	{
-		 		o.Albedo =  mainOutput.rgb + blendOutput.rgb + gridOutput.rgb +  FOWOutput.rgb;
-		 		o.Alpha = mainOutput.a + blendOutput.a + gridOutput.a + FOWOutput.a;
+		 		fixed4 FOWCol = tex2D(_FOWTex, IN.tangent.xy);
+		 		fixed4 FOWOutput = FOWCol.rgba;
+		 	
+		 		o.Albedo =  mainOutput.rgb + blendOutput.rgb + gridOutput.rgb;// + FOWOutput.rgb;
+		 		o.Alpha = mainOutput.a + blendOutput.a + gridOutput.a;// + FOWOutput.a;
 		 	}
 		 	else
 			{
@@ -87,8 +86,11 @@
 		 {
 		 	if(IN.underFOW == 1)
 		 	{
-		 		o.Albedo =  mainOutput.rgb + blendOutput.rgb +  FOWOutput.rgb;
-		 		o.Alpha = mainOutput.a + blendOutput.a + FOWOutput.a;
+		 		fixed4 FOWCol = tex2D(_FOWTex, IN.tangent.xy);
+		 		fixed4 FOWOutput = FOWCol.rgba;
+		 
+		 		o.Albedo =  mainOutput.rgb + blendOutput.rgb;// + FOWOutput.rgb;
+		 		o.Alpha = mainOutput.a + blendOutput.a;// + FOWOutput.a;
 		 	}
 		 	else
 		 	{

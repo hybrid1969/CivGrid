@@ -191,6 +191,10 @@ namespace CivGrid
         /// </summary>
         public WorldType worldType;
         /// <summary>
+        /// If latitude should be factored into the tile determination
+        /// </summary>
+        public bool useLatitude = true;
+        /// <summary>
         /// The size of the map in hexagons
         /// </summary>
         public Vector2 mapSize;
@@ -240,6 +244,11 @@ namespace CivGrid
 		
 		[SerializeField] 
 		public Texture2D gridTexture;
+
+        [SerializeField]
+        public Texture2D deepFogTexture;
+        [SerializeField]
+        public Texture2D lightFogTexture;
 
         //world setup
         /// <summary>
@@ -589,6 +598,7 @@ namespace CivGrid
 			chunkRenderer.material.mainTexture = textureAtlas.terrainAtlas;
             chunkRenderer.material.SetTexture("_GridTex", gridTexture);
             chunkRenderer.material.SetTexture("_BlendTex", borderTexture);
+            chunkRenderer.material.SetTexture("_FOWTex", deepFogTexture);
 
             //add the mesh filter
             chunkObj.AddComponent<MeshFilter>();
@@ -652,15 +662,6 @@ namespace CivGrid
         /// <returns>An int corresponding to the biome it should be within</returns>
         internal Tile GenerateTileType(int x, int h)
         {
-            ////temp no influence from rainfall values
-            //float latitude = Mathf.Abs((mapSize.y / 2) - x) / (mapSize.x / 2);
-            //float longitude = Mathf.Abs((mapSize.x / 2) - h) / (mapSize.y / 2);
-            ////add more results
-            //latitude *= (1 + UnityEngine.Random.Range(-0.2f, 0.2f));
-            //longitude *= (1 + UnityEngine.Random.Range(-0.2f, 0.2f));
-            //latitude = Mathf.Clamp(latitude, 0f, 1f);
-            //longitude = Mathf.Clamp(longitude, 0f, 1f);
-
             Tile tile;
 
             //if water
@@ -677,8 +678,23 @@ namespace CivGrid
             }
             else
             {
-                tile = tileManager.DetermineTile(rainfallMap.GetPixel(x, h).grayscale, temperatureMap.GetPixel(x, h).grayscale);
-                //tile = tileManager.GetTileFromLattitudeAndLongitude(latitude, longitude);
+                if (useLatitude)
+                {
+                    ////temp no influence from rainfall values
+                    float latitude = Mathf.Abs((mapSize.y / 2) - x) / (mapSize.x / 2);
+                    //float longitude = Mathf.Abs((mapSize.x / 2) - h) / (mapSize.y / 2);
+                    ////add more results
+                    latitude *= (1 + UnityEngine.Random.Range(-0.2f, 0.2f));
+                    //longitude *= (1 + UnityEngine.Random.Range(-0.2f, 0.2f));
+                    latitude = Mathf.Clamp(latitude, 0f, 1f);
+                    //longitude = Mathf.Clamp(longitude, 0f, 1f);
+
+                    tile = tileManager.DetermineTile(rainfallMap.GetPixel(x, h).grayscale, temperatureMap.GetPixel(x, h).grayscale, latitude);
+                }
+                else
+                {
+                    tile = tileManager.DetermineTile(rainfallMap.GetPixel(x, h).grayscale, temperatureMap.GetPixel(x, h).grayscale);
+                }
             }
 
             return (tile);
@@ -691,7 +707,7 @@ namespace CivGrid
         /// <param name="yArrayPosition">Y array position</param>
         /// <param name="edge">If the world is an edge of a chunk</param>
         /// <returns>The correct <see cref="Feature"/> for this tile</returns>
-        internal Feature PickFeatureType(int xArrayPosition, int yArrayPosition, bool edge)
+        internal Feature GenerateFeatureType(int xArrayPosition, int yArrayPosition, bool edge)
         {
             float value = elevationMap.GetPixel(xArrayPosition, yArrayPosition).r;
             Feature returnVal = 0;

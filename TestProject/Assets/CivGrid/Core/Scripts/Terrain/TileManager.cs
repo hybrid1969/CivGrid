@@ -274,41 +274,48 @@ namespace CivGrid
             return null;
         }
 
-        /// <summary>
-        /// Finds a tile for a provided latitude.
-        /// </summary>
-        /// <param name="latitude">The latitude of the tile you want</param>
-        /// <param name="longitude">The longitude of the tile you want</param>
-        /// <returns>The tile that should be assign at the given latitude and longitude</returns>
-        //public Tile GetTileFromLattitudeAndLongitude(float latitude, float longitude)
-        //{
-        //    //loop through all tiles
-        //    for (int i = 0; i < internalTiles.Length; i++)
-        //    {
-        //        //if its not a special tile
-        //        if ((internalTiles[i].isMountain == false && internalTiles[i].isOcean == false && internalTiles[i].isShore == false))
-        //        {
-        //            //if it doesnt not fit within the lattitude clamp continue to the next tile, otherwise return this tile
-        //            if (longitude < internalTiles[i].possibleWorldDegrees.bottom) { continue; }
-        //            if (longitude > internalTiles[i].possibleWorldDegrees.top) { continue; }
-        //            if (latitude < internalTiles[i].possibleWorldDegrees.left) { continue; }
-        //            if (latitude > internalTiles[i].possibleWorldDegrees.right) { continue; }
-        //            else
-        //            {
-        //                return internalTiles[i];
-        //            }
-        //        }
-        //    }
-        //    //tile not found
-        //    Debug.LogError("Couldn't find tile for this lattitude: " + latitude + " and this longitude: " + longitude);
-        //    return null;
-        //}
         List<int> possibleTiles = new List<int>();
         public Tile DetermineTile(float rainfall, float temperature)
         {
             possibleTiles.Clear();
             //loop through all tiles
             for (int i = 0; i < internalTiles.Length; i++)
+            {
+                //if its not a special tile
+                if ((internalTiles[i].isMountain == false && internalTiles[i].isOcean == false && internalTiles[i].isShore == false))
+                {
+                    if (temperature < internalTiles[i].possibleTemperatureValues.min) { continue; }
+                    if (temperature > internalTiles[i].possibleTemperatureValues.max) { continue; }
+                    if (rainfall < internalTiles[i].possibleRainfallValues.min) { continue; }
+                    if (rainfall > internalTiles[i].possibleRainfallValues.max) { continue; }
+
+                    possibleTiles.Add(i);
+                }
+            }
+
+            if (possibleTiles.Count == 0)
+            {
+                Debug.LogError("Tile not found for this specific setting; Temperature: " + temperature + " ; Rainfall: " + rainfall);
+                return null;
+            }
+            else
+            {
+                int result = Random.Range(0, possibleTiles.Count);
+
+                return internalTiles[possibleTiles[result]];
+            }
+        }
+
+        public Tile DetermineTile(float rainfall, float temperature, float latitude)
+        {
+            possibleTiles.Clear();
+
+            //Debug.Log(latitude);
+            //temperature = (temperature + latitude) / 2;
+
+            //temperature = Mathf.Clamp(temperature, 0, 1);
+
+            for(int i = 0; i < internalTiles.Length; i++)
             {
                 //if its not a special tile
                 if ((internalTiles[i].isMountain == false && internalTiles[i].isOcean == false && internalTiles[i].isShore == false))

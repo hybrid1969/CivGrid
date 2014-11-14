@@ -109,13 +109,25 @@ namespace CivGrid.Editors
 			EditorGUILayout.SelectableLabel("Grid Settings", EditorStyles.boldLabel);
 			
 			EditorGUI.indentLevel++;
-			worldManager.ShowGrid = EditorGUILayout.Toggle("Show Grid", worldManager.ShowGrid);
+			
+            worldManager.ShowGrid = EditorGUILayout.Toggle("Show Grid", worldManager.ShowGrid);
 			worldManager.gridTexture = (Texture2D)EditorGUILayout.ObjectField("Grid Texture", worldManager.gridTexture, typeof(Texture2D), false);
-			EditorGUI.indentLevel--;
+			
+            EditorGUI.indentLevel--;
+
+            EditorGUILayout.SelectableLabel("Fog of War Settings", EditorStyles.boldLabel);
+
+            EditorGUI.indentLevel++;
+
+            worldManager.lightFogTexture = (Texture2D)EditorGUILayout.ObjectField("Light Fog Texture", worldManager.lightFogTexture, typeof(Texture2D), false);
+            worldManager.deepFogTexture = (Texture2D)EditorGUILayout.ObjectField("Deep Fog Texture", worldManager.deepFogTexture, typeof(Texture2D), false);
+
+            EditorGUI.indentLevel--;
 
             EditorGUILayout.SelectableLabel("Border Settings", EditorStyles.boldLabel);
             
             EditorGUI.indentLevel++;
+            
             worldManager.sprShDefBorders = (BorderTextureData)EditorGUILayout.ObjectField("Border Definitions", worldManager.sprShDefBorders, typeof(BorderTextureData), false);
 			worldManager.borderTexture = (Texture2D)EditorGUILayout.ObjectField("Border Texture", worldManager.borderTexture, typeof(Texture2D), false);
             if(GUILayout.Button("Add New Border Define"))

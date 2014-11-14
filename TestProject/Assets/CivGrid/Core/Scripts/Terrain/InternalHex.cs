@@ -128,11 +128,6 @@ namespace CivGrid
         public GameObject iObject;
 
         /// <summary>
-        /// If this hexagon is on the edge of the parent chunk
-        /// </summary>
-        public bool onChunkEdge;
-
-        /// <summary>
         /// Bordering hexagons of this hexagon.
         /// </summary>
         public Hex[] neighbors;
