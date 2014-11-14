@@ -310,10 +310,8 @@ namespace CivGrid
         {
             possibleTiles.Clear();
 
-            //Debug.Log(latitude);
-            //temperature = (temperature + latitude) / 2;
-
-            //temperature = Mathf.Clamp(temperature, 0, 1);
+            temperature = Mathf.Round(100 * temperature) / 100;
+            rainfall = Mathf.Round(100 * rainfall) / 100;
 
             for(int i = 0; i < internalTiles.Length; i++)
             {
@@ -378,8 +376,8 @@ namespace CivGrid
         /// <summary>
         /// Possible latitude and longitudes to spawn this <see cref="Tile"/>
         /// </summary>
-        [SerializeField]
-        public WorldDegree possibleWorldDegrees = new WorldDegree();
+        //[SerializeField]
+        //public WorldDegree possibleWorldDegrees = new WorldDegree();
         [SerializeField]
         public Clamp possibleRainfallValues = new Clamp();
         [SerializeField]
@@ -397,38 +395,40 @@ namespace CivGrid
         /// </summary>
         public bool isMountain;
 
-        /// <summary>
-        /// Constructor for this class.
-        /// </summary>
-        /// <param name="name">Name of the tile</param>
-        /// <param name="bottomLongitude">Bottom lattitude clamp</param>
-        /// <param name="topLongitude">"Top lattitude clamp</param>
-        public Tile(string name, float bottomLat, float topLat)
-        {
-            this.name = name;
-            this.possibleWorldDegrees.bottom = bottomLat;
-            this.possibleWorldDegrees.top = topLat;
-        }
+        ///// <summary>
+        ///// Constructor for this class.
+        ///// </summary>
+        ///// <param name="name">Name of the tile</param>
+        ///// <param name="bottomLongitude">Bottom lattitude clamp</param>
+        ///// <param name="topLongitude">"Top lattitude clamp</param>
+        //public Tile(string name, float bottomLat, float topLat)
+        //{
+        //    this.name = name;
+        //    this.possibleWorldDegrees.bottom = bottomLat;
+        //    this.possibleWorldDegrees.top = topLat;
+        //}
 
         /// <summary>
-        /// Full constructor for this class.
+        /// Full constructor for this class
         /// </summary>
-        /// <param name="name">Name of the tile</param>
-        /// <param name="isShore">Is a shore tile</param>
-        /// <param name="isOcean">Is an ocean tile</param>
-        /// <param name="isMountain">Is a mountain tile</param>
-        /// <param name="bottomLongitude">Bottom longitude clamp</param>
-        /// <param name="topLongitude">Top longitude clamp</param>
-        public Tile(string name, bool isShore, bool isOcean, bool isMountain, float bottomLongitude, float topLongitude, float leftLatitude, float rightLatitude)
+        /// <param name="name"></param>
+        /// <param name="isShore"></param>
+        /// <param name="isOcean"></param>
+        /// <param name="isMountain"></param>
+        /// <param name="rainfallMin"></param>
+        /// <param name="rainfallMax"></param>
+        /// <param name="temperatureMin"></param>
+        /// <param name="temperatureMax"></param>
+        public Tile(string name, bool isShore, bool isOcean, bool isMountain, float rainfallMin, float rainfallMax, float temperatureMin, float temperatureMax)
         {
             this.name = name;
             this.isShore = isShore;
             this.isOcean = isOcean;
             this.isMountain = isMountain;
-            this.possibleWorldDegrees.bottom = bottomLongitude;
-            this.possibleWorldDegrees.top = topLongitude;
-            this.possibleWorldDegrees.left = leftLatitude;
-            this.possibleWorldDegrees.right = rightLatitude;
+            this.possibleRainfallValues.min = rainfallMin;
+            this.possibleRainfallValues.max = rainfallMax;
+            this.possibleTemperatureValues.min = temperatureMin;
+            this.possibleTemperatureValues.max = temperatureMax;
         }
 
         /// <summary>

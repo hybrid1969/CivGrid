@@ -608,10 +608,10 @@ namespace CivGrid.Editors
         public bool tIsShore;
         public bool tIsOcean;
         public bool tIsMountain;
-        public float tTopLongitude;
-        public float tBottomLongitude;
-        public float tLeftLatitude;
-        public float tRightLatitude;
+        public float tRainfallMin;
+        public float tRainfallMax;
+        public float tTemperatureMin;
+        public float tTemperatureMax;
 
         TileManager tileManager;
 
@@ -645,15 +645,18 @@ namespace CivGrid.Editors
                 tIsMountain = EditorGUILayout.Toggle("Is Mountain:", tIsMountain);
                 if (tIsShore == false && tIsOcean == false && tIsMountain == false)
                 {
-                    tTopLongitude = EditorGUILayout.FloatField("Top Longitude:", tTopLongitude);
-                    tBottomLongitude = EditorGUILayout.FloatField("Bottom Longitude:", tBottomLongitude);
-                    tLeftLatitude = EditorGUILayout.FloatField("Left Latitude", tLeftLatitude);
-                    tRightLatitude = EditorGUILayout.FloatField("Right Latitude", tRightLatitude);
-                }
-                else
-                {
-                    tTopLongitude = 0;
-                    tBottomLongitude = 0;
+                    EditorGUILayout.SelectableLabel("Rainfall Amount", EditorStyles.boldLabel);
+                    EditorGUI.indentLevel++;
+                    tRainfallMin = EditorGUILayout.FloatField("Minimum", tRainfallMin);
+                    tRainfallMax = EditorGUILayout.FloatField("Maximum", tRainfallMax);
+                    EditorGUI.indentLevel--;
+
+                    EditorGUILayout.SelectableLabel("Temperature", EditorStyles.boldLabel);
+                    EditorGUI.indentLevel++;
+                    tTemperatureMin = EditorGUILayout.FloatField("Minimum", tTemperatureMin);
+                    tTemperatureMax = EditorGUILayout.FloatField("Maximum", tTemperatureMax);
+                    EditorGUI.indentLevel--;
+
                 }
 
                 GUILayout.EndScrollView();
@@ -662,7 +665,7 @@ namespace CivGrid.Editors
 
                 if (GUILayout.Button("Create"))
                 {
-                    CreateTile(tName, tIsShore, tIsOcean, tIsMountain, tTopLongitude, tBottomLongitude, tLeftLatitude, tRightLatitude);
+                    CreateTile(tName, tIsShore, tIsOcean, tIsMountain, tRainfallMin, tRainfallMax, tTemperatureMin, tTemperatureMax);
                     EditorUtility.UnloadUnusedAssets();
                     Resources.UnloadUnusedAssets();
                     this.Close();
@@ -686,13 +689,17 @@ namespace CivGrid.Editors
                 tile.isMountain = EditorGUILayout.Toggle("Is Mountain:", tile.isMountain);
                 if (tile.isShore == false && tile.isOcean == false && tile.isMountain == false)
                 {
-                    tile.possibleWorldDegrees.top = EditorGUILayout.FloatField("Top Lattitude:", tile.possibleWorldDegrees.top);
-                    tile.possibleWorldDegrees.bottom = EditorGUILayout.FloatField("Bottom Lattitude:", tile.possibleWorldDegrees.bottom);
-                }
-                else
-                {
-                    tile.possibleWorldDegrees.top = 0;
-                    tile.possibleWorldDegrees.bottom = 0;
+                    EditorGUILayout.SelectableLabel("Rainfall Amount", EditorStyles.boldLabel);
+                    EditorGUI.indentLevel++;
+                    tile.possibleRainfallValues.min = EditorGUILayout.FloatField("Minimum", tile.possibleRainfallValues.min);
+                    tile.possibleRainfallValues.max = EditorGUILayout.FloatField("Maximum", tile.possibleRainfallValues.max);
+                    EditorGUI.indentLevel--;
+
+                    EditorGUILayout.SelectableLabel("Temperature", EditorStyles.boldLabel);
+                    EditorGUI.indentLevel++;
+                    tile.possibleTemperatureValues.min = EditorGUILayout.FloatField("Minimum", tile.possibleTemperatureValues.min);
+                    tile.possibleTemperatureValues.max = EditorGUILayout.FloatField("Maximum", tile.possibleTemperatureValues.max);
+                    EditorGUI.indentLevel--;
                 }
 
                 GUILayout.EndScrollView();
@@ -708,9 +715,9 @@ namespace CivGrid.Editors
             }
         }
 
-        private void CreateTile(string name, bool isShore, bool isOcean, bool isMountain, float topLongitude, float bottomLongitude, float leftLatitude, float rightLatitude)
+        private void CreateTile(string name, bool isShore, bool isOcean, bool isMountain, float rainfallMin, float rainfallMax, float temperatureMin, float temperateMax)
         {
-            tileManager.AddTile(new Tile(name, isShore, isOcean, isMountain, bottomLongitude, topLongitude, leftLatitude, rightLatitude));
+            tileManager.AddTile(new Tile(name, isShore, isOcean, isMountain, rainfallMin, rainfallMax, temperatureMin, temperateMax));
         }
     }
 
