@@ -1,9 +1,39 @@
-﻿<Properties>
+﻿<Properties GitUserInfo="UsingGIT">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\CivGrid\Core\Scripts\Terrain\Saver.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\CivGrid\Core\Scripts\Terrain\Hex.shader">
     <Files>
-      <File FileName="Assets\CivGrid\Core\Scripts\Terrain\Saver.cs" Line="42" Column="10" />
+      <File FileName="..\..\..\AppData\Local\Temp\Rar$DIa0.613\Particle Blend.shader" Line="69" Column="5" />
+      <File FileName="Assets\CivGrid\Core\Scripts\Terrain\Hex.shader" Line="93" Column="45" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="Assembly-CSharp" expanded="True">
+            <Node name="CivGrid" expanded="True">
+              <Node name="Core" expanded="True">
+                <Node name="Scripts" expanded="True">
+                  <Node name="Terrain" expanded="True">
+                    <Node name="Hex.shader" selected="True" />
+                  </Node>
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+          <Node name="Assembly-CSharp-Editor" expanded="True">
+            <Node name="CivGrid" expanded="True">
+              <Node name="Core" expanded="True">
+                <Node name="Scripts" expanded="True">
+                  <Node name="Editor" expanded="True" />
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="ClassPad">
+        <State expanded="True" selected="True" />
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

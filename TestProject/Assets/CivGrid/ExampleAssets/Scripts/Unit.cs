@@ -1,23 +1,22 @@
 ﻿using UnityEngine;
 using System.Collections;
 using CivGrid;
+using CivGrid.SampleResources;
 
-
-/// <Unit Summary>
-/// This is the base script for ALL units in the game, combat and speical abilities is handled in the child class (Melee, Range Attack, Build, etc)
-/// This handles movement, health, death, selection, and basic statistics.
-/// It is not recamended to add to this class instead use this as a base class and extend methods from it(see Melee for more information on how to do this)
-/// </End>
-
-namespace CivGrid
+namespace CivGrid.SampleResources
 {
 
+    /// <summary>
+    /// This is the base script for ALL units in the game, combat and speical abilities is handled in the child class (Melee, Range Attack, Build, etc)
+    /// This handles movement, health, death, selection, and basic statistics.
+    /// It is not recamended to add to this class instead use this as a base class and extend methods from it(see Melee for more information on how to do this)
+    /// </summary>
     public abstract class Unit : MonoBehaviour
     {
 
         public int health;
         public bool selected = false;
-        public HexInfo currentLocation;
+        public Hex currentLocation;
         bool moveMode;
 
         public int unitMoves;
@@ -74,7 +73,7 @@ namespace CivGrid
                             {
                                 //since its a tile get the Hex script
                                 //TODO: FIX
-                                HexInfo hex = new HexInfo();//obj.GetComponent<HexInfo>();
+                                Hex hex = new Hex();//obj.GetComponent<HexInfo>();
 
                                 //check to see if tile is occupied
                                 if (hex.currentUnit == null)
@@ -87,7 +86,7 @@ namespace CivGrid
 
                                     if (movesNeeded <= movesLeft)
                                     {
-                                        print("Moving to tile: " + hex.AxialGridPosition);
+                                        print("Moving to tile: " + hex.AxialCoordinates);
                                         //actually move the unit
                                         Move(currentLocation, hex, true);
                                         movesLeft -= movesNeeded;
@@ -131,12 +130,12 @@ namespace CivGrid
 
 
 
-        public void Move(HexInfo fromTile, HexInfo toTile, bool quickMove)
+        public void Move(Hex fromTile, Hex toTile, bool quickMove)
         {
             if (quickMove)
             {
                 //find our obj reference to the needed grid
-                GameObject hex = GameObject.Find("HexTile " + toTile.AxialGridPosition);
+                GameObject hex = GameObject.Find("HexTile " + toTile.AxialCoordinates);
                 //tell old tile we are no longer on it
                 fromTile.currentUnit = null;
                 //move unit

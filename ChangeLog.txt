@@ -88,3 +88,40 @@ Version 0.5.2f
 Version 0.5.3f
 	+Fixes movement with wrapping enabled on a camera
 	+Tiles with features now work as desribed in 0.5.2f
+Version 0.5.5
+	+Complete code commentation
+	+Resource/Improvement/Tile generation speed up
+	+Resource and Improvement manager cleaned up once again
+Version 0.6
+	+Added delegate callbacks
+	+Added complete documentation
+	+Massive code cleanup
+	+Moved all example logic out of WorldManager
+	+Worked on hill and mountain generation
+Version 0.7
+	+Corrected misnaming of latitude
+	+Added latitude/longitudes
+	+Cached all coordinate formats
+	+New Terrain Manager Window
+	+Better Window performance
+	+Better GetHexFromXXXX() performance
+	+Mesh generation overhaul
+	+Neighbors logic
+	+Fixed offset coordinate conversions
+	+Flat hexagon's are heightmapped and 3D with blending
+	+Fixed oceans being set as shore incorrectly on map 	borders
+	+Implimented custom extension classes for Hex, and Chunk
+	+Hexagon borders
+	+Exposed noise settings
+	+Added LOD system, including:
+	0 - All flat
+	1 - Mountains and Hills with noise
+	2 - All tiles have noise
+	3 - High Poly Noise
+`	+Exposed internal LOD data, instead of loading it at 	runtime
+	+Fixed LOD 0, not having raised mountains
+	+Optimized FinePossibleChunks()
+	+Spread Borders work over a few frames
+	+Fixed Editor Bugs
+	+Fixed Tile referencing errors
+	

@@ -10,16 +10,29 @@ namespace CivGrid
     public class CivGridCamera : MonoBehaviour
     {
         //Base camera Settings
+        /// <summary>
+        /// Should the terrain wrap around when a camera moves too far off in the horizontal side?
+        /// This adds a small overhead from running two cameras and a depth buffer.
+        /// </summary>
         public bool enableWrapping;
-        public Camera cam1;
+        private Camera cam1;
         private Transform cam1T;
+        /// <summary>
+        /// The height of the camera from the terrain.
+        /// </summary>
         public float cameraHeight = 3f;
+        /// <summary>
+        /// The angle of the camera in degrees. Default is 65*.
+        /// </summary>
         public float cameraAngle = 65f;
+        /// <summary>
+        /// The speed at which the camera moves in units per second.
+        /// </summary>
         public float cameraSpeed = 2f;
 
         //Base wrapping settings
         private Vector2 camOffset;
-        public Camera cam2;
+        private Camera cam2;
         private Transform cam2T;
         private bool cam1Lead;
 
@@ -31,9 +44,30 @@ namespace CivGrid
         private WorldManager worldManager;
 
         /// <summary>
-        /// Sets up the cameras to position themselves correctly depending on the user settings.
-        /// Spawns the second follow camera if wrapping is enableds.
+        /// Helper method to retrieve a camera from the camera system, containing camera(s).
+        /// Index 0 will return the first camera and if present index 1 will return the second camera.
         /// </summary>
+        /// <param name="index">The camera index to retrieve</param>
+        /// <returns>The retrieved camera</returns>
+        /// <remarks>
+        /// If an invalid index is supplied, for example if index 1 is given when enableWrapping is false, null
+        /// will be returned. This also applies for any other index then 0 or 1.
+        /// </remarks>
+        public Camera GetCamera(int index)
+        {
+            if (index == 0) { return cam1; }
+            if (index == 1 && enableWrapping == true) { return cam2; }
+            else { return null; }
+        }
+
+        /// <summary>
+        /// Sets up the cameras to position themselves correctly depending on the user settings.
+        /// Spawns the second follow camera if wrapping is enabled.
+        /// Caches transforms for the cameras for speed.
+        /// </summary>
+        /// <remarks>
+        /// The WorldManager script must be within the scene for this method to execute.
+        /// </remarks>
         public void SetupCameras()
         {
             //cache the lead camera and world manager
@@ -94,7 +128,7 @@ namespace CivGrid
         /// <summary>
         /// Assigns moveVector in the vetical axis depending on zoom input.
         /// </summary>
-        void CheckInput()
+        private void CheckInput()
         {
             //zoom in/out depending on input or not at all
             if (Input.GetKey(KeyCode.Plus) || Input.GetKey(KeyCode.KeypadPlus)) { moveVector.y = -1; }
@@ -107,12 +141,12 @@ namespace CivGrid
         /// Assigns the direction in which the camera needs to move and then translates it.
         /// Directions are described in screen space.
         /// </summary>
-        void UpdateCamera()
+        private void UpdateCamera()
         {
             try
             {
                 //gets the mouse position in viewport cords
-                Vector3 pos = cam1.ScreenToViewportPoint(worldManager.mousePos);
+                pos = cam1.ScreenToViewportPoint(worldManager.mousePos);
 
                 //mouse is in the far right of the screen
                 if (pos.x >= 0.8f)
@@ -166,7 +200,7 @@ namespace CivGrid
         /// Assigns the direction in which the camera needs to move and then translates it.
         /// Directions are described in screen space.
         /// </summary>
-        void UpdateCameraW()
+        private void UpdateCameraW()
         {
             try
             {

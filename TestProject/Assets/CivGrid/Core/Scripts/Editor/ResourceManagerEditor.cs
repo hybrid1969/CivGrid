@@ -26,6 +26,7 @@ namespace CivGrid.Editors
                 extraInfoFoldout = new bool[resourceManager.resources.Count];
             }
         }
+		
         bool done;
         public override void OnInspectorGUI()
         {
@@ -80,33 +81,48 @@ namespace CivGrid.Editors
                     {
                         resource.name = EditorGUILayout.TextField("Resource Name:", resource.name);
                         resource.rarity = EditorGUILayout.FloatField("Rarity:", resource.rarity);
-                        resource.spawnAmount = EditorGUILayout.IntField("Spawn Amount:", resource.spawnAmount);
+                        resource.meshSpawnAmount = EditorGUILayout.IntField("Spawn Amount:", resource.meshSpawnAmount);
                         resource.replaceGroundTexture = EditorGUILayout.Toggle("Replace Ground Texture", resource.replaceGroundTexture);
-
-                        //if (resource.replaceGroundTexture == true)
-                        {
-                            //EditorGUILayout.HelpBox("Remember to add this to the terrain atlas", MessageType.Warning);
-                        }
 
                         extraInfoFoldout[i] = EditorGUILayout.Foldout(extraInfoFoldout[i], "Rules:");
 
                         if (extraInfoFoldout[i])
                         {
                             EditorGUILayout.SelectableLabel("Possible Tiles", EditorStyles.boldLabel, GUILayout.ExpandHeight(false), GUILayout.MaxHeight(15));
-                            foreach (int t in resource.rule.possibleTiles)
-                            {
-                                EditorGUI.indentLevel++;
-                                EditorGUILayout.SelectableLabel(tileManager.EditorTryGet(t).name, GUILayout.ExpandHeight(false), GUILayout.MaxHeight(18));
-                                EditorGUI.indentLevel--;
-                            }
+							EditorGUI.indentLevel++;
+							if(resource.rule.possibleTiles.Length == 0)
+							{
+								EditorGUILayout.SelectableLabel("No Possible Tiles");
+							}
+							else
+							{
+								foreach (int t in resource.rule.possibleTiles)
+                            	{
+                                	EditorGUI.indentLevel++;
+                                	EditorGUILayout.SelectableLabel(tileManager.tiles[t].name, GUILayout.ExpandHeight(false), GUILayout.MaxHeight(18));
+                               		EditorGUI.indentLevel--;
+                            	}
+							}
+							EditorGUI.indentLevel--;
 
                             EditorGUILayout.SelectableLabel("Possible Features", EditorStyles.boldLabel, GUILayout.ExpandHeight(false), GUILayout.MaxHeight(15));
-                            foreach (Feature f in resource.rule.possibleFeatures)
-                            {
-                                EditorGUI.indentLevel++;
-                                EditorGUILayout.SelectableLabel(f.ToString(), GUILayout.ExpandHeight(false), GUILayout.MaxHeight(18));
-                                EditorGUI.indentLevel--;
-                            }
+							EditorGUI.indentLevel++;
+							if(resource.rule.possibleFeatures.Length == 0)
+							{
+								EditorGUILayout.SelectableLabel("No Possible Features");	
+							}
+							else
+							{
+								foreach (Feature f in resource.rule.possibleFeatures)
+                            	{
+                                	EditorGUI.indentLevel++;
+                                	EditorGUILayout.SelectableLabel(f.ToString(), GUILayout.ExpandHeight(false), GUILayout.MaxHeight(18));
+                                	EditorGUI.indentLevel--;
+                            	}
+							}
+							EditorGUI.indentLevel--;
+							
+							EditorGUILayout.Separator();
                         }
                         resource.meshToSpawn = (Mesh)EditorGUILayout.ObjectField("Resource Mesh", (Object)resource.meshToSpawn, typeof(Mesh), false);
                         resource.meshTexture = (Texture2D)EditorGUILayout.ObjectField("Resource Mesh Texture:", (Object)resource.meshTexture, typeof(Texture2D), false, GUILayout.ExpandHeight(false), GUILayout.ExpandWidth(true));
@@ -123,8 +139,6 @@ namespace CivGrid.Editors
             {
                 resourceManager.UpdateResourceNames();
             }
-
-            //base.DrawDefaultInspector();
         }
     }
 }

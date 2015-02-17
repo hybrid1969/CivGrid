@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using CivGrid;
+using CivGrid.SampleResources;
 
-namespace CivGrid
+namespace CivGrid.SampleResources
 {
 
     public delegate void WorldEvent(string type, string message);
@@ -22,7 +23,21 @@ namespace CivGrid
         {
             GameManager.worldEvent += EventManager;
             GameManager.nextTurn += NextTurn;
+            WorldManager.onHexClick += OnHexClick;
             worldManager = GameObject.FindObjectOfType<WorldManager>();
+        }
+
+        void OnHexClick(Hex hex, int mouseButton)
+        {
+            if(mouseButton == 0)
+            {
+				Debug.Log( "nya" );
+                worldManager.improvementManager.TestedAddImprovementToTile(hex, 0);
+            }
+            if(mouseButton == 1)
+            {
+                worldManager.improvementManager.RemoveImprovementFromTile(hex);
+            }
         }
 
         void OnDisable()
@@ -39,7 +54,7 @@ namespace CivGrid
 
         void SpawnUnit(GameObject obj, Vector2 hexLoc)
         {
-            HexInfo hex = worldManager.GetHexFromAxialPosition(hexLoc);
+            Hex hex = worldManager.GetHexFromAxialCoordinates(hexLoc);
 
             GameObject unit = (GameObject)Instantiate(obj, hex.worldPosition, Quaternion.identity);
 
@@ -64,11 +79,6 @@ namespace CivGrid
             if (type == "Death")
             {
                 print(message);
-            }
-
-            if (type == "World Done")
-            {
-                StartSpawning();
             }
         }
 

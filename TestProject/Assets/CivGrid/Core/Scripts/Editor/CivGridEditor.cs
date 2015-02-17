@@ -140,7 +140,7 @@ namespace CivGrid.Editors
 
                 r.name = EditorGUILayout.TextField("Resource Name:", r.name);
                 r.rarity = EditorGUILayout.FloatField("Rariety:", r.rarity);
-                r.spawnAmount = EditorGUILayout.IntField("Mesh Spawn Amount:", r.spawnAmount);
+                r.meshSpawnAmount = EditorGUILayout.IntField("Mesh Spawn Amount:", r.meshSpawnAmount);
                 r.replaceGroundTexture = EditorGUILayout.Toggle("Replace Ground Texture", r.replaceGroundTexture);
                 r.meshToSpawn = (Mesh)EditorGUILayout.ObjectField("Resource Mesh:", (Object)r.meshToSpawn, typeof(Mesh), false);
                 r.meshTexture = (Texture2D)EditorGUILayout.ObjectField("Resource Mesh Texture:", (Object)r.meshTexture, typeof(Texture2D), false);
@@ -214,7 +214,7 @@ namespace CivGrid.Editors
 
                 if (GUILayout.Button("Close"))
                 {
-                    EditResource(r.name, r.rarity, r.spawnAmount, r.meshToSpawn, r.meshTexture, r.replaceGroundTexture, resourceIndexToEdit);
+                    EditResource(r.name, r.rarity, r.meshSpawnAmount, r.meshToSpawn, r.meshTexture, r.replaceGroundTexture, resourceIndexToEdit);
                     resourceManager.resources.RemoveAt(resourceIndexToEdit+1);
                     EditorUtility.UnloadUnusedAssets();
                     Resources.UnloadUnusedAssets();
@@ -264,7 +264,7 @@ namespace CivGrid.Editors
                 }
             }
 
-            resourceManager.AddResource(new Resource(name, rariety, spawnAmount, mesh, texture, replaceGroundTexture, new ResourceRule(finalTiles, finalFeatures.ToArray())));
+            resourceManager.AddResource(new Resource(name, rariety, spawnAmount, mesh, texture, replaceGroundTexture, new HexRule(finalTiles, finalFeatures.ToArray())));
         }
 
         void EditResource(string name, float rariety, int spawnAmount, Mesh mesh, Texture2D texture, bool replaceGroundTexture, int index)
@@ -306,7 +306,7 @@ namespace CivGrid.Editors
                 }
             }
 
-            resourceManager.AddResourceAt(new Resource(name, rariety, spawnAmount, mesh, texture, replaceGroundTexture, new ResourceRule(finalTiles, finalFeatures.ToArray())), index);
+            resourceManager.AddResourceAtIndex(new Resource(name, rariety, spawnAmount, mesh, texture, replaceGroundTexture, new HexRule(finalTiles, finalFeatures.ToArray())), index);
         }
     }
 
@@ -423,7 +423,7 @@ namespace CivGrid.Editors
             {
                 this.title = "Edit Improvement";
 
-                Improvement improvement = improvementManager.searalizableImprovements[improvementIndexToEdit];
+                Improvement improvement = improvementManager.improvements[improvementIndexToEdit];
                 GUILayout.Label("Edit Improvement: " + improvement.name);
 
                 GUILayout.BeginVertical();
@@ -438,12 +438,12 @@ namespace CivGrid.Editors
 
                 if (doneAddingImprovements == false)
                 {
-                    foreach (int t in improvementManager.searalizableImprovements[improvementIndexToEdit].rule.possibleTiles)
+                    foreach (int t in improvementManager.improvements[improvementIndexToEdit].rule.possibleTiles)
                     {
                         iPossibleTiles.Add(t);
                     }
 
-                    foreach (Feature f in improvementManager.searalizableImprovements[improvementIndexToEdit].rule.possibleFeatures)
+                    foreach (Feature f in improvementManager.improvements[improvementIndexToEdit].rule.possibleFeatures)
                     {
                         iPossibleFeatures.Add(f);
                     }
@@ -504,7 +504,7 @@ namespace CivGrid.Editors
                 if (GUILayout.Button("Close"))
                 {
                     EditImprovement(improvement.name, improvement.meshToSpawn, improvement.meshTexture, improvement.replaceGroundTexture, improvementIndexToEdit);
-                    improvementManager.searalizableImprovements.RemoveAt(improvementIndexToEdit+1);
+                    improvementManager.improvements.RemoveAt(improvementIndexToEdit+1);
                     EditorUtility.UnloadUnusedAssets();
                     Resources.UnloadUnusedAssets();
                     this.Close();
@@ -553,7 +553,7 @@ namespace CivGrid.Editors
                 }
             }
 
-            improvementManager.AddImprovement(new Improvement(name, mesh, texture, replaceGroundTexture, new ImprovementRule(finalTiles, finalFeatures.ToArray())));
+            improvementManager.AddImprovement(new Improvement(name, mesh, texture, replaceGroundTexture, new HexRule(finalTiles, finalFeatures.ToArray())));
         }
 
         void EditImprovement(string name, Mesh mesh, Texture2D texture, bool replaceGroundTexture, int index)
@@ -595,7 +595,7 @@ namespace CivGrid.Editors
                 }
             }
 
-            improvementManager.AddImprovementAtIndex(new Improvement(name, mesh, texture, replaceGroundTexture, new ImprovementRule(finalTiles, finalFeatures.ToArray())), index);
+            improvementManager.AddImprovementAtIndex(new Improvement(name, mesh, texture, replaceGroundTexture, new HexRule(finalTiles, finalFeatures.ToArray())), index);
         }
     }
 
@@ -608,8 +608,10 @@ namespace CivGrid.Editors
         public bool tIsShore;
         public bool tIsOcean;
         public bool tIsMountain;
-        public float tTopLat;
-        public float tBottomLat;
+        public float tRainfallMin;
+        public float tRainfallMax;
+        public float tTemperatureMin;
+        public float tTemperatureMax;
 
         TileManager tileManager;
 
@@ -643,13 +645,18 @@ namespace CivGrid.Editors
                 tIsMountain = EditorGUILayout.Toggle("Is Mountain:", tIsMountain);
                 if (tIsShore == false && tIsOcean == false && tIsMountain == false)
                 {
-                    tTopLat = EditorGUILayout.FloatField("Top Lattitude:", tTopLat);
-                    tBottomLat = EditorGUILayout.FloatField("Bottom Lattitude:", tBottomLat);
-                }
-                else
-                {
-                    tTopLat = 0;
-                    tBottomLat = 0;
+                    EditorGUILayout.SelectableLabel("Rainfall Amount", EditorStyles.boldLabel);
+                    EditorGUI.indentLevel++;
+                    tRainfallMin = EditorGUILayout.FloatField("Minimum", tRainfallMin);
+                    tRainfallMax = EditorGUILayout.FloatField("Maximum", tRainfallMax);
+                    EditorGUI.indentLevel--;
+
+                    EditorGUILayout.SelectableLabel("Temperature", EditorStyles.boldLabel);
+                    EditorGUI.indentLevel++;
+                    tTemperatureMin = EditorGUILayout.FloatField("Minimum", tTemperatureMin);
+                    tTemperatureMax = EditorGUILayout.FloatField("Maximum", tTemperatureMax);
+                    EditorGUI.indentLevel--;
+
                 }
 
                 GUILayout.EndScrollView();
@@ -658,7 +665,7 @@ namespace CivGrid.Editors
 
                 if (GUILayout.Button("Create"))
                 {
-                    CreateTile(tName, tIsShore, tIsOcean, tIsMountain, tTopLat, tBottomLat);
+                    CreateTile(tName, tIsShore, tIsOcean, tIsMountain, tRainfallMin, tRainfallMax, tTemperatureMin, tTemperatureMax);
                     EditorUtility.UnloadUnusedAssets();
                     Resources.UnloadUnusedAssets();
                     this.Close();
@@ -682,13 +689,17 @@ namespace CivGrid.Editors
                 tile.isMountain = EditorGUILayout.Toggle("Is Mountain:", tile.isMountain);
                 if (tile.isShore == false && tile.isOcean == false && tile.isMountain == false)
                 {
-                    tile.topLat = EditorGUILayout.FloatField("Top Lattitude:", tile.topLat);
-                    tile.bottomLat = EditorGUILayout.FloatField("Bottom Lattitude:", tile.bottomLat);
-                }
-                else
-                {
-                    tile.topLat = 0;
-                    tile.bottomLat = 0;
+                    EditorGUILayout.SelectableLabel("Rainfall Amount", EditorStyles.boldLabel);
+                    EditorGUI.indentLevel++;
+                    tile.possibleRainfallValues.min = EditorGUILayout.FloatField("Minimum", tile.possibleRainfallValues.min);
+                    tile.possibleRainfallValues.max = EditorGUILayout.FloatField("Maximum", tile.possibleRainfallValues.max);
+                    EditorGUI.indentLevel--;
+
+                    EditorGUILayout.SelectableLabel("Temperature", EditorStyles.boldLabel);
+                    EditorGUI.indentLevel++;
+                    tile.possibleTemperatureValues.min = EditorGUILayout.FloatField("Minimum", tile.possibleTemperatureValues.min);
+                    tile.possibleTemperatureValues.max = EditorGUILayout.FloatField("Maximum", tile.possibleTemperatureValues.max);
+                    EditorGUI.indentLevel--;
                 }
 
                 GUILayout.EndScrollView();
@@ -704,13 +715,249 @@ namespace CivGrid.Editors
             }
         }
 
-        private void CreateTile(string name, bool isShore, bool isOcean, bool isMountain, float topLat, float bottomLat)
+        private void CreateTile(string name, bool isShore, bool isOcean, bool isMountain, float rainfallMin, float rainfallMax, float temperatureMin, float temperateMax)
         {
-            tileManager.AddTile(new Tile(name, isShore, isOcean, isMountain, bottomLat, topLat));
+            tileManager.AddTile(new Tile(name, isShore, isOcean, isMountain, rainfallMin, rainfallMax, temperatureMin, temperateMax));
         }
     }
 
     public enum TypeofEditorTile { Terrain, Resource, Improvement }
+
+//    public sealed class TerrainManagerWindow : EditorWindow
+//    {
+//        WorldManager worldManager;
+//        ImprovementManager improvementManager;
+//        ResourceManager resourceManager;
+//        TileManager tileManager;
+
+//        string loc = Application.dataPath;
+//        string editedLoc;
+    
+//        Vector2 terrainAtlasSize = new Vector2(1,1);
+//        Texture2D[,] textures;
+//        int[,] tempTileType;
+//        int[,] tempResourceType;
+//        int[,] tempImprovementType;
+//        TypeofEditorTile[,] catagory;
+//        List<TileItem> tileLocations = new List<TileItem>();
+//        List<ResourceItem> resourceLocations = new List<ResourceItem>();
+//        List<ImprovementItem> improvementLocations = new List<ImprovementItem>();
+
+//        private Vector2 internalAtlasDimension;
+
+//        [MenuItem("CivGrid/Terrain Manager", priority = 1)]
+//        static void ShowWindow()
+//        {
+//            EditorWindow.GetWindow(typeof(TerrainManagerWindow));
+//        }
+
+//        void OnEnable()
+//        {
+//            this.title = "Terrain Manager";
+//            worldManager = GameObject.FindObjectOfType<WorldManager>();
+//            improvementManager = GameObject.FindObjectOfType<ImprovementManager>();
+//            resourceManager = GameObject.FindObjectOfType<ResourceManager>();
+//            tileManager = GameObject.FindObjectOfType<TileManager>();
+
+//            terrainAtlasSize = new Vector2(Mathf.CeilToInt(tileManager.tileNames.Length / 2f), 2);
+//            AssignAtlasSize(true);
+
+//            if (worldManager == null || improvementManager == null)
+//            {
+//                Debug.LogError("Need to have WorldManager and ImprovementManager in current scene");
+//            }
+
+//            tileManager.UpdateTileNames();
+//            resourceManager.UpdateResourceNames();
+//            improvementManager.UpdateImprovementNames();
+//        }
+
+//        Vector2 scrollPosition = new Vector2();
+//        void OnGUI()
+//        {
+//            terrainAtlasSize = EditorGUILayout.Vector2Field("Terrain Texture Size", terrainAtlasSize);
+
+//            if (internalAtlasDimension.x == 0)
+//            {
+//                if (GUILayout.Button("Generate Grid"))
+//                {
+//                    AssignAtlasSize(true);
+//                }
+//            }
+//            else
+//            {
+//                if (GUILayout.Button("Resize Grid"))
+//                {
+//                    AssignAtlasSize(false);
+//                }
+//            }
+
+//            if(GUILayout.Button("Clear"))
+//            {
+//                ClearAtlasSize();
+//            }
+
+//            scrollPosition = GUILayout.BeginScrollView(scrollPosition);
+
+//            int tileIndex = -1;
+//            int resourceIndex = -1;
+//            int improvementIndex = -1;
+//            for (int y = 0; y < internalAtlasDimension.y; y++)
+//            {
+//                //start new row
+//                GUILayout.BeginHorizontal();
+//                for (int x = 0; x < internalAtlasDimension.x; x++)
+//                {
+//                    textures[x, y] = (Texture2D)EditorGUILayout.ObjectField((Object)textures[x, y], typeof(Texture2D), false, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true), GUILayout.MaxHeight(150f), GUILayout.MaxWidth(150f));
+//                    GUILayout.BeginVertical();
+//                    GUILayout.Label("Settings for texture (" + x + "," + y + "):");
+//                    catagory[x, y] = (TypeofEditorTile)EditorGUILayout.EnumPopup("Type:", catagory[x, y], GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
+//                    if (catagory[x, y] == TypeofEditorTile.Terrain && (tileManager.tiles != null && tileManager.tiles.Count > 0))
+//                    {
+//                        if(tileIndex < (tileManager.tileNames.Length-1))
+//                        {
+//                            tileIndex++;
+//                            tempTileType[x, y] = tileIndex;
+//                        }
+//                        tempTileType[x, y] = (int)EditorGUILayout.Popup("Tile Type:", tempTileType[x, y], tileManager.tileNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
+//                        tempResourceType[x,y] = 0;
+//                        tempImprovementType[x,y] = 0;
+//                    }
+//                    else if (catagory[x, y] == TypeofEditorTile.Resource && (resourceManager.resources != null && resourceManager.resources.Count > 0))
+//                    {
+//                        if (resourceIndex < (resourceManager.resourceNames.Length - 1))
+//                        {
+//                            resourceIndex++;
+//                            tempResourceType[x, y] = resourceIndex;
+//                        }
+//                        tempResourceType[x, y] = (int)EditorGUILayout.Popup("Resource Type:", tempResourceType[x, y], resourceManager.resourceNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
+//                        tempTileType[x, y] = 0;
+//                        tempImprovementType[x,y] = 0;
+//                    }
+//                    else if (catagory[x, y] == TypeofEditorTile.Improvement && (improvementManager.improvements != null && improvementManager.improvements.Count > 0))
+//                    {
+//                        if (improvementIndex < (improvementManager.improvementNames.Length - 1))
+//                        {
+//                            improvementIndex++;
+//                            tempImprovementType[x, y] = improvementIndex;
+//                        }
+//                        tempImprovementType[x, y] = (int)EditorGUILayout.Popup("Improvement Type:", tempImprovementType[x, y], improvementManager.improvementNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
+//                        tempTileType[x,y] = 0;
+//                        tempResourceType[x, y] = 0;
+//                    }
+//                    else
+//                    {
+//                        EditorGUILayout.SelectableLabel("There are no options for this type.", GUILayout.ExpandHeight(true));
+//                    }
+//                    GUILayout.EndVertical();
+//                }
+//                GUILayout.EndHorizontal();
+//            }
+//            GUILayout.EndScrollView();
+
+//            editedLoc = ((string)loc.Clone()).Remove(0, loc.IndexOf("Assets"));
+
+//            GUILayout.Label("Location to save:");
+//            GUILayout.Label(editedLoc);
+
+//            if (GUILayout.Button("Edit"))
+//            {
+//                string tempLoc = EditorUtility.OpenFolderPanel("Folder to save texture...", loc, "");
+//                if (tempLoc != null && tempLoc != "")
+//                {
+//                    loc = tempLoc;
+//                }
+//            }
+
+//            if (GUILayout.Button("Generate Atlas"))
+//            {
+//                GenerateAtlas();
+//            }
+//        }
+
+//        private void AssignAtlasSize(bool freshStart)
+//        {
+//            if (freshStart == true)
+//            {
+//                internalAtlasDimension = terrainAtlasSize;
+//                textures = new Texture2D[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
+//                tempTileType = new int[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
+//                tempResourceType = new int[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
+//                tempImprovementType = new int[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
+//                catagory = new TypeofEditorTile[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
+
+//                improvementLocations.Clear();
+//                resourceLocations.Clear();
+//                tileLocations.Clear();
+//            }
+//            else
+//            {
+//                internalAtlasDimension = terrainAtlasSize;
+//                textures = Utility.Resize2DArray<Texture2D>(textures, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
+//                tempTileType = Utility.Resize2DArray<int>(tempTileType, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
+//                tempResourceType = Utility.Resize2DArray<int>(tempResourceType, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
+//                tempImprovementType = Utility.Resize2DArray<int>(tempImprovementType, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
+//                catagory = Utility.Resize2DArray<TypeofEditorTile>(catagory, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
+//            }
+//        }
+
+//        private void ClearAtlasSize()
+//        {
+//            internalAtlasDimension = new Vector2(0, 0);
+
+//            textures = new Texture2D[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
+//            tempTileType = new int[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
+//            tempResourceType = new int[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
+//            tempImprovementType = new int[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
+//            catagory = new TypeofEditorTile[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
+
+//            improvementLocations.Clear();
+//            resourceLocations.Clear();
+//            tileLocations.Clear();
+//        }
+
+
+//        private void GenerateAtlas()
+//        {
+
+//            Rect[] rectAreas;
+//            Texture2D returnTexture = TexturePacker.AtlasTextures(Utility.ToSingleArray<Texture2D>(textures), 2048, out rectAreas);
+
+//            int lengthOfArraysX = catagory.GetLength(0); 
+//            int lengthOfArraysY = catagory.GetLength(1); 
+
+//            for (int x = 0; x < lengthOfArraysX; x++)
+//            {
+//                for (int y = 0; y < lengthOfArraysY; y++)
+//                {
+//                    if (catagory[x, y] == TypeofEditorTile.Terrain)
+//                    {
+//                        tileLocations.Add(tileManager.tiles[tempTileType[x, y]], rectAreas[x * lengthOfArraysY + y]);
+//                    }
+//                    else if (catagory[x, y] == TypeofEditorTile.Resource)
+//                    {
+//                        resourceLocations.Add(resourceManager.resources[tempResourceType[x, y]], rectAreas[x * lengthOfArraysY + y]);
+//                    }
+//                    else
+//                    {
+//                        improvementLocations.Add(improvementManager.improvements[tempImprovementType[x, y]], rectAreas[x * lengthOfArraysY + y]);
+//                    }
+//                }
+//            }
+
+//            FileUtility.SaveTexture(returnTexture, loc, "TerrainAtlas", false);
+//            worldManager.textureAtlas.terrainAtlas = (Texture2D)AssetDatabase.LoadAssetAtPath(editedLoc + "/TerrainAtlas.png", typeof(Texture2D));
+//            worldManager.textureAtlas.tileLocations = (TileItem[])tileLocations.ToArray().Clone();
+//            worldManager.textureAtlas.resourceLocations = (ResourceItem[])resourceLocations.ToArray().Clone();
+//            worldManager.textureAtlas.improvementLocations = (ImprovementItem[])improvementLocations.ToArray().Clone();
+
+
+//            EditorUtility.UnloadUnusedAssets();
+//            Resources.UnloadUnusedAssets();
+//            this.Close();
+//        }
+//    }
+//}
 
     public sealed class TerrainManagerWindow : EditorWindow
     {
@@ -721,18 +968,19 @@ namespace CivGrid.Editors
 
         string loc = Application.dataPath;
         string editedLoc;
-    
-        Vector2 terrainAtlasSize = new Vector2(1,1);
-        Texture2D[,] textures;
-        int[,] tempTileType;
-        int[,] tempResourceType;
-        int[,] tempImprovementType;
-        TypeofEditorTile[,] catagory;
+
+        //Vector2 terrainAtlasSize = new Vector2(1, 1);
+        int atlasLength = 0;
+        List<Texture2D> textures = new List<Texture2D>();
+        List<int> tempTileType = new List<int>();
+        List<int> tempResourceType = new List<int>();
+        List<int> tempImprovementType = new List<int>();
+        List<TypeofEditorTile> catagory = new List<TypeofEditorTile>();
         List<TileItem> tileLocations = new List<TileItem>();
         List<ResourceItem> resourceLocations = new List<ResourceItem>();
         List<ImprovementItem> improvementLocations = new List<ImprovementItem>();
 
-        private Vector2 internalAtlasDimension;
+        bool start = false;
 
         [MenuItem("CivGrid/Terrain Manager", priority = 1)]
         static void ShowWindow()
@@ -753,74 +1001,120 @@ namespace CivGrid.Editors
                 Debug.LogError("Need to have WorldManager and ImprovementManager in current scene");
             }
 
-            tileManager.UpdateTileNames();
+            int length = 0;
+
+            foreach(Resource r in resourceManager.resources)
+            {
+                if (r.replaceGroundTexture == true) { length++; }
+            }
+            foreach(Improvement i in improvementManager.improvements)
+            {
+                if (i.replaceGroundTexture == true) { length++; }
+            }
+            length += tileManager.tileNames.Length;
+
+            for (int i = 0; i < length; i++)
+            {
+                AddElement();
+            }
+
+                tileManager.UpdateTileNames();
             resourceManager.UpdateResourceNames();
             improvementManager.UpdateImprovementNames();
 
+            start = true;
+        }
+
+        void AddElement()
+        {
+            atlasLength++;
+            textures.Add(null);
+            tempTileType.Add(0);
+            tempResourceType.Add(0);
+            tempImprovementType.Add(0);
+            catagory.Add(TypeofEditorTile.Terrain);
         }
 
         Vector2 scrollPosition = new Vector2();
         void OnGUI()
         {
-            terrainAtlasSize = EditorGUILayout.Vector2Field("Terrain Texture Size", terrainAtlasSize);
-
-            if (internalAtlasDimension.x == 0)
+            if (GUILayout.Button("Add Element"))
             {
-                if (GUILayout.Button("Generate Grid"))
-                {
-                    AssignAtlasSize(true);
-                }
+                AddElement();
             }
-            else
-            {
-                if (GUILayout.Button("Resize Grid"))
-                {
-                    AssignAtlasSize(false);
-                }
-            }
-
             if(GUILayout.Button("Clear"))
             {
-                ClearAtlasSize();
+                atlasLength = 0;
+                textures.Clear();
+                tempTileType.Clear();
+                tempResourceType.Clear();
+                tempImprovementType.Clear();
+                catagory.Clear();
             }
 
             scrollPosition = GUILayout.BeginScrollView(scrollPosition);
-            for (int y = 0; y < internalAtlasDimension.y; y++)
-            {
+
+            int tileIndex = -1;
+            int resourceIndex = -1;
+            int improvementIndex = -1;
+
                 //start new row
                 GUILayout.BeginHorizontal();
-                for (int x = 0; x < internalAtlasDimension.x; x++)
+                for (int i = 0; i < atlasLength; i++)
                 {
-                    textures[x, y] = (Texture2D)EditorGUILayout.ObjectField((Object)textures[x, y], typeof(Texture2D), false, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true), GUILayout.MaxHeight(150f), GUILayout.MaxWidth(150f));
                     GUILayout.BeginVertical();
-                    GUILayout.Label("Settings for texture (" + x + "," + y + "):");
-                    catagory[x, y] = (TypeofEditorTile)EditorGUILayout.EnumPopup("Type:", catagory[x, y], GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
-                    if (catagory[x, y] == TypeofEditorTile.Terrain && (tileManager.tiles != null && tileManager.tiles.Count > 0))
+                    textures[i] = (Texture2D)EditorGUILayout.ObjectField((Object)textures[i], typeof(Texture2D), false, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true), GUILayout.MaxHeight(150f), GUILayout.MaxWidth(150f));
+                    GUILayout.Label("Settings for texture (" + i);
+                    catagory[i] = (TypeofEditorTile)EditorGUILayout.EnumPopup("Type:", catagory[i], GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
+                    if (catagory[i] == TypeofEditorTile.Terrain && (tileManager.tiles != null && tileManager.tiles.Count > 0))
                     {
-                        tempTileType[x, y] = (int)EditorGUILayout.Popup("Tile Type:", tempTileType[x, y], tileManager.tileNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
-                        tempResourceType[x,y] = 0;
-                        tempImprovementType[x,y] = 0;
+                        if (tileIndex < (tileManager.tileNames.Length - 1) && start)
+                        {
+                            tileIndex++;
+                            tempTileType[i] = tileIndex;
+                        }
+                        tempTileType[i] = (int)EditorGUILayout.Popup("Tile Type:", tempTileType[i], tileManager.tileNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
+                        tempResourceType[i] = 0;
+                        tempImprovementType[i] = 0;
                     }
-                    else if (catagory[x, y] == TypeofEditorTile.Resource && (resourceManager.resources != null && resourceManager.resources.Count > 0))
+                    else if (catagory[i] == TypeofEditorTile.Resource && (resourceManager.resources != null && resourceManager.resources.Count > 0))
                     {
-                        tempResourceType[x, y] = (int)EditorGUILayout.Popup("Resource Type:", tempResourceType[x, y], resourceManager.resourceNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
-                        tempTileType[x, y] = 0;
-                        tempImprovementType[x,y] = 0;
+                        if (resourceIndex < (resourceManager.resourceNames.Length - 1) && start)
+                        {
+                            resourceIndex++;
+                            tempResourceType[i] = resourceIndex;
+                        }
+                        tempResourceType[i] = (int)EditorGUILayout.Popup("Resource Type:", tempResourceType[i], resourceManager.resourceNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
+                        tempTileType[i] = 0;
+                        tempImprovementType[i] = 0;
                     }
-                    else if (catagory[x, y] == TypeofEditorTile.Improvement && (improvementManager.searalizableImprovements != null && improvementManager.searalizableImprovements.Count > 0))
+                    else if (catagory[i] == TypeofEditorTile.Improvement && (improvementManager.improvements != null && improvementManager.improvements.Count > 0))
                     {
-                        tempImprovementType[x, y] = (int)EditorGUILayout.Popup("Improvement Type:", tempImprovementType[x, y], improvementManager.improvementNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
-                        tempTileType[x,y] = 0;
-                        tempResourceType[x, y] = 0;
+                        if (improvementIndex < (improvementManager.improvementNames.Length - 1) && start)
+                        {
+                            improvementIndex++;
+                            tempImprovementType[i] = improvementIndex;
+                        }
+                        tempImprovementType[i] = (int)EditorGUILayout.Popup("Improvement Type:", tempImprovementType[i], improvementManager.improvementNames, GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f));
+                        tempTileType[i] = 0;
+                        tempResourceType[i] = 0;
                     }
                     else
                     {
                         EditorGUILayout.SelectableLabel("There are no options for this type.", GUILayout.ExpandHeight(true));
                     }
+                    if (GUILayout.Button("-", GUILayout.ExpandWidth(true), GUILayout.MaxWidth(300f)))
+                    {
+                        atlasLength--;
+                        textures.RemoveAt(i);
+                        tempTileType.RemoveAt(i);
+                        tempResourceType.RemoveAt(i);
+                        tempImprovementType.RemoveAt(i);
+                        catagory.RemoveAt(i);
+                    }
                     GUILayout.EndVertical();
                 }
                 GUILayout.EndHorizontal();
-            }
             GUILayout.EndScrollView();
 
             editedLoc = ((string)loc.Clone()).Remove(0, loc.IndexOf("Assets"));
@@ -841,47 +1135,9 @@ namespace CivGrid.Editors
             {
                 GenerateAtlas();
             }
-        }
 
-        private void AssignAtlasSize(bool freshStart)
-        {
-            if (freshStart == true)
-            {
-                internalAtlasDimension = terrainAtlasSize;
-                textures = new Texture2D[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
-                tempTileType = new int[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
-                tempResourceType = new int[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
-                tempImprovementType = new int[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
-                catagory = new TypeofEditorTile[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
-
-                improvementLocations.Clear();
-                resourceLocations.Clear();
-                tileLocations.Clear();
-            }
-            else
-            {
-                internalAtlasDimension = terrainAtlasSize;
-                textures = CivGridUtility.Resize2DArray<Texture2D>(textures, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
-                tempTileType = CivGridUtility.Resize2DArray<int>(tempTileType, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
-                tempResourceType = CivGridUtility.Resize2DArray<int>(tempResourceType, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
-                tempImprovementType = CivGridUtility.Resize2DArray<int>(tempImprovementType, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
-                catagory = CivGridUtility.Resize2DArray<TypeofEditorTile>(catagory, (int)internalAtlasDimension.x, (int)internalAtlasDimension.y);
-            }
-        }
-
-        private void ClearAtlasSize()
-        {
-            internalAtlasDimension = new Vector2(0, 0);
-
-            textures = new Texture2D[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
-            tempTileType = new int[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
-            tempResourceType = new int[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
-            tempImprovementType = new int[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
-            catagory = new TypeofEditorTile[(int)internalAtlasDimension.x, (int)internalAtlasDimension.y];
-
-            improvementLocations.Clear();
-            resourceLocations.Clear();
-            tileLocations.Clear();
+            
+            start = false;
         }
 
 
@@ -889,31 +1145,27 @@ namespace CivGrid.Editors
         {
 
             Rect[] rectAreas;
-            Texture2D returnTexture = TexturePacker.AtlasTextures(CivGridUtility.ToSingleArray<Texture2D>(textures), out rectAreas);
+            Texture2D returnTexture = TexturePacker.AtlasTextures(textures.ToArray(), 2048, out rectAreas);
 
-            int lengthOfArraysX = catagory.GetLength(0); 
-            int lengthOfArraysY = catagory.GetLength(1); 
+            int lengthOfArrays = catagory.Count;
 
-            for (int x = 0; x < lengthOfArraysX; x++)
+            for (int i = 0; i < lengthOfArrays; i++)
             {
-                for (int y = 0; y < lengthOfArraysY; y++)
-                {
-                    if (catagory[x, y] == TypeofEditorTile.Terrain)
+                    if (catagory[i] == TypeofEditorTile.Terrain)
                     {
-                        tileLocations.Add(tileManager.tiles[tempTileType[x, y]], rectAreas[x * lengthOfArraysY + y]);
+                        tileLocations.Add(tileManager.tiles[tempTileType[i]], rectAreas[i]);
                     }
-                    else if (catagory[x, y] == TypeofEditorTile.Resource)
+                    else if (catagory[i] == TypeofEditorTile.Resource)
                     {
-                        resourceLocations.Add(resourceManager.resources[tempResourceType[x, y]], rectAreas[x * lengthOfArraysY + y]);
+                        resourceLocations.Add(resourceManager.resources[tempResourceType[i]], rectAreas[i]);
                     }
                     else
                     {
-                        improvementLocations.Add(improvementManager.searalizableImprovements[tempImprovementType[x, y]], rectAreas[x * lengthOfArraysY + y]);
+                        improvementLocations.Add(improvementManager.improvements[tempImprovementType[i]], rectAreas[i]);
                     }
-                }
             }
 
-            CivGridSaver.SaveTexture(returnTexture, loc, "TerrainAtlas", false);
+            FileUtility.SaveTexture(returnTexture, loc, "TerrainAtlas", false);
             worldManager.textureAtlas.terrainAtlas = (Texture2D)AssetDatabase.LoadAssetAtPath(editedLoc + "/TerrainAtlas.png", typeof(Texture2D));
             worldManager.textureAtlas.tileLocations = (TileItem[])tileLocations.ToArray().Clone();
             worldManager.textureAtlas.resourceLocations = (ResourceItem[])resourceLocations.ToArray().Clone();
