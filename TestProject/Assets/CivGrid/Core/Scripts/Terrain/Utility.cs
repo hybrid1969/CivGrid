@@ -648,8 +648,8 @@ namespace CivGrid
             else
             {
                 //not found
-                Debug.LogError("Couldn't get a value from the given key: " + key.name);
-                location = new Rect();
+                Debug.LogError("Couldn't get a value from the given key: " + key.name + " setting to default : " + list[0].Key.name + "/n Add this to the texture atlas!");
+                location = list[0].Value;
                 return false;
             }
         }
